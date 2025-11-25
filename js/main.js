@@ -34,6 +34,9 @@ const me = { id: null, mesh: null, character: null, health: 100, maxHealth: 100 
 const others = new Map();
 setPlayersMap(others);
 
+// Game State
+let gameState = 'connecting'; // 'connecting', 'playing'
+
 let charactersData = {};
 fetch("/api/characters")
 	.then((res) => res.json())
@@ -128,7 +131,9 @@ async function connectToRoomGame() {
 			const msg = JSON.parse(event.data);
 
 			if (msg.type === "hello") {
-				me.id = String(myUserId);
+				// --- CHANGE: Use the ID from the server's hello message
+				me.id = String(msg.id);
+				console.log(`[Game] My player ID is ${me.id}`);
 
 				// Only create my mesh if it doesn't exist
 				if (!me.mesh) {
@@ -168,6 +173,10 @@ async function connectToRoomGame() {
 					color: playerColor,
 					character: me.character
 				}));
+
+				// --- CHANGE: Set game state to playing
+				gameState = 'playing';
+				console.log('[Game] State changed to "playing"');
 			}
 
 			if (msg.type === "player-join") {
@@ -255,6 +264,7 @@ async function connectToRoomGame() {
 
 		ws.onclose = () => {
 			console.log('[WS] Disconnected from game');
+			gameState = 'connecting'; // Reset on disconnect
 		};
 
 		ws.onerror = (error) => {
@@ -271,6 +281,12 @@ function tick(t) {
 	requestAnimationFrame(tick);
 	const dt = Math.min(0.033, tick.prevT ? (t - tick.prevT) / 1000 : 0.016);
 	tick.prevT = t;
+
+	// --- CHANGE: Only run game logic if in 'playing' state
+	if (gameState !== 'playing') {
+		render(); // Still render the scene
+		return;
+	}
 
 	let vx = 0, vz = 0;
 

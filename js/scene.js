@@ -58,6 +58,61 @@ export function updateCameraPosition(x, z) {
     camera.lookAt(x, 0, z);
 }
 
+function createHealthBar() {
+    const barGroup = new THREE.Group();
+
+    // Background bar (black)
+    const bgGeometry = new THREE.PlaneGeometry(0.8, 0.1);
+    const bgMaterial = new THREE.MeshBasicMaterial({ color: 0x000000 });
+    const bgBar = new THREE.Mesh(bgGeometry, bgMaterial);
+    barGroup.add(bgBar);
+
+    // Health bar (green to red based on health)
+    const healthGeometry = new THREE.PlaneGeometry(0.8, 0.1);
+    const healthMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+    const healthBar = new THREE.Mesh(healthGeometry, healthMaterial);
+    healthBar.position.z = 0.01; // Slightly in front of background
+    barGroup.add(healthBar);
+
+    // Store reference to health bar for updates
+    barGroup.userData.healthBar = healthBar;
+    barGroup.userData.maxWidth = 0.8;
+
+    // Billboard effect (always face camera)
+    barGroup.rotation.x = -Math.PI / 2;
+    barGroup.position.y = 1.7; // Above the player's head
+
+    return barGroup;
+}
+
+export function updateHealthBar(playerMesh, health, maxHealth) {
+    if (!playerMesh.userData.healthBarGroup) return;
+
+    const barGroup = playerMesh.userData.healthBarGroup;
+    const healthBar = barGroup.userData.healthBar;
+    const maxWidth = barGroup.userData.maxWidth;
+
+    // Calculate health percentage
+    const healthPercent = Math.max(0, Math.min(1, health / maxHealth));
+
+    // Update width
+    healthBar.scale.x = healthPercent;
+    healthBar.position.x = -maxWidth / 2 + (maxWidth * healthPercent) / 2;
+
+    // Update color based on health percentage
+    let color;
+    if (healthPercent > 0.6) {
+        color = 0x00ff00; // Green
+    } else if (healthPercent > 0.3) {
+        color = 0xffff00; // Yellow
+    } else if (healthPercent > 0) {
+        color = 0xff0000; // Red
+    } else {
+        color = 0x666666; // Gray for dead
+    }
+    healthBar.material.color.setHex(color);
+}
+
 export function makePlayerMesh(hexColor) {
     const g = new THREE.Group();
     const body = new THREE.Mesh(
@@ -81,6 +136,12 @@ export function makePlayerMesh(hexColor) {
     dir.rotation.x = Math.PI;
     dir.position.set(0, 1.1, 0.35);
     g.add(dir);
+
+    // Add health bar
+    const healthBarGroup = createHealthBar();
+    g.add(healthBarGroup);
+    g.userData.healthBarGroup = healthBarGroup;
+
     return g;
 }
 

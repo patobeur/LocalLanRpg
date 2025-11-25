@@ -1,22 +1,76 @@
-// Serveur WebSocket pour jeu LAN (2 joueurs ou plus) avec envoi de l’IP locale
+// Serveur WebSocket pour jeu LAN (2 joueurs ou plus) avec envoi de l'IP locale
 
 const express = require("express");
 const http = require("http");
 const WebSocket = require("ws");
 const os = require("os");
+const session = require("express-session");
 const characters = require("./server_side/characters.js");
+const authRoutes = require("./authRoutes");
+const roomManager = require("./server_side/rooms.js");
+const Game = require("./server_side/game.js");
 
 const app = express();
 const server = http.createServer(app);
 const PORT = process.env.PORT || 8080;
 
+// Middleware
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// Session configuration
+app.use(session({
+	secret: "local-lan-rpg-secret-key-change-in-production",
+	resave: false,
+	saveUninitialized: false,
+	cookie: {
+		maxAge: 24 * 60 * 60 * 1000, // 24 hours
+		secure: false // set to true if using HTTPS
+	}
+}));
+
+// Auth routes
+app.use('/api/auth', authRoutes);
+
 // Servir les fichiers statiques (HTML, CSS, JS)
 app.use(express.static(__dirname));
 app.use('/node_modules', express.static(__dirname + '/node_modules'));
 
-// Route par défaut
+// Middleware d'authentification
+function requireAuth(req, res, next) {
+	if (req.session && req.session.userId) {
+		return next();
+	}
+	res.redirect('/login.html');
+}
+
+// Route par défaut - redirige vers lobby si authentifié
 app.get("/", (req, res) => {
+	if (req.session && req.session.userId) {
+		res.redirect('/lobby.html');
+	} else {
+		res.redirect('/login.html');
+	}
+});
+
+// Route du lobby - nécessite authentification
+app.get("/lobby.html", requireAuth, (req, res) => {
+	res.sendFile(__dirname + "/lobby.html");
+});
+
+// Route de room - nécessite authentification
+app.get("/room.html", requireAuth, (req, res) => {
+	res.sendFile(__dirname + "/room.html");
+});
+
+// Route du jeu - nécessite authentification
+app.get("/jouer.html", requireAuth, (req, res) => {
 	res.sendFile(__dirname + "/jouer.html");
+});
+
+// Route de connexion - accessible sans auth
+app.get("/login.html", (req, res) => {
+	res.sendFile(__dirname + "/login.html");
 });
 
 // API Personnages
@@ -24,49 +78,161 @@ app.get("/api/characters", (req, res) => {
 	res.json(characters);
 });
 
+// ===== ROOM API ROUTES =====
+
+// Get all rooms
+app.get("/api/rooms", requireAuth, (req, res) => {
+	try {
+		const rooms = roomManager.getRoomsList();
+		res.json({ success: true, rooms });
+	} catch (error) {
+		console.error('Get rooms error:', error);
+		res.status(500).json({ error: error.message });
+	}
+});
+
+// Create room
+app.post("/api/rooms", requireAuth, (req, res) => {
+	const { name } = req.body;
+	if (!name || name.trim().length === 0) {
+		return res.status(400).json({ error: "Room name is required" });
+	}
+
+	try {
+		const room = roomManager.createRoom(
+			name.trim(),
+			req.session.userId,
+			req.session.username
+		);
+		res.json({
+			success: true, roomId: room.id, room: {
+				id: room.id,
+				name: room.name,
+				creatorUsername: room.creatorUsername
+			}
+		});
+	} catch (error) {
+		console.error('Create room error:', error);
+		res.status(500).json({ error: error.message });
+	}
+});
+
+// Get room details
+app.get("/api/rooms/:roomId", requireAuth, (req, res) => {
+	const { roomId } = req.params;
+	try {
+		const room = roomManager.getRoom(roomId);
+		if (!room) {
+			return res.status(404).json({ error: "Room not found" });
+		}
+		res.json({
+			success: true, room: {
+				id: room.id,
+				name: room.name,
+				creatorId: room.creatorId,
+				creatorUsername: room.creatorUsername,
+				status: room.status,
+				players: room.getPlayersList()
+			}
+		});
+	} catch (error) {
+		console.error('Get room error:', error);
+		res.status(500).json({ error: error.message });
+	}
+});
+
+// Join room
+app.post("/api/rooms/:roomId/join", requireAuth, (req, res) => {
+	const { roomId } = req.params;
+	try {
+		const room = roomManager.joinRoom(
+			roomId,
+			req.session.userId,
+			req.session.username
+		);
+		res.json({ success: true, roomId: room.id });
+	} catch (error) {
+		console.error('Join room error:', error);
+		res.status(400).json({ error: error.message });
+	}
+});
+
+// Leave room
+app.post("/api/rooms/:roomId/leave", requireAuth, (req, res) => {
+	const { roomId } = req.params;
+	try {
+		roomManager.leaveRoom(roomId, req.session.userId);
+		res.json({ success: true });
+	} catch (error) {
+		console.error('Leave room error:', error);
+		res.status(500).json({ error: error.message });
+	}
+});
+
+// Set faction
+app.post("/api/rooms/:roomId/faction", requireAuth, (req, res) => {
+	const { roomId } = req.params;
+	const { faction } = req.body;
+
+	if (!faction || (faction !== 'blue' && faction !== 'red')) {
+		return res.status(400).json({ error: "Invalid faction. Must be 'blue' or 'red'" });
+	}
+
+	try {
+		roomManager.setPlayerFaction(roomId, req.session.userId, faction);
+		res.json({ success: true });
+	} catch (error) {
+		console.error('Set faction error:', error);
+		res.status(400).json({ error: error.message });
+	}
+});
+
+// Set character
+app.post("/api/rooms/:roomId/character", requireAuth, (req, res) => {
+	const { roomId } = req.params;
+	const { character } = req.body;
+
+	if (!character || !characters.chars[character]) {
+		return res.status(400).json({ error: "Invalid character" });
+	}
+
+	try {
+		roomManager.setPlayerCharacter(roomId, req.session.userId, character);
+		res.json({ success: true });
+	} catch (error) {
+		console.error('Set character error:', error);
+		res.status(400).json({ error: error.message });
+	}
+});
+
+// Start game
+app.post("/api/rooms/:roomId/start", requireAuth, (req, res) => {
+	const { roomId } = req.params;
+	try {
+		const room = roomManager.startGame(roomId, req.session.userId);
+		res.json({ success: true, roomId: room.id });
+	} catch (error) {
+		console.error('Start game error:', error);
+		res.status(400).json({ error: error.message });
+	}
+});
+
 const wss = new WebSocket.Server({ server });
 
-const game = require("./server_side/game.js");
-
-// Obtenir toutes les IPs locales disponibles
-function getLocalIPs() {
-	return Object.values(os.networkInterfaces())
-		.flat()
-		.filter((net) => net.family === "IPv4" && !net.internal)
-		.map((net) => `ws://${net.address}:${PORT}`);
-}
-
-function broadcast(obj, excludeId = null) {
+// Broadcast to all clients in a specific room
+function broadcastToRoom(roomId, obj, excludeWs = null) {
 	const msg = JSON.stringify(obj);
 	for (const client of wss.clients) {
-		if (client.readyState === WebSocket.OPEN && client.id !== excludeId) {
+		if (client.readyState === WebSocket.OPEN &&
+			client.roomId === roomId &&
+			client !== excludeWs) {
 			client.send(msg);
 		}
 	}
 }
 
 wss.on("connection", (ws) => {
-	const id = game.generateId();
-	ws.id = id;
-	console.log(`[WS] Client connecté: ${id} (Total: ${wss.clients.size})`);
-
-	// Envoi IP serveur + état initial
-	ws.send(JSON.stringify({ type: "server-ip", ips: getLocalIPs() }));
-
-	ws.send(
-		JSON.stringify({
-			type: "hello",
-			id,
-			players: game.getPlayers(),
-		})
-	);
-
-	ws.send(
-		JSON.stringify({
-			type: "players-list",
-			players: game.getPlayersList(),
-		})
-	);
+	console.log(`[WS] Client connected (Total: ${wss.clients.size})`);
 
 	ws.on("message", (data) => {
 		let msg;
@@ -76,90 +242,162 @@ wss.on("connection", (ws) => {
 			return;
 		}
 
+		// Join room (from room.html)
+		if (msg.type === "join-room") {
+			ws.roomId = msg.roomId;
+			console.log(`[WS] Client joined room ${msg.roomId}`);
+
+			// Send current room state
+			const room = roomManager.getRoom(msg.roomId);
+			if (room) {
+				ws.send(JSON.stringify({
+					type: "room-update",
+					players: room.getPlayersList()
+				}));
+			}
+		}
+
+		// Room changed (faction or character selected)
+		if (msg.type === "room-changed") {
+			const room = roomManager.getRoom(msg.roomId);
+			if (room) {
+				// Broadcast update to all in room
+				broadcastToRoom(msg.roomId, {
+					type: "room-update",
+					players: room.getPlayersList()
+				});
+			}
+		}
+
+		// Start game
+		if (msg.type === "start-game") {
+			// Broadcast to all players in room
+			broadcastToRoom(msg.roomId, {
+				type: "game-start",
+				roomId: msg.roomId
+			});
+		}
+
+		// === GAME WEBSOCKET (from jouer.html) ===
+
+		if (msg.type === "join-game") {
+			const roomId = msg.roomId;
+			ws.roomId = roomId;
+			ws.playerId = msg.playerId;
+
+			const room = roomManager.getRoom(roomId);
+			if (!room || !room.game) {
+				console.error(`[WS] Game not found for room ${roomId}`);
+				return;
+			}
+
+			console.log(`[WS] Player ${msg.playerId} joined game in room ${roomId}`);
+
+			// Send hello with room's game state
+			ws.send(JSON.stringify({
+				type: "hello",
+				id: msg.playerId,
+				players: room.game.getPlayers()
+			}));
+		}
+
 		if (msg.type === "join") {
-			const player = game.addPlayer(id, msg);
-			broadcast({ type: "player-join", player }, id);
+			if (!ws.roomId || !ws.playerId) return;
+
+			const room = roomManager.getRoom(ws.roomId);
+			if (!room || !room.game) return;
+
+			const player = room.game.addPlayer(ws.playerId, msg);
+			broadcastToRoom(ws.roomId, { type: "player-join", player }, ws);
 		}
 
 		if (msg.type === "state") {
-			const p = game.updatePlayer(id, msg);
+			if (!ws.roomId || !ws.playerId) return;
+
+			const room = roomManager.getRoom(ws.roomId);
+			if (!room || !room.game) return;
+
+			const p = room.game.updatePlayer(ws.playerId, msg);
 			if (p) {
-				broadcast(
-					{
-						type: "player-state",
-						id,
-						x: p.x,
-						y: p.y,
-						z: p.z,
-						rotY: p.rotY,
-						ts: p.ts,
-					},
-					id
-				);
+				broadcastToRoom(ws.roomId, {
+					type: "player-state",
+					id: ws.playerId,
+					x: p.x,
+					y: p.y,
+					z: p.z,
+					rotY: p.rotY,
+					ts: p.ts
+				}, ws);
 			}
 		}
 
 		if (msg.type === "shoot") {
-			// Add projectile to server game state
-			game.addProjectile(id, msg.x, msg.y, msg.z, msg.angle);
+			if (!ws.roomId || !ws.playerId) return;
 
-			// Broadcast shoot event to all other players (for visuals)
-			broadcast(
-				{
-					type: "shoot",
-					shooterId: id,
-					x: msg.x,
-					y: msg.y,
-					z: msg.z,
-					angle: msg.angle,
-				},
-				id
-			);
+			const room = roomManager.getRoom(ws.roomId);
+			if (!room || !room.game) return;
+
+			room.game.addProjectile(ws.playerId, msg.x, msg.y, msg.z, msg.angle);
+
+			broadcastToRoom(ws.roomId, {
+				type: "shoot",
+				shooterId: ws.playerId,
+				x: msg.x,
+				y: msg.y,
+				z: msg.z,
+				angle: msg.angle
+			}, ws);
 		}
-
-		// Client no longer sends 'hit' messages
 	});
 
 	ws.on("close", () => {
-		console.log(`[WS] Client parti: ${id} (Total: ${wss.clients.size})`);
-		if (game.removePlayer(id)) {
-			console.log(`[WS] Joueur ${id} supprimé du jeu.`);
-			broadcast({ type: "player-leave", id });
-		} else {
-			console.log(`[WS] Joueur ${id} introuvable lors de la suppression.`);
+		console.log(`[WS] Client disconnected (Total: ${wss.clients.size})`);
+
+		if (ws.roomId && ws.playerId) {
+			const room = roomManager.getRoom(ws.roomId);
+			if (room && room.game) {
+				if (room.game.removePlayer(ws.playerId)) {
+					console.log(`[WS] Player ${ws.playerId} removed from game`);
+					broadcastToRoom(ws.roomId, { type: "player-leave", id: ws.playerId });
+				}
+			}
 		}
 	});
 });
 
-// Server Game Loop (60 FPS)
+// Game loop for all active rooms
 setInterval(() => {
 	const dt = 1 / 60;
-	const events = game.update(dt);
 
-	events.forEach((e) => {
-		if (e.type === "hit") {
-			// Broadcast health update
-			broadcast({
-				type: "player-health",
-				id: e.targetId,
-				health: e.targetHealth,
-				maxHealth: e.targetMaxHealth,
+	for (const room of roomManager.rooms.values()) {
+		if (room.status === 'playing' && room.game) {
+			const events = room.game.update(dt);
+
+			events.forEach((e) => {
+				if (e.type === "hit") {
+					// Broadcast to room only
+					broadcastToRoom(room.id, {
+						type: "player-health",
+						id: e.targetId,
+						health: e.targetHealth,
+						maxHealth: e.targetMaxHealth
+					});
+
+					broadcastToRoom(room.id, {
+						type: "projectile-hit",
+						shooterId: e.shooterId,
+						targetId: e.targetId
+					});
+
+					console.log(`[Game Room ${room.id}] Player ${e.shooterId} hit Player ${e.targetId} for ${e.damage} dmg. HP: ${e.targetHealth}`);
+				}
 			});
-
-			// Broadcast projectile hit to remove projectile on other clients
-			broadcast({
-				type: "projectile-hit",
-				shooterId: e.shooterId,
-				targetId: e.targetId,
-			});
-
-			console.log(`[Game] Player ${e.shooterId} hit Player ${e.targetId} for ${e.damage} dmg. HP: ${e.targetHealth}`);
 		}
-	});
+	}
 }, 1000 / 60);
 
 server.listen(PORT, () => {
 	console.log(`[HTTP] Serveur démarré sur http://0.0.0.0:${PORT}`);
 	console.log(`[WS] Serveur WebSocket prêt`);
-	console.log("IP(s) locale(s) :", getLocalIPs().join(", "));
+	console.log("Système de rooms activé");
 });

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<title>Connexion - Local LAN RPG</title>
+	<link rel="stylesheet" href="login.css" />
+</head>
+
+<body>
+	<div class="container">
+		<div class="auth-card">
+			<h1>Local LAN RPG</h1>
+			
+			<!-- Login Form -->
+			<form id="loginForm" class="auth-form">
+				<h2>Connexion</h2>
+				<div class="form-group">
+					<label for="loginUsername">Nom d'utilisateur</label>
+					<input 
+						type="text" 
+						id="loginUsername" 
+						name="username" 
+						required 
+						autocomplete="username"
+						placeholder="Votre pseudo"
+					/>
+				</div>
+				<div class="form-group">
+					<label for="loginPassword">Mot de passe</label>
+					<input 
+						type="password" 
+						id="loginPassword" 
+						name="password" 
+						required 
+						autocomplete="current-password"
+						placeholder="••••••••"
+					/>
+				</div>
+				<div class="error-message" id="loginError"></div>
+				<button type="submit" class="btn-primary">Se connecter</button>
+				<p class="toggle-text">
+					Pas de compte ? 
+					<a href="#" id="showRegister">Créer un compte</a>
+				</p>
+			</form>
+
+			<!-- Register Form -->
+			<form id="registerForm" class="auth-form hidden">
+				<h2>Créer un compte</h2>
+				<div class="form-group">
+					<label for="registerUsername">Nom d'utilisateur</label>
+					<input 
+						type="text" 
+						id="registerUsername" 
+						name="username" 
+						required 
+						autocomplete="username"
+						placeholder="Choisissez un pseudo"
+						minlength="3"
+						maxlength="16"
+					/>
+				</div>
+				<div class="form-group">
+					<label for="registerEmail">Email</label>
+					<input 
+						type="email" 
+						id="registerEmail" 
+						name="email" 
+						required 
+						autocomplete="email"
+						placeholder="votre@email.com"
+					/>
+				</div>
+				<div class="form-group">
+					<label for="registerPassword">Mot de passe</label>
+					<input 
+						type="password" 
+						id="registerPassword" 
+						name="password" 
+						required 
+						autocomplete="new-password"
+						placeholder="••••••••"
+						minlength="6"
+					/>
+					<small>Au moins 6 caractères</small>
+				</div>
+				<div class="form-group">
+					<label for="registerPasswordConfirm">Confirmer le mot de passe</label>
+					<input 
+						type="password" 
+						id="registerPasswordConfirm" 
+						name="passwordConfirm" 
+						required 
+						autocomplete="new-password"
+						placeholder="••••••••"
+					/>
+				</div>
+				<div class="error-message" id="registerError"></div>
+				<button type="submit" class="btn-primary">Créer un compte</button>
+				<p class="toggle-text">
+					Déjà un compte ? 
+					<a href="#" id="showLogin">Se connecter</a>
+				</p>
+			</form>
+		</div>
+	</div>
+
+	<script src="js/auth.js"></script>
+</body>
+</html>

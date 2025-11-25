@@ -1,34 +1,23 @@
 <!DOCTYPE html>
 <html lang="fr">
-	<head>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<title>Top‑Down LAN (2 joueurs)</title>
-		<link rel="stylesheet" href="jouer.css" />
-	</head>
 
-	<body>
-		<div id="hud"></div>
-		<div id="ui">
-			<div id="card">
-				<h2>Créer/charger un profil</h2>
-				<label>Pseudo</label>
-				<input
-					id="name"
-					type="text"
-					maxlength="16"
-					placeholder="Ex: Pixelou" />
-				<label>Couleur du joueur</label>
-				<input id="color" type="color" value="#4caf50" />
-				<button id="save">Continuer</button>
-				<div id="hint"
-					>Touches : ZQSD / WASD pour bouger.<br />Ouvre cet onglet sur un
-					autre PC et passe l'IP du serveur :
-					<code>?server=http://192.168.x.x:8080</code>
-				</div>
-			</div>
-		</div>
-		<canvas id="c"></canvas>
-		<script type="module" src="js/main.js?v=2"></script>
-	</body>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Local LAN RPG - Game</title>
+    <link rel="stylesheet" href="jouer.css" />
+</head>
+
+<body>
+    <canvas id="c"></canvas>
+
+    <!-- Simple HUD -->
+    <div id="hud"
+        style="position: absolute; top: 10px; left: 10px; color: white; font-family: monospace; background: rgba(0,0,0,0.7); padding: 10px; border-radius: 5px; display: none;">
+        <div id="status">En jeu...</div>
+    </div>
+
+    <script type="module" src="js/main.js"></script>
+</body>
+
 </html>

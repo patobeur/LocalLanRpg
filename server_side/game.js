@@ -128,4 +128,7 @@ class Game {
     }
 }
 
-module.exports = new Game();
+// Export the class itself, not an instance
+// Each room will create its own Game instance
+module.exports = Game;
+

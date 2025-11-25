@@ -128,7 +128,7 @@ async function connectToRoomGame() {
 			const msg = JSON.parse(event.data);
 
 			if (msg.type === "hello") {
-				me.id = myUserId;
+				me.id = String(myUserId);
 
 				// Only create my mesh if it doesn't exist
 				if (!me.mesh) {
@@ -172,22 +172,24 @@ async function connectToRoomGame() {
 
 			if (msg.type === "player-join") {
 				const p = msg.player;
+				const pId = String(p.id);
 				// Prevent adding myself or existing players
-				if (p.id !== me.id && !others.has(p.id)) {
+				if (pId !== me.id && !others.has(pId)) {
 					const m = makePlayerMesh(p.color);
 					m.position.set(p.x, p.y, p.z);
 					m.rotation.y = p.rotY;
 					m.userData.health = p.health || 100;
 					m.userData.maxHealth = p.maxHealth || 100;
 					updateHealthBar(m, m.userData.health, m.userData.maxHealth);
-					others.set(p.id, m);
+					others.set(pId, m);
 					world.add(m);
 				}
 			}
 
 			if (msg.type === "player-state") {
-				if (msg.id === me.id) return;
-				let m = others.get(msg.id);
+				const msgId = String(msg.id);
+				if (msgId === me.id) return;
+				let m = others.get(msgId);
 				if (!m) {
 					// If we receive state for a player we don't know, request full list or ignore?
 					// For now, let's ignore to prevent ghost creation with wrong colors
@@ -198,24 +200,26 @@ async function connectToRoomGame() {
 			}
 
 			if (msg.type === "player-leave") {
-				const m = others.get(msg.id);
+				const msgId = String(msg.id);
+				const m = others.get(msgId);
 				if (m) {
 					world.remove(m);
-					others.delete(msg.id);
+					others.delete(msgId);
 				}
 			}
 
 			if (msg.type === "shoot") {
-				shootProjectile(msg.x, msg.y, msg.z, msg.angle, msg.shooterId);
+				shootProjectile(msg.x, msg.y, msg.z, msg.angle, String(msg.shooterId));
 			}
 
 			if (msg.type === "player-health") {
-				if (msg.id === me.id) {
+				const msgId = String(msg.id);
+				if (msgId === me.id) {
 					me.health = msg.health;
 					me.maxHealth = msg.maxHealth;
 					updateHealthBar(me.mesh, me.health, me.maxHealth);
 				} else {
-					const m = others.get(msg.id);
+					const m = others.get(msgId);
 					if (m) {
 						m.userData.health = msg.health;
 						m.userData.maxHealth = msg.maxHealth;
@@ -225,12 +229,14 @@ async function connectToRoomGame() {
 			}
 
 			if (msg.type === "projectile-hit") {
-				const target = others.get(msg.targetId) || (msg.targetId === me.id ? me.mesh : null);
+				const targetId = String(msg.targetId);
+				const shooterId = String(msg.shooterId);
+				const target = others.get(targetId) || (targetId === me.id ? me.mesh : null);
 				if (target) {
 					let closest = null;
 					let minDst = Infinity;
 					for (const p of projectiles) {
-						if (p.shooterId === msg.shooterId) {
+						if (p.shooterId === shooterId) {
 							const d = Math.hypot(p.x - target.position.x, p.z - target.position.z);
 							if (d < minDst) {
 								minDst = d;
@@ -269,7 +275,7 @@ function tick(t) {
 	let vx = 0, vz = 0;
 
 	// Auto Attack Logic
-	const attackId = getAttackTarget();
+	const attackId = String(getAttackTarget());
 	let attacking = false;
 
 	if (attackId && others.has(attackId)) {

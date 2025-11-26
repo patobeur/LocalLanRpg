@@ -41,12 +41,22 @@ function requireAuth(req, res, next) {
 	if (req.session && req.session.userId) {
 		return next();
 	}
+	// For API routes, return JSON error instead of redirecting
+	if (req.path.startsWith('/api/')) {
+		return res.status(401).json({ error: 'Unauthorized' });
+	}
 	res.redirect('/login.html');
 }
 
-// Route par défaut - redirige vers lobby si authentifié
+// Route par défaut - redirige vers lobby ou jeu si authentifié
 app.get("/", (req, res) => {
 	if (req.session && req.session.userId) {
+		// Check if user is in an active game
+		for (const room of roomManager.rooms.values()) {
+			if (room.status === 'playing' && room.players.has(req.session.userId)) {
+				return res.redirect(`/jouer.html?roomId=${room.id}`);
+			}
+		}
 		res.redirect('/lobby.html');
 	} else {
 		res.redirect('/login.html');
@@ -55,6 +65,12 @@ app.get("/", (req, res) => {
 
 // Route du lobby - nécessite authentification
 app.get("/lobby.html", requireAuth, (req, res) => {
+	// Check if user is in an active game
+	for (const room of roomManager.rooms.values()) {
+		if (room.status === 'playing' && room.players.has(req.session.userId)) {
+			return res.redirect(`/jouer.html?roomId=${room.id}`);
+		}
+	}
 	res.sendFile(__dirname + "/lobby.html");
 });
 
@@ -293,6 +309,9 @@ wss.on("connection", (ws) => {
 
 			console.log(`[WS] Player ${msg.playerId} joined game in room ${roomId}`);
 
+			// Mark as connected
+			room.game.setPlayerDisconnected(msg.playerId, false);
+
 			// Send hello with room's game state
 			ws.send(JSON.stringify({
 				type: "hello",
@@ -307,8 +326,11 @@ wss.on("connection", (ws) => {
 			const room = roomManager.getRoom(ws.roomId);
 			if (!room || !room.game) return;
 
-			const player = room.game.addPlayer(ws.playerId, msg);
-			broadcastToRoom(ws.roomId, { type: "player-join", player }, ws);
+			// Only add if not already in game (reconnection check)
+			if (!room.game.players.has(ws.playerId)) {
+				const player = room.game.addPlayer(ws.playerId, msg);
+				broadcastToRoom(ws.roomId, { type: "player-join", player }, ws);
+			}
 		}
 
 		if (msg.type === "state") {
@@ -355,10 +377,17 @@ wss.on("connection", (ws) => {
 
 		if (ws.roomId && ws.playerId) {
 			const room = roomManager.getRoom(ws.roomId);
-			if (room && room.game) {
-				if (room.game.removePlayer(ws.playerId)) {
-					console.log(`[WS] Player ${ws.playerId} removed from game`);
-					broadcastToRoom(ws.roomId, { type: "player-leave", id: ws.playerId });
+			if (room) {
+				if (room.status === 'playing' && room.game) {
+					// Game in progress: Mark as disconnected but keep in game
+					room.game.setPlayerDisconnected(ws.playerId, true);
+					console.log(`[WS] Player ${ws.playerId} disconnected (kept in game)`);
+				} else {
+					// Lobby/Waiting: Remove player
+					if (roomManager.leaveRoom(ws.roomId, ws.playerId)) {
+						console.log(`[WS] Player ${ws.playerId} left room ${ws.roomId}`);
+						broadcastToRoom(ws.roomId, { type: "room-update", players: room.getPlayersList() });
+					}
 				}
 			}
 		}
@@ -374,7 +403,17 @@ setInterval(() => {
 			const events = room.game.update(dt);
 
 			events.forEach((e) => {
-				if (e.type === "hit") {
+				if (e.type === "server-player-move") {
+					broadcastToRoom(room.id, {
+						type: "player-state",
+						id: e.id,
+						x: e.x,
+						y: e.y,
+						z: e.z,
+						rotY: e.rotY,
+						ts: Date.now() // Use current time for sync
+					});
+				} else if (e.type === "hit") {
 					// Broadcast to room only
 					broadcastToRoom(room.id, {
 						type: "player-health",
@@ -401,3 +440,21 @@ server.listen(PORT, () => {
 	console.log(`[WS] Serveur WebSocket prêt`);
 	console.log("Système de rooms activé");
 });
+
+// Handle server shutdown
+const shutdown = () => {
+	console.log("Shutting down server...");
+	// Broadcast shutdown to all clients
+	for (const client of wss.clients) {
+		if (client.readyState === WebSocket.OPEN) {
+			client.send(JSON.stringify({ type: "server-shutdown" }));
+		}
+	}
+	server.close(() => {
+		console.log("Server closed");
+		process.exit(0);
+	});
+};
+
+process.on("SIGINT", shutdown);
+process.on("SIGTERM", shutdown);

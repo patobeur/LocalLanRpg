@@ -29,6 +29,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         try {
             const response = await fetch('/api/rooms');
+
+            if (response.status === 401) {
+                window.location.href = '/login.html';
+                return;
+            }
+
             const data = await response.json();
 
             if (data.success && data.rooms) {

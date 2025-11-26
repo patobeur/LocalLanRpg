@@ -149,6 +149,12 @@ async function connectToRoomGame() {
 		ws.onmessage = (event) => {
 			const msg = JSON.parse(event.data);
 
+			if (msg.type === "server-shutdown") {
+				alert("Le serveur a été arrêté. Retour à l'accueil.");
+				window.location.href = "/";
+				return;
+			}
+
 			if (msg.type === "hello") {
 				// me.id = String(myUserId);
 				// --- CHANGE: Use the ID from the server's hello message

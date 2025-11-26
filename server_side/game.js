@@ -1,4 +1,5 @@
 const characters = require("./characters.js");
+const config = require("./config.js");
 
 class Game {
     constructor() {
@@ -34,6 +35,8 @@ class Game {
             maxHealth: charStats.health,
             mana: charStats.mana,
             maxMana: charStats.mana,
+            faction: msg.faction || "blue",
+            disconnected: false,
             ts: Date.now(),
         };
         this.players.set(id, player);
@@ -55,6 +58,15 @@ class Game {
         return this.players.delete(id);
     }
 
+    setPlayerDisconnected(id, isDisconnected) {
+        const p = this.players.get(id);
+        if (p) {
+            p.disconnected = isDisconnected;
+            return true;
+        }
+        return false;
+    }
+
     addProjectile(shooterId, x, y, z, angle) {
         this.projectiles.push({
             shooterId,
@@ -69,6 +81,44 @@ class Game {
 
     update(dt) {
         const events = [];
+
+        // Autonomous movement for disconnected players
+        for (const p of this.players.values()) {
+            if (p.disconnected) {
+                const spawn = p.faction === "blue" ? config.locations.spawnTeamA : config.locations.spawnTeamB;
+                const dx = spawn.x - p.x;
+                const dz = spawn.y - p.z; // Note: config uses y for z in 2D representation usually, but let's check config.js. 
+                // Config has x, y. In 3D game, y is up. So config y maps to z.
+
+                const dist = Math.hypot(dx, dz);
+                const speed = 3.5; // Same as player speed
+
+                if (dist > 0.1) {
+                    const move = speed * dt;
+                    p.x += (dx / dist) * move;
+                    p.z += (dz / dist) * move;
+                    p.rotY = Math.atan2(dx, dz);
+                    p.ts = Date.now();
+
+                    // We need to broadcast this movement, but update() returns events.
+                    // We can add a special event or just rely on the fact that we don't usually broadcast position from update()
+                    // The server usually trusts clients. But here server drives.
+                    // We need to emit a 'player-moved' event or similar if we want clients to see it smoothly.
+                    // However, the current architecture relies on clients sending 'state'.
+                    // We need to inject a state update event.
+
+                    // Let's add a custom event type for server-driven movement
+                    events.push({
+                        type: "server-player-move",
+                        id: p.id,
+                        x: p.x,
+                        y: p.y,
+                        z: p.z,
+                        rotY: p.rotY
+                    });
+                }
+            }
+        }
 
         for (let i = this.projectiles.length - 1; i >= 0; i--) {
             const p = this.projectiles[i];

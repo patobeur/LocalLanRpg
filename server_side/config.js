@@ -9,4 +9,6 @@ const config = {
         BaseTeamA: { x: -25, y: -25, hp: 1000 },
         BaseTeamB: { x: 25, y: 25, hp: 1000 },
     },
-}
+};
+
+module.exports = config;

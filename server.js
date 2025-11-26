@@ -35,6 +35,7 @@ app.use('/api/auth', authRoutes);
 // Servir les fichiers statiques (HTML, CSS, JS)
 app.use(express.static(__dirname));
 app.use('/node_modules', express.static(__dirname + '/node_modules'));
+app.use('/media', express.static(__dirname + '/public/media'));
 
 // Middleware d'authentification
 function requireAuth(req, res, next) {

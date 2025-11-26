@@ -262,11 +262,16 @@ function createCharacterCard(char) {
     }
 
     card.innerHTML = `
+		<div class="character-image">
+			<img src="/public/media/characters/low/${char.png}" alt="${char.name}" onerror="this.style.display='none'">
+		</div>
 		<h4>${char.name}</h4>
 		<div class="type">${char.type}</div>
 		<div class="stats">
-			HP: ${char.health}<br>
-			Mana: ${char.mana}
+			<div class="stat-row"><span>❤️ HP:</span> <strong>${char.health}</strong></div>
+			<div class="stat-row"><span>💎 Mana:</span> <strong>${char.mana}</strong></div>
+			<div class="stat-row"><span>⚡ Vitesse:</span> <strong>${char.speed}</strong></div>
+			<div class="stat-row"><span>🗡️ Dégâts:</span> <strong>${char.autoAttackDamage[0]}</strong></div>
 		</div>
 	`;
 

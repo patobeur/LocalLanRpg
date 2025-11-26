@@ -167,13 +167,24 @@ async function connectToRoomGame() {
 					world.add(me.mesh);
 				}
 
-				// Initialize health
+				// Initialize health and position
 				const myData = msg.players[me.id];
 				if (myData) {
 					me.health = myData.health || 100;
 					me.maxHealth = myData.maxHealth || 100;
 					me.mana = myData.mana || 100;
 					me.maxMana = myData.maxMana || 100;
+
+					// Set position from server (important for reconnection)
+					px = myData.x || 0;
+					py = myData.y || 0.5;
+					pz = myData.z || 0;
+					rotY = myData.rotY || 0;
+
+					// Update mesh position
+					me.mesh.position.set(px, py, pz);
+					me.mesh.rotation.y = rotY;
+
 					updateHealthBar(me.mesh, me.health, me.maxHealth);
 					updateManaBar(me.mesh, me.mana, me.maxMana);
 				}

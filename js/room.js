@@ -46,6 +46,13 @@ async function loadRoom() {
         }
 
         roomData = data.room;
+
+        // If game is already in progress, redirect to game
+        if (roomData.status === 'playing') {
+            window.location.href = `/jouer.html?roomId=${roomId}`;
+            return;
+        }
+
         roomNameEl.textContent = roomData.name;
 
         // Get my user ID

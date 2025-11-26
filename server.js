@@ -76,6 +76,14 @@ app.get("/lobby.html", requireAuth, (req, res) => {
 
 // Route de room - nécessite authentification
 app.get("/room.html", requireAuth, (req, res) => {
+	const roomId = req.query.roomId;
+	if (roomId) {
+		const room = roomManager.getRoom(roomId);
+		// If room is playing, redirect to game
+		if (room && room.status === 'playing') {
+			return res.redirect(`/jouer.html?roomId=${roomId}`);
+		}
+	}
 	res.sendFile(__dirname + "/room.html");
 });
 

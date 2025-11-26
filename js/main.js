@@ -9,6 +9,7 @@ import {
 	clearAttackTarget,
 	setPlayersMap,
 } from "./input.js";
+import { initGameUI } from "./game-ui.js";
 import {
 	initScene,
 	render,
@@ -58,6 +59,12 @@ const PROJECTILE_RANGE = 30;
 // Init Subsystems
 initInput();
 initScene();
+
+// Init UI
+initGameUI((mode) => {
+	setInputMode(mode);
+	console.log(`[Game] Movement mode set to: ${mode}`);
+});
 
 // Game variables
 let px = 0,
@@ -318,7 +325,20 @@ function tick(t) {
 	let attacking = false;
 
 	if (attackId && others.has(attackId)) {
-		const targetMesh = others.get(attackId);
+		// Check if we should break attack due to keyboard movement
+		if (getMovementMode() === "keyboard") {
+			const d = getMoveDir();
+			if (d.up || d.down || d.left || d.right) {
+				clearAttackTarget();
+				attacking = false;
+			}
+		}
+	}
+
+	// Re-check attackId after potential clear
+	const currentAttackId = String(getAttackTarget());
+	if (currentAttackId && others.has(currentAttackId) && !attacking) {
+		const targetMesh = others.get(currentAttackId);
 		const dx = targetMesh.position.x - px;
 		const dz = targetMesh.position.z - pz;
 		const dist = Math.hypot(dx, dz);

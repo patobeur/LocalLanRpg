@@ -23,8 +23,8 @@ export function initInput() {
     });
 
     addEventListener("mousedown", (e) => {
-        if (mode === "mouse" && e.button === 0) {
-            // Check player click first
+        if (e.button === 0) {
+            // Check player click first (ALWAYS allowed)
             if (playersMap) {
                 const playerHit = getPlayerIntersection(e.clientX, e.clientY, playersMap);
                 if (playerHit) {
@@ -34,11 +34,13 @@ export function initInput() {
                 }
             }
 
-            // Click gauche (ground)
-            const point = getGroundIntersection(e.clientX, e.clientY);
-            if (point) {
-                target = { x: point.x, z: point.z };
-                attackTarget = null; // Stop attacking
+            // Click gauche (ground) - ONLY in mouse mode
+            if (mode === "mouse") {
+                const point = getGroundIntersection(e.clientX, e.clientY);
+                if (point) {
+                    target = { x: point.x, z: point.z };
+                    attackTarget = null; // Stop attacking
+                }
             }
         }
     });

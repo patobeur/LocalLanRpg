@@ -120,6 +120,40 @@ class Game {
             }
         }
 
+        // Health and Mana Regeneration
+        for (const p of this.players.values()) {
+            const charStats = characters.chars[p.character];
+            if (!charStats) continue;
+
+            let updated = false;
+
+            // Health regeneration
+            if (p.health < p.maxHealth) {
+                p.health += charStats.HealthRegeneration * dt;
+                if (p.health > p.maxHealth) p.health = p.maxHealth;
+                updated = true;
+            }
+
+            // Mana regeneration
+            if (p.mana < p.maxMana) {
+                p.mana += charStats.manaRegeneration * dt;
+                if (p.mana > p.maxMana) p.mana = p.maxMana;
+                updated = true;
+            }
+
+            // Broadcast regen updates
+            if (updated) {
+                events.push({
+                    type: "player-regen",
+                    id: p.id,
+                    health: p.health,
+                    maxHealth: p.maxHealth,
+                    mana: p.mana,
+                    maxMana: p.maxMana
+                });
+            }
+        }
+
         for (let i = this.projectiles.length - 1; i >= 0; i--) {
             const p = this.projectiles[i];
             const move = this.PROJECTILE_SPEED * dt;

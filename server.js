@@ -421,6 +421,15 @@ setInterval(() => {
 						rotY: e.rotY,
 						ts: Date.now() // Use current time for sync
 					});
+				} else if (e.type === "player-regen") {
+					broadcastToRoom(room.id, {
+						type: "player-health",
+						id: e.id,
+						health: e.health,
+						maxHealth: e.maxHealth,
+						mana: e.mana,
+						maxMana: e.maxMana
+					});
 				} else if (e.type === "hit") {
 					// Broadcast to room only
 					broadcastToRoom(room.id, {

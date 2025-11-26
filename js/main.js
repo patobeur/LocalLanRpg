@@ -291,7 +291,14 @@ async function connectToRoomGame() {
 				if (msgId === me.id) {
 					me.health = msg.health;
 					me.maxHealth = msg.maxHealth;
+					if (msg.mana !== undefined) {
+						me.mana = msg.mana;
+						me.maxMana = msg.maxMana;
+					}
 					updateHealthBar(me.mesh, me.health, me.maxHealth);
+					if (msg.mana !== undefined) {
+						updateManaBar(me.mesh, me.mana, me.maxMana);
+					}
 					// Update HUD
 					gameUI.updatePlayerInfo(
 						charactersData[me.character]?.name || "Player",
@@ -308,7 +315,14 @@ async function connectToRoomGame() {
 					if (m) {
 						m.userData.health = msg.health;
 						m.userData.maxHealth = msg.maxHealth;
+						if (msg.mana !== undefined) {
+							m.userData.mana = msg.mana;
+							m.userData.maxMana = msg.maxMana;
+						}
 						updateHealthBar(m, m.userData.health, m.userData.maxHealth);
+						if (msg.mana !== undefined) {
+							updateManaBar(m, m.userData.mana, m.userData.maxMana);
+						}
 					}
 				}
 			}

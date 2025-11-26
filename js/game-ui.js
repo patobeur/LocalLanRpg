@@ -65,13 +65,27 @@ export function initGameUI(onModeChange) {
         const current = loadProfile() || {};
         current.mode = modalMoveModeSelect.value;
         saveProfile(current);
-        
+
         if (onModeChange) {
             onModeChange(current.mode);
         }
     });
 
     return {
-        toggle: toggleModal
+        toggle: toggleModal,
+        updatePlayerInfo: (name, level, health, maxHealth, mana, maxMana, xp, maxXp) => {
+            const nameEl = document.getElementById("player-name");
+            const levelEl = document.getElementById("player-level");
+            const xpBar = document.getElementById("bar-xp");
+            const hpBar = document.getElementById("bar-hp");
+            const mpBar = document.getElementById("bar-mp");
+
+            if (nameEl) nameEl.textContent = name;
+            if (levelEl) levelEl.textContent = `Niveau ${level}`;
+
+            if (xpBar) xpBar.style.width = `${Math.min(100, Math.max(0, (xp / maxXp) * 100))}%`;
+            if (hpBar) hpBar.style.width = `${Math.min(100, Math.max(0, (health / maxHealth) * 100))}%`;
+            if (mpBar) mpBar.style.width = `${Math.min(100, Math.max(0, (mana / maxMana) * 100))}%`;
+        }
     };
 }

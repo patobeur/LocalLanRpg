@@ -18,6 +18,7 @@ import {
 	world,
 	scene,
 	updateHealthBar,
+	updateManaBar,
 } from "./scene.js";
 import * as THREE from "/node_modules/three/build/three.module.js";
 
@@ -61,7 +62,7 @@ initInput();
 initScene();
 
 // Init UI
-initGameUI((mode) => {
+const gameUI = initGameUI((mode) => {
 	setInputMode(mode);
 	console.log(`[Game] Movement mode set to: ${mode}`);
 });
@@ -165,7 +166,10 @@ async function connectToRoomGame() {
 				if (myData) {
 					me.health = myData.health || 100;
 					me.maxHealth = myData.maxHealth || 100;
+					me.mana = myData.mana || 100;
+					me.maxMana = myData.maxMana || 100;
 					updateHealthBar(me.mesh, me.health, me.maxHealth);
+					updateManaBar(me.mesh, me.mana, me.maxMana);
 				}
 
 				// Add other players
@@ -180,7 +184,10 @@ async function connectToRoomGame() {
 					m.rotation.y = p.rotY;
 					m.userData.health = p.health || 100;
 					m.userData.maxHealth = p.maxHealth || 100;
+					m.userData.mana = p.mana || 100;
+					m.userData.maxMana = p.maxMana || 100;
 					updateHealthBar(m, m.userData.health, m.userData.maxHealth);
+					updateManaBar(m, m.userData.mana, m.userData.maxMana);
 					others.set(id, m);
 					world.add(m);
 				}
@@ -197,6 +204,18 @@ async function connectToRoomGame() {
 				// --- CHANGE: Set game state to playing
 				gameState = "playing";
 				console.log('[Game] State changed to "playing"');
+
+				// Update HUD
+				gameUI.updatePlayerInfo(
+					myPlayer.username,
+					1, // Level
+					me.health,
+					me.maxHealth,
+					me.mana,
+					me.maxMana,
+					0, // XP
+					100 // Max XP
+				);
 			}
 
 			if (msg.type === "player-join") {
@@ -209,7 +228,10 @@ async function connectToRoomGame() {
 					m.rotation.y = p.rotY;
 					m.userData.health = p.health || 100;
 					m.userData.maxHealth = p.maxHealth || 100;
+					m.userData.mana = p.mana || 100;
+					m.userData.maxMana = p.maxMana || 100;
 					updateHealthBar(m, m.userData.health, m.userData.maxHealth);
+					updateManaBar(m, m.userData.mana, m.userData.maxMana);
 					others.set(pId, m);
 					world.add(m);
 				}
@@ -253,6 +275,17 @@ async function connectToRoomGame() {
 					me.health = msg.health;
 					me.maxHealth = msg.maxHealth;
 					updateHealthBar(me.mesh, me.health, me.maxHealth);
+					// Update HUD
+					gameUI.updatePlayerInfo(
+						charactersData[me.character]?.name || "Player",
+						1,
+						me.health,
+						me.maxHealth,
+						me.mana,
+						me.maxMana,
+						0,
+						100
+					);
 				} else {
 					const m = others.get(msgId);
 					if (m) {

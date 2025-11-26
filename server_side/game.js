@@ -32,6 +32,8 @@ class Game {
             rotY: 0,
             health: charStats.health,
             maxHealth: charStats.health,
+            mana: charStats.mana,
+            maxMana: charStats.mana,
             ts: Date.now(),
         };
         this.players.set(id, player);

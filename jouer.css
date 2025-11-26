@@ -82,43 +82,100 @@ button:disabled {
 	padding: 8px 10px;
 	border-radius: 10px;
 }
+
 /* Modal Styles */
 #options-modal {
-position: fixed;
-inset: 0;
-background: rgba(0, 0, 0, 0.7);
-display: flex;
-justify-content: center;
-align-items: center;
-z-index: 1000;
+	position: fixed;
+	inset: 0;
+	background: rgba(0, 0, 0, 0.7);
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	z-index: 1000;
 }
 
 #options-modal[hidden] {
-display: none !important;
+	display: none !important;
 }
 
 #options-content {
-background: #121a2a;
-border: 1px solid #26324a;
-border-radius: 12px;
-width: min(90vw, 350px);
-padding: 20px;
-box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+	background: #121a2a;
+	border: 1px solid #26324a;
+	border-radius: 12px;
+	width: min(90vw, 350px);
+	padding: 20px;
+	box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
 }
 
 #options-content h2 {
-margin-top: 0;
-font-size: 18px;
-margin-bottom: 15px;
-border-bottom: 1px solid #26324a;
-padding-bottom: 10px;
+	margin-top: 0;
+	font-size: 18px;
+	margin-bottom: 15px;
+	border-bottom: 1px solid #26324a;
+	padding-bottom: 10px;
 }
 
 .close-btn {
-margin-top: 15px;
-background: #26324a;
-}
-.close-btn:hover {
-background: #32415e;
+	margin-top: 15px;
+	background: #26324a;
 }
 
+.close-btn:hover {
+	background: #32415e;
+}
+
+
+#player-info {
+	position: fixed;
+	bottom: 20px;
+	left: 20px;
+	background: rgba(18, 26, 42, 0.85);
+	border: 1px solid #26324a;
+	border-radius: 12px;
+	padding: 15px 20px;
+	color: #eaeefb;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+	min-width: 150px;
+	backdrop-filter: blur(4px);
+}
+
+#player-name {
+	font-size: 18px;
+	font-weight: 700;
+	margin-bottom: 4px;
+	color: #4A90E2;
+}
+
+#player-level {
+	font-size: 14px;
+	color: #8b9bb4;
+	margin-bottom: 10px;
+}
+
+.bar-container {
+	margin-top: 6px;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.bar-label {
+	font-size: 10px;
+	font-weight: bold;
+	width: 20px;
+	color: #8b9bb4;
+}
+
+.bar-bg {
+	flex: 1;
+	height: 8px;
+	background: #0e1523;
+	border-radius: 4px;
+	overflow: hidden;
+	border: 1px solid #26324a;
+}
+
+.bar-fill {
+	height: 100%;
+	transition: width 0.3s ease;
+}

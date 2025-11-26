@@ -11,13 +11,50 @@
 <body>
     <canvas id="c"></canvas>
 
-    <!-- Simple HUD -->
-    <div id="hud"
-        style="position: absolute; top: 10px; left: 10px; color: white; font-family: monospace; background: rgba(0,0,0,0.7); padding: 10px; border-radius: 5px; display: none;">
-        <div id="status">En jeu...</div>
-    </div>
+    <!DOCTYPE html>
+    <html lang="fr">
 
-    <script type="module" src="js/main.js"></script>
-</body>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Local LAN RPG - Game</title>
+        <link rel="stylesheet" href="jouer.css" />
+    </head>
 
-</html>
+    <body>
+        <canvas id="c"></canvas>
+
+        <!-- Simple HUD -->
+        <div id="hud"
+            style="position: absolute; top: 10px; left: 10px; color: white; font-family: monospace; background: rgba(0,0,0,0.7); padding: 10px; border-radius: 5px; display: none;">
+            <div id="status">En jeu...</div>
+        </div>
+
+        <div id="player-info">
+            <div id="player-name">Player</div>
+            <div id="player-level">Niveau 1</div>
+
+            <div class="bar-container">
+                <div class="bar-label">XP</div>
+                <div class="bar-bg">
+                    <div id="bar-xp" class="bar-fill" style="width: 0%; background: #9b59b6;"></div>
+                </div>
+            </div>
+            <div class="bar-container">
+                <div class="bar-label">HP</div>
+                <div class="bar-bg">
+                    <div id="bar-hp" class="bar-fill" style="width: 100%; background: #e74c3c;"></div>
+                </div>
+            </div>
+            <div class="bar-container">
+                <div class="bar-label">MP</div>
+                <div class="bar-bg">
+                    <div id="bar-mp" class="bar-fill" style="width: 100%; background: #3498db;"></div>
+                </div>
+            </div>
+        </div>
+
+        <script type="module" src="js/main.js"></script>
+    </body>
+
+    </html>

@@ -85,6 +85,31 @@ function createHealthBar() {
     return barGroup;
 }
 
+function createManaBar() {
+    const barGroup = new THREE.Group();
+
+    // Background bar (black)
+    const bgGeometry = new THREE.PlaneGeometry(0.8, 0.1);
+    const bgMaterial = new THREE.MeshBasicMaterial({ color: 0x000000 });
+    const bgBar = new THREE.Mesh(bgGeometry, bgMaterial);
+    barGroup.add(bgBar);
+
+    // Mana bar (blue)
+    const manaGeometry = new THREE.PlaneGeometry(0.8, 0.1);
+    const manaMaterial = new THREE.MeshBasicMaterial({ color: 0x3498db });
+    const manaBar = new THREE.Mesh(manaGeometry, manaMaterial);
+    manaBar.position.z = 0.01;
+    barGroup.add(manaBar);
+
+    barGroup.userData.manaBar = manaBar;
+    barGroup.userData.maxWidth = 0.8;
+
+    barGroup.rotation.x = -Math.PI / 2;
+    barGroup.position.y = 1.55; // Below health bar (1.7)
+
+    return barGroup;
+}
+
 export function updateHealthBar(playerMesh, health, maxHealth) {
     if (!playerMesh.userData.healthBarGroup) return;
 
@@ -111,6 +136,19 @@ export function updateHealthBar(playerMesh, health, maxHealth) {
         color = 0x666666; // Gray for dead
     }
     healthBar.material.color.setHex(color);
+}
+
+export function updateManaBar(playerMesh, mana, maxMana) {
+    if (!playerMesh.userData.manaBarGroup) return;
+
+    const barGroup = playerMesh.userData.manaBarGroup;
+    const manaBar = barGroup.userData.manaBar;
+    const maxWidth = barGroup.userData.maxWidth;
+
+    const percent = Math.max(0, Math.min(1, mana / maxMana));
+
+    manaBar.scale.x = percent;
+    manaBar.position.x = -maxWidth / 2 + (maxWidth * percent) / 2;
 }
 
 export function makePlayerMesh(hexColor) {
@@ -141,6 +179,11 @@ export function makePlayerMesh(hexColor) {
     const healthBarGroup = createHealthBar();
     g.add(healthBarGroup);
     g.userData.healthBarGroup = healthBarGroup;
+
+    // Add mana bar
+    const manaBarGroup = createManaBar();
+    g.add(manaBarGroup);
+    g.userData.manaBarGroup = manaBarGroup;
 
     return g;
 }

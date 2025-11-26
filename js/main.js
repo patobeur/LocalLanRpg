@@ -24,15 +24,24 @@ const qs = new URLSearchParams(location.search);
 const roomId = qs.get("roomId");
 
 if (!roomId) {
-	alert('Vous devez rejoindre une salle pour jouer');
-	window.location.href = '/lobby.html';
+	alert("Vous devez rejoindre une salle pour jouer");
+	window.location.href = "/lobby.html";
 }
 
 let ws = null;
 let lastBroadcast = 0;
-const me = { id: null, mesh: null, character: null, health: 100, maxHealth: 100 };
+const me = {
+	id: null,
+	mesh: null,
+	character: null,
+	health: 100,
+	maxHealth: 100,
+};
 const others = new Map();
 setPlayersMap(others);
+
+// Game State
+let gameState = "connecting"; // 'connecting', 'playing'
 
 let charactersData = {};
 fetch("/api/characters")
@@ -51,7 +60,10 @@ initInput();
 initScene();
 
 // Game variables
-let px = 0, py = 0.5, pz = 0, rotY = 0;
+let px = 0,
+	py = 0.5,
+	pz = 0,
+	rotY = 0;
 const speed = 3.5;
 const gridSize = 40;
 
@@ -87,48 +99,53 @@ async function connectToRoomGame() {
 		const roomData = await roomRes.json();
 
 		if (!roomData.success) {
-			alert('Salle introuvable');
-			window.location.href = '/lobby.html';
+			alert("Salle introuvable");
+			window.location.href = "/lobby.html";
 			return;
 		}
 
-		const sessionRes = await fetch('/api/auth/session');
+		const sessionRes = await fetch("/api/auth/session");
 		const sessionData = await sessionRes.json();
 		const myUserId = sessionData.user.id;
 
 		// Find my player in room
-		const myPlayer = roomData.room.players.find(p => p.id === myUserId);
+		const myPlayer = roomData.room.players.find((p) => p.id === myUserId);
 		if (!myPlayer || !myPlayer.character) {
-			alert('Vous devez choisir un personnage dans la salle');
+			alert("Vous devez choisir un personnage dans la salle");
 			window.location.href = `/room.html?roomId=${roomId}`;
 			return;
 		}
 
 		me.character = myPlayer.character;
-		const playerColor = myPlayer.faction === 'blue' ? '#4A90E2' : '#E74C3C';
+		const playerColor = myPlayer.faction === "blue" ? "#4A90E2" : "#E74C3C";
 
 		// Connect to WebSocket
-		const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+		const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
 		const wsUrl = `${protocol}//${window.location.host}`;
 
 		ws = new WebSocket(wsUrl);
 
 		ws.onopen = () => {
-			console.log('[WS] Connected to game');
+			console.log("[WS] Connected to game");
 
 			// Join game with room context
-			ws.send(JSON.stringify({
-				type: 'join-game',
-				roomId: roomId,
-				playerId: myUserId
-			}));
+			ws.send(
+				JSON.stringify({
+					type: "join-game",
+					roomId: roomId,
+					playerId: myUserId,
+				})
+			);
 		};
 
 		ws.onmessage = (event) => {
 			const msg = JSON.parse(event.data);
 
 			if (msg.type === "hello") {
-				me.id = String(myUserId);
+				// me.id = String(myUserId);
+				// --- CHANGE: Use the ID from the server's hello message
+				me.id = String(msg.id);
+				console.log(`[Game] My player ID is ${me.id}`);
 
 				// Only create my mesh if it doesn't exist
 				if (!me.mesh) {
@@ -162,12 +179,17 @@ async function connectToRoomGame() {
 				}
 
 				// Send join message
-				ws.send(JSON.stringify({
-					type: "join",
-					name: myPlayer.username,
-					color: playerColor,
-					character: me.character
-				}));
+				ws.send(
+					JSON.stringify({
+						type: "join",
+						name: myPlayer.username,
+						color: playerColor,
+						character: me.character,
+					})
+				);
+				// --- CHANGE: Set game state to playing
+				gameState = "playing";
+				console.log('[Game] State changed to "playing"');
 			}
 
 			if (msg.type === "player-join") {
@@ -209,7 +231,13 @@ async function connectToRoomGame() {
 			}
 
 			if (msg.type === "shoot") {
-				shootProjectile(msg.x, msg.y, msg.z, msg.angle, String(msg.shooterId));
+				shootProjectile(
+					msg.x,
+					msg.y,
+					msg.z,
+					msg.angle,
+					String(msg.shooterId)
+				);
 			}
 
 			if (msg.type === "player-health") {
@@ -231,13 +259,17 @@ async function connectToRoomGame() {
 			if (msg.type === "projectile-hit") {
 				const targetId = String(msg.targetId);
 				const shooterId = String(msg.shooterId);
-				const target = others.get(targetId) || (targetId === me.id ? me.mesh : null);
+				const target =
+					others.get(targetId) || (targetId === me.id ? me.mesh : null);
 				if (target) {
 					let closest = null;
 					let minDst = Infinity;
 					for (const p of projectiles) {
 						if (p.shooterId === shooterId) {
-							const d = Math.hypot(p.x - target.position.x, p.z - target.position.z);
+							const d = Math.hypot(
+								p.x - target.position.x,
+								p.z - target.position.z
+							);
 							if (d < minDst) {
 								minDst = d;
 								closest = p;
@@ -254,16 +286,17 @@ async function connectToRoomGame() {
 		};
 
 		ws.onclose = () => {
-			console.log('[WS] Disconnected from game');
+			console.log("[WS] Disconnected from game");
+			gameState = "connecting"; // Reset on disconnect
 		};
 
 		ws.onerror = (error) => {
-			console.error('[WS] Error:', error);
+			console.error("[WS] Error:", error);
 		};
 	} catch (error) {
-		console.error('Connect to room game error:', error);
-		alert('Erreur de connexion au jeu');
-		window.location.href = '/lobby.html';
+		console.error("Connect to room game error:", error);
+		alert("Erreur de connexion au jeu");
+		window.location.href = "/lobby.html";
 	}
 }
 
@@ -272,7 +305,13 @@ function tick(t) {
 	const dt = Math.min(0.033, tick.prevT ? (t - tick.prevT) / 1000 : 0.016);
 	tick.prevT = t;
 
-	let vx = 0, vz = 0;
+	// --- CHANGE: Only run game logic if in 'playing' state
+	if (gameState !== "playing") {
+		render(); // Still render the scene
+		return;
+	}
+	let vx = 0,
+		vz = 0;
 
 	// Auto Attack Logic
 	const attackId = String(getAttackTarget());
@@ -286,7 +325,8 @@ function tick(t) {
 
 		const myChar = charactersData[me.character] || charactersData["Moumba"];
 		const range = myChar ? myChar.hitDistance : 5;
-		const cdSeconds = myChar && myChar.autoAttackCd ? myChar.autoAttackCd[0] : 1;
+		const cdSeconds =
+			myChar && myChar.autoAttackCd ? myChar.autoAttackCd[0] : 1;
 		const cdMs = cdSeconds * 1000;
 
 		if (dist > range) {

@@ -1,9 +1,7 @@
-
 const characters = {
     names: ["Moumba", "Wiko", "Squazzzza", "Gromp", "Zephyr", "Ignis", "Flora", "Shadow"],
     types: ["tank", "dps", "support", "tank", "speedster", "mage", "healer", "assassin"],
     xpNeededPerLv: [0, 1000, 3000, 6000, 10000, 15000, 21000, 28000, 36000, 45000, 55000, 66000, 78000, 91000, 105000, 120000, 136000, 153000],
-    maxLv: 18,
     chars: {
         Moumba: {
             name: "Moumba",

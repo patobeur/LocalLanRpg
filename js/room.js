@@ -260,11 +260,9 @@ function createCharacterCard(char) {
     if (myCharacter === char.name) {
         card.classList.add('selected');
     }
+    card.style.backgroundImage = `url('/media/characters/low/${char.png}')`;
 
     card.innerHTML = `
-		<div class="character-image">
-			<img src="/public/media/characters/low/${char.png}" alt="${char.name}" onerror="this.style.display='none'">
-		</div>
 		<h4>${char.name}</h4>
 		<div class="type">${char.type}</div>
 		<div class="stats">

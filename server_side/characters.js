@@ -50,7 +50,7 @@ const characters = {
 			physiqueArmor: 2,
 			magicArmor: 1.5,
 			svg: "moumba.svg",
-			png: "Moumba.png",
+			png: "Moumba.jpg",
 		},
 		Wiko: {
 			name: "Wiko",
@@ -78,7 +78,7 @@ const characters = {
 			physiqueArmor: 1.2,
 			magicArmor: 1.2,
 			svg: "wiko.svg",
-			png: "Wiko.png",
+			png: "Wiko.jpg",
 		},
 		Squazzzza: {
 			name: "Squazzzza",
@@ -106,7 +106,7 @@ const characters = {
 			physiqueArmor: 1.5,
 			magicAttack: 2,
 			svg: "squazzzza.svg",
-			png: "Squazzzza.png",
+			png: "Squazzzza.jpg",
 		},
 		Gromp: {
 			name: "Gromp",
@@ -134,7 +134,7 @@ const characters = {
 			physiqueArmor: 3,
 			magicArmor: 1,
 			svg: "gromp.svg",
-			png: "Gromp.png",
+			png: "Gromp.jpg",
 		},
 		Zephyr: {
 			name: "Zephyr",
@@ -162,7 +162,7 @@ const characters = {
 			physiqueArmor: 0.8,
 			magicArmor: 0.8,
 			svg: "zephyr.svg",
-			png: "Zephyr.png",
+			png: "Zephyr.jpg",
 		},
 		Ignis: {
 			name: "Ignis",
@@ -190,7 +190,7 @@ const characters = {
 			physiqueArmor: 0.5,
 			magicArmor: 2,
 			svg: "ignis.svg",
-			png: "Ignis.png",
+			png: "Ignis.jpg",
 		},
 		Flora: {
 			name: "Flora",
@@ -218,7 +218,7 @@ const characters = {
 			physiqueArmor: 1,
 			magicArmor: 1.5,
 			svg: "flora.svg",
-			png: "Flora.png",
+			png: "Flora.jpg",
 		},
 		Shadow: {
 			name: "Shadow",
@@ -246,7 +246,7 @@ const characters = {
 			physiqueArmor: 1,
 			magicArmor: 1,
 			svg: "shadow.svg",
-			png: "Shadow.png",
+			png: "Shadow.jpg",
 		},
 	},
 };

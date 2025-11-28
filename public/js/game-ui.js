@@ -6,6 +6,13 @@ export function initGameUI(onModeChange) {
     modal.innerHTML = `
 		<div id="options-content">
 			<h2>Options</h2>
+            
+            <div style="margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #26324a;">
+                <button id="quitGameBtn" style="width:100%; padding:10px; background:#e74c3c; color:white; border:none; border-radius:4px; cursor:pointer; font-weight:bold;">
+                    Quitter la partie
+                </button>
+            </div>
+
 			<label>Mode de déplacement</label>
 			<select id="modalMoveMode" style="width:100%; padding:8px; background:#0e1523; color:#eaeefb; border:1px solid #26324a; border-radius:4px;">
 				<option value="keyboard">Clavier (ZQSD / Flèches)</option>
@@ -18,6 +25,22 @@ export function initGameUI(onModeChange) {
 
     const modalMoveModeSelect = document.getElementById("modalMoveMode");
     const closeOptionsBtn = document.getElementById("closeOptions");
+    const quitBtn = document.getElementById("quitGameBtn");
+
+    if (quitBtn) {
+        quitBtn.onclick = async () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const roomId = urlParams.get("roomId");
+            if (roomId) {
+                try {
+                    await fetch(`/api/rooms/${roomId}/leave`, { method: "POST" });
+                } catch (e) {
+                    console.error("Error leaving room:", e);
+                }
+            }
+            window.location.href = "lobby.html";
+        };
+    }
 
     function loadProfile() {
         try {
@@ -81,11 +104,11 @@ export function initGameUI(onModeChange) {
             const mpBar = document.getElementById("bar-mp");
 
             if (nameEl) nameEl.textContent = name;
-            if (levelEl) levelEl.textContent = `Niveau ${level}`;
+            if (levelEl) levelEl.textContent = `Niveau ${level} `;
 
-            if (xpBar) xpBar.style.width = `${Math.min(100, Math.max(0, (xp / maxXp) * 100))}%`;
-            if (hpBar) hpBar.style.width = `${Math.min(100, Math.max(0, (health / maxHealth) * 100))}%`;
-            if (mpBar) mpBar.style.width = `${Math.min(100, Math.max(0, (mana / maxMana) * 100))}%`;
+            if (xpBar) xpBar.style.width = `${Math.min(100, Math.max(0, (xp / maxXp) * 100))}% `;
+            if (hpBar) hpBar.style.width = `${Math.min(100, Math.max(0, (health / maxHealth) * 100))}% `;
+            if (mpBar) mpBar.style.width = `${Math.min(100, Math.max(0, (mana / maxMana) * 100))}% `;
         }
     };
 }

@@ -187,7 +187,13 @@ app.post("/api/rooms/:roomId/join", requireAuth, (req, res) => {
 app.post("/api/rooms/:roomId/leave", requireAuth, (req, res) => {
 	const { roomId } = req.params;
 	try {
-		roomManager.leaveRoom(roomId, req.session.userId);
+		const { removed, leftGame } = roomManager.leaveRoom(roomId, req.session.userId);
+		if (leftGame) {
+			broadcastToRoom(roomId, {
+				type: "player-left",
+				id: req.session.userId
+			});
+		}
 		res.json({ success: true });
 	} catch (error) {
 		console.error('Leave room error:', error);

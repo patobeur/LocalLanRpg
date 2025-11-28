@@ -119,17 +119,38 @@ class RoomManager {
 
     leaveRoom(roomId, playerId) {
         const room = this.rooms.get(roomId);
-        if (!room) return false;
+        if (!room) return { removed: false };
 
         const removed = room.removePlayer(playerId);
+        let leftGame = false;
+
+        // Remove from game instance if playing
+        if (room.status === 'playing' && room.game) {
+            if (room.game.removePlayer(playerId)) {
+                leftGame = true;
+                console.log(`[Rooms] Player ${playerId} removed from game in room ${roomId}`);
+            }
+        }
 
         // Delete room if empty
         if (room.isEmpty()) {
             this.rooms.delete(roomId);
             console.log(`[Rooms] Room ${roomId} deleted (empty)`);
+        } else {
+            // If creator left, assign new creator
+            if (room.creatorId === playerId) {
+                const remainingPlayers = Array.from(room.players.values());
+                if (remainingPlayers.length > 0) {
+                    // Pick random player
+                    const newCreator = remainingPlayers[Math.floor(Math.random() * remainingPlayers.length)];
+                    room.creatorId = newCreator.id;
+                    room.creatorUsername = newCreator.username;
+                    console.log(`[Rooms] Room ${roomId} ownership transferred to ${newCreator.username}`);
+                }
+            }
         }
 
-        return removed;
+        return { removed, leftGame };
     }
 
     setPlayerFaction(roomId, playerId, faction) {

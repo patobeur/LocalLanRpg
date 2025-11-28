@@ -470,7 +470,7 @@ function tick(t) {
 		rotY = Math.atan2(vx, vz);
 	}
 
-	const half = gridSize * 0.5 - 0.6;
+	const half = gridSize;// * 0.5;// - 0.6;
 	px = Math.max(-half, Math.min(half, px));
 	pz = Math.max(-half, Math.min(half, pz));
 

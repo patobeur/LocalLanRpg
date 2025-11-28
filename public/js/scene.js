@@ -31,6 +31,55 @@ export function initScene() {
 	world.add(plane);
 	world.add(new THREE.GridHelper(gridSize, gridSize, 0x335, 0x224));
 
+	// Add spawn point indicators
+	// Team A spawn (blue) - diameter 5, height 0.25
+	const spawnTeamA = new THREE.Mesh(
+		new THREE.CylinderGeometry(2.5, 2.5, 0.25, 32),
+		new THREE.MeshStandardMaterial({
+			color: 0x4A90E2,
+			transparent: true,
+			opacity: 0.6
+		})
+	);
+	spawnTeamA.position.set(-20, 0.125, -20);
+	world.add(spawnTeamA);
+
+	// Team B spawn (red) - diameter 5, height 0.25
+	const spawnTeamB = new THREE.Mesh(
+		new THREE.CylinderGeometry(2.5, 2.5, 0.25, 32),
+		new THREE.MeshStandardMaterial({
+			color: 0xE74C3C,
+			transparent: true,
+			opacity: 0.6
+		})
+	);
+	spawnTeamB.position.set(20, 0.125, 20);
+	world.add(spawnTeamB);
+
+	// Minions A spawn (light blue) - diameter 2, height 0.25
+	const spawnMinionsA = new THREE.Mesh(
+		new THREE.CylinderGeometry(1, 1, 0.25, 32),
+		new THREE.MeshStandardMaterial({
+			color: 0x85C1E9,
+			transparent: true,
+			opacity: 0.6
+		})
+	);
+	spawnMinionsA.position.set(-22, 0.125, -22);
+	world.add(spawnMinionsA);
+
+	// Minions B spawn (light red) - diameter 2, height 0.25
+	const spawnMinionsB = new THREE.Mesh(
+		new THREE.CylinderGeometry(1, 1, 0.25, 32),
+		new THREE.MeshStandardMaterial({
+			color: 0xF1948A,
+			transparent: true,
+			opacity: 0.6
+		})
+	);
+	spawnMinionsB.position.set(22, 0.125, 22);
+	world.add(spawnMinionsB);
+
 	renderer.setSize(innerWidth, innerHeight);
 	updateCameraProjection();
 

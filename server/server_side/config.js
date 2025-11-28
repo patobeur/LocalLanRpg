@@ -1,9 +1,9 @@
 const config = {
     locations: {
-        spawnTeamA: { x: -20, y: -20 },
-        spawnTeamB: { x: 20, y: 20 },
-        spawnMinionsA: { x: -22, y: -22 },
-        spawnMinionsB: { x: 22, y: 22 },
+        spawnTeamA: { x: -22, y: -22 },
+        spawnTeamB: { x: 22, y: 22 },
+        spawnMinionsA: { x: -18, y: -18 },
+        spawnMinionsB: { x: 18, y: 18 },
     },
     structures: {
         BaseTeamA: { x: -25, y: -25, hp: 1000 },

@@ -10,8 +10,8 @@ const config = {
         BaseTeamB: { x: 25, y: 25, hp: 1000, z: 0, w: 5, h: 5, d: 5, type: "sphereGeometry" },
     },
     meshes: {
-        BaseTeamA: { x: -25, y: -25, hp: 1000, z: 0, w: 5, h: 5, d: 5, type: "GLB", filepath: "./media/structures/glb/baseTeamA.glb" },
-        BaseTeamB: { x: 25, y: 25, hp: 1000, z: 0, w: 5, h: 5, d: 5, type: "GLB", filepath: "./media/structures/glb/baseTeamB.glb" },
+        BaseTeamA: { x: -25, y: -25, hp: 1000, z: 0, w: 5, h: 5, d: 5, type: "GLB", filepath: "./media/structures/glb/baseTeamA.glb", rotation: { x: 0, y: 180, z: 0 } },
+        BaseTeamB: { x: 25, y: 25, hp: 1000, z: 0, w: 5, h: 5, d: 5, type: "GLB", filepath: "./media/structures/glb/baseTeamB.glb", rotation: { x: 0, y: 0, z: 0 } },
     },
 };
 

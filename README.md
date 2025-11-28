@@ -111,3 +111,5 @@ Users table created or already exists.
 6. **Room:** Inside the room, choose your faction (Blue or Red) and then select a character.
 7. **Start Game:** The room creator can start the game once at least two players have chosen a character.
 8. **Play:** You will be redirected to the game page to play.
+
+Glb model sources : https://poly.pizza/m/UyH95ZAeJ2

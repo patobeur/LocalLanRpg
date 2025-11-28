@@ -19,6 +19,7 @@ import {
 	scene,
 	updateHealthBar,
 	updateManaBar,
+	createMapObjects,
 } from "./scene.js";
 import * as THREE from "/node_modules/three/build/three.module.js";
 
@@ -187,6 +188,11 @@ async function connectToRoomGame() {
 
 					updateHealthBar(me.mesh, me.health, me.maxHealth);
 					updateManaBar(me.mesh, me.mana, me.maxMana);
+				}
+
+				// Create map objects from config
+				if (msg.config) {
+					createMapObjects(msg.config);
 				}
 
 				// Add other players

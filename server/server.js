@@ -10,6 +10,7 @@ const characters = require("./server_side/characters.js");
 const authRoutes = require("./authRoutes");
 const roomManager = require("./server_side/rooms.js");
 const Game = require("./server_side/game.js");
+const config = require("./server_side/config.js");
 
 const app = express();
 const server = http.createServer(app);
@@ -332,7 +333,11 @@ wss.on("connection", (ws) => {
 			ws.send(JSON.stringify({
 				type: "hello",
 				id: msg.playerId,
-				players: room.game.getPlayers()
+				players: room.game.getPlayers(),
+				config: {
+					locations: config.locations,
+					structures: config.structures
+				}
 			}));
 		}
 

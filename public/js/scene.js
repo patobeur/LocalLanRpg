@@ -31,55 +31,6 @@ export function initScene() {
 	world.add(plane);
 	world.add(new THREE.GridHelper(gridSize, gridSize, 0x335, 0x224));
 
-	// Add spawn point indicators
-	// Team A spawn (blue) - diameter 5, height 0.25
-	const spawnTeamA = new THREE.Mesh(
-		new THREE.CylinderGeometry(2.5, 2.5, 0.25, 32),
-		new THREE.MeshStandardMaterial({
-			color: 0x4A90E2,
-			transparent: true,
-			opacity: 0.6
-		})
-	);
-	spawnTeamA.position.set(-20, 0.125, -20);
-	world.add(spawnTeamA);
-
-	// Team B spawn (red) - diameter 5, height 0.25
-	const spawnTeamB = new THREE.Mesh(
-		new THREE.CylinderGeometry(2.5, 2.5, 0.25, 32),
-		new THREE.MeshStandardMaterial({
-			color: 0xE74C3C,
-			transparent: true,
-			opacity: 0.6
-		})
-	);
-	spawnTeamB.position.set(20, 0.125, 20);
-	world.add(spawnTeamB);
-
-	// Minions A spawn (light blue) - diameter 2, height 0.25
-	const spawnMinionsA = new THREE.Mesh(
-		new THREE.CylinderGeometry(1, 1, 0.25, 32),
-		new THREE.MeshStandardMaterial({
-			color: 0x85C1E9,
-			transparent: true,
-			opacity: 0.6
-		})
-	);
-	spawnMinionsA.position.set(-22, 0.125, -22);
-	world.add(spawnMinionsA);
-
-	// Minions B spawn (light red) - diameter 2, height 0.25
-	const spawnMinionsB = new THREE.Mesh(
-		new THREE.CylinderGeometry(1, 1, 0.25, 32),
-		new THREE.MeshStandardMaterial({
-			color: 0xF1948A,
-			transparent: true,
-			opacity: 0.6
-		})
-	);
-	spawnMinionsB.position.set(22, 0.125, 22);
-	world.add(spawnMinionsB);
-
 	renderer.setSize(innerWidth, innerHeight);
 	updateCameraProjection();
 
@@ -90,6 +41,75 @@ export function initScene() {
 		updateCameraProjection();
 		renderer.setSize(innerWidth, innerHeight);
 	});
+}
+
+export function createMapObjects(mapConfig) {
+	if (!mapConfig) return;
+
+	// Color mapping for different spawn types
+	const colorMap = {
+		spawnTeamA: 0x4A90E2,      // Blue
+		spawnTeamB: 0xE74C3C,      // Red
+		spawnMinionsA: 0x85C1E9,   // Light blue
+		spawnMinionsB: 0xF1948A,   // Light red
+		BaseTeamA: 0x2E86DE,       // Darker blue
+		BaseTeamB: 0xC0392B        // Darker red
+	};
+
+	// Create locations (spawn points)
+	if (mapConfig.locations) {
+		for (const [key, loc] of Object.entries(mapConfig.locations)) {
+			let geometry;
+
+			if (loc.type === "CylinderGeometry") {
+				// For cylinders: w and d are diameter, h is height
+				const radius = loc.w / 2; // w is diameter
+				geometry = new THREE.CylinderGeometry(radius, radius, loc.h, 32);
+			} else if (loc.type === "sphereGeometry") {
+				// For spheres: w is diameter
+				const radius = loc.w / 2;
+				geometry = new THREE.SphereGeometry(radius, 32, 32);
+			}
+
+			if (geometry) {
+				const material = new THREE.MeshStandardMaterial({
+					color: colorMap[key] || 0x888888,
+					transparent: true,
+					opacity: 0.6
+				});
+				const mesh = new THREE.Mesh(geometry, material);
+				// Position: x, z from config (y is up in 3D)
+				mesh.position.set(loc.x, loc.z, loc.y);
+				world.add(mesh);
+			}
+		}
+	}
+
+	// Create structures (bases)
+	if (mapConfig.structures) {
+		for (const [key, str] of Object.entries(mapConfig.structures)) {
+			let geometry;
+
+			if (str.type === "sphereGeometry") {
+				const radius = str.w / 2;
+				geometry = new THREE.SphereGeometry(radius, 32, 32);
+			} else if (str.type === "CylinderGeometry") {
+				const radius = str.w / 2;
+				geometry = new THREE.CylinderGeometry(radius, radius, str.h, 32);
+			}
+
+			if (geometry) {
+				const material = new THREE.MeshStandardMaterial({
+					color: colorMap[key] || 0x666666,
+					transparent: true,
+					opacity: 0.7
+				});
+				const mesh = new THREE.Mesh(geometry, material);
+				mesh.position.set(str.x, str.z, str.y);
+				world.add(mesh);
+			}
+		}
+	}
 }
 
 function updateCameraProjection() {

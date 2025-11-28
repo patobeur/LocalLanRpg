@@ -45,7 +45,7 @@ This project is a real-time multiplayer game where players can battle each other
 1. **Clone the repository:**
 
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/patobeur/LocalLanRpg.git
    cd LocalLanRpg
    ```
 

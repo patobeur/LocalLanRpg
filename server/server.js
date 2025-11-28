@@ -4,6 +4,7 @@ const express = require("express");
 const http = require("http");
 const WebSocket = require("ws");
 const os = require("os");
+const path = require("path");
 const session = require("express-session");
 const characters = require("./server_side/characters.js");
 const authRoutes = require("./authRoutes");
@@ -33,9 +34,9 @@ app.use(session({
 app.use('/api/auth', authRoutes);
 
 // Servir les fichiers statiques (HTML, CSS, JS)
-app.use(express.static(__dirname));
-app.use('/node_modules', express.static(__dirname + '/node_modules'));
-app.use('/media', express.static(__dirname + '/public/media'));
+app.use(express.static(path.join(__dirname, '../public')));
+app.use('/node_modules', express.static(path.join(__dirname, '../node_modules')));
+app.use('/media', express.static(path.join(__dirname, '../public/media')));
 
 // Middleware d'authentification
 function requireAuth(req, res, next) {
@@ -72,7 +73,7 @@ app.get("/lobby.html", requireAuth, (req, res) => {
 			return res.redirect(`/jouer.html?roomId=${room.id}`);
 		}
 	}
-	res.sendFile(__dirname + "/lobby.html");
+	res.sendFile(path.join(__dirname, "../public/lobby.html"));
 });
 
 // Route de room - nécessite authentification
@@ -85,17 +86,17 @@ app.get("/room.html", requireAuth, (req, res) => {
 			return res.redirect(`/jouer.html?roomId=${roomId}`);
 		}
 	}
-	res.sendFile(__dirname + "/room.html");
+	res.sendFile(path.join(__dirname, "../public/room.html"));
 });
 
 // Route du jeu - nécessite authentification
 app.get("/jouer.html", requireAuth, (req, res) => {
-	res.sendFile(__dirname + "/jouer.html");
+	res.sendFile(path.join(__dirname, "../public/jouer.html"));
 });
 
 // Route de connexion - accessible sans auth
 app.get("/login.html", (req, res) => {
-	res.sendFile(__dirname + "/login.html");
+	res.sendFile(path.join(__dirname, "../public/login.html"));
 });
 
 // API Personnages

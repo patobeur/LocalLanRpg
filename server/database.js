@@ -1,7 +1,8 @@
 const sqlite3 = require("sqlite3").verbose();
 const bcrypt = require("bcrypt");
+const path = require("path");
 
-const DB_PATH = "./users.db";
+const DB_PATH = path.join(__dirname, "data/users.db");
 const saltRounds = 10;
 
 let db = new sqlite3.Database(DB_PATH, (err) => {

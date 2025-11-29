@@ -10,7 +10,7 @@ export const renderer = new THREE.WebGLRenderer({
 });
 
 const gridSize = 60;
-const camSize = 8;
+const ZOOM_SCALE = 100; // Pixels per world unit
 const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
 let planeMesh = null;
@@ -133,10 +133,12 @@ export function createMapObjects(mapConfig) {
 
 function updateCameraProjection() {
 	const aspect = innerWidth / innerHeight;
-	camera.left = -camSize * aspect;
-	camera.right = camSize * aspect;
-	camera.top = camSize;
-	camera.bottom = -camSize;
+	const viewSize = innerHeight / ZOOM_SCALE;
+
+	camera.left = -viewSize * aspect;
+	camera.right = viewSize * aspect;
+	camera.top = viewSize;
+	camera.bottom = -viewSize;
 	camera.updateProjectionMatrix();
 }
 

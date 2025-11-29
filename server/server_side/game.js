@@ -49,6 +49,9 @@ class Game {
             mana: charStats.mana,
             maxMana: charStats.mana,
             faction: faction,
+            level: 1, // Default level
+            isDead: false,
+            respawnTime: null,
             disconnected: false,
             ts: Date.now(),
         };
@@ -164,6 +167,57 @@ class Game {
                     mana: p.mana,
                     maxMana: p.maxMana
                 });
+            }
+        }
+
+        // Death and Respawn System
+        const now = Date.now();
+        for (const p of this.players.values()) {
+            // Check for death
+            if (!p.isDead && p.health < 1) {
+                p.isDead = true;
+                const respawnDelay = p.level * 5000; // 5 seconds per level
+                p.respawnTime = now + respawnDelay;
+
+                events.push({
+                    type: "player-death",
+                    id: p.id,
+                    respawnTime: p.respawnTime
+                });
+
+                console.log(`[Game] Player ${p.id} died, respawn in ${respawnDelay / 1000}s`);
+            }
+
+            // Check for respawn
+            if (p.isDead && p.respawnTime && now >= p.respawnTime) {
+                // Calculate spawn position
+                const spawn = p.faction === "blue" ? config.locations.spawnTeamA : config.locations.spawnTeamB;
+                const radius = (spawn.w || 5) / 2;
+                const angle = Math.random() * Math.PI * 2;
+                const dist = Math.random() * radius;
+                p.x = spawn.x + Math.cos(angle) * dist;
+                p.z = spawn.y + Math.sin(angle) * dist;
+                p.y = 0.5;
+
+                // Reset health and state
+                p.health = p.maxHealth;
+                p.mana = p.maxMana;
+                p.isDead = false;
+                p.respawnTime = null;
+
+                events.push({
+                    type: "player-respawn",
+                    id: p.id,
+                    x: p.x,
+                    y: p.y,
+                    z: p.z,
+                    health: p.health,
+                    maxHealth: p.maxHealth,
+                    mana: p.mana,
+                    maxMana: p.maxMana
+                });
+
+                console.log(`[Game] Player ${p.id} respawned at (${p.x.toFixed(1)}, ${p.z.toFixed(1)})`);
             }
         }
 

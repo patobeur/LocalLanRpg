@@ -157,51 +157,37 @@ async function connectToRoomGame() {
 			}
 
 			if (msg.type === "hello") {
-				// me.id = String(myUserId);
-				// --- CHANGE: Use the ID from the server's hello message
 				me.id = String(msg.id);
 				console.log(`[Game] My player ID is ${me.id}`);
 
-				// Only create my mesh if it doesn't exist
 				if (!me.mesh) {
 					me.mesh = makePlayerMesh(playerColor);
 					world.add(me.mesh);
 				}
 
-				// Initialize health and position
 				const myData = msg.players[me.id];
 				if (myData) {
 					me.health = myData.health || 100;
 					me.maxHealth = myData.maxHealth || 100;
 					me.mana = myData.mana || 100;
 					me.maxMana = myData.maxMana || 100;
-
-					// Set position from server (important for reconnection)
 					px = myData.x || 0;
 					py = myData.y || 0.5;
 					pz = myData.z || 0;
 					rotY = myData.rotY || 0;
-
-					// Update mesh position
 					me.mesh.position.set(px, py, pz);
 					me.mesh.rotation.y = rotY;
-
 					updateHealthBar(me.mesh, me.health, me.maxHealth);
 					updateManaBar(me.mesh, me.mana, me.maxMana);
 				}
 
-				// Create map objects from config
 				if (msg.config) {
 					createMapObjects(msg.config);
 				}
 
-				// Add other players
 				for (const [id, p] of Object.entries(msg.players || {})) {
 					if (id === me.id) continue;
-
-					// Check if player already exists
 					if (others.has(id)) continue;
-
 					const m = makePlayerMesh(p.color);
 					m.position.set(p.x, p.y, p.z);
 					m.rotation.y = p.rotY;
@@ -215,7 +201,6 @@ async function connectToRoomGame() {
 					world.add(m);
 				}
 
-				// Send join message
 				ws.send(
 					JSON.stringify({
 						type: "join",
@@ -224,27 +209,24 @@ async function connectToRoomGame() {
 						character: me.character,
 					})
 				);
-				// --- CHANGE: Set game state to playing
 				gameState = "playing";
 				console.log('[Game] State changed to "playing"');
 
-				// Update HUD
 				gameUI.updatePlayerInfo(
 					myPlayer.username,
-					1, // Level
+					1,
 					me.health,
 					me.maxHealth,
 					me.mana,
 					me.maxMana,
-					0, // XP
-					100 // Max XP
+					0,
+					100
 				);
 			}
 
 			if (msg.type === "player-join") {
 				const p = msg.player;
 				const pId = String(p.id);
-				// Prevent adding myself or existing players
 				if (pId !== me.id && !others.has(pId)) {
 					const m = makePlayerMesh(p.color);
 					m.position.set(p.x, p.y, p.z);
@@ -264,11 +246,7 @@ async function connectToRoomGame() {
 				const msgId = String(msg.id);
 				if (msgId === me.id) return;
 				let m = others.get(msgId);
-				if (!m) {
-					// If we receive state for a player we don't know, request full list or ignore?
-					// For now, let's ignore to prevent ghost creation with wrong colors
-					return;
-				}
+				if (!m) return;
 				m.position.set(msg.x, msg.y, msg.z);
 				m.rotation.y = msg.rotY;
 			}
@@ -305,7 +283,6 @@ async function connectToRoomGame() {
 					if (msg.mana !== undefined) {
 						updateManaBar(me.mesh, me.mana, me.maxMana);
 					}
-					// Update HUD
 					gameUI.updatePlayerInfo(
 						charactersData[me.character]?.name || "Player",
 						1,
@@ -360,11 +337,66 @@ async function connectToRoomGame() {
 					}
 				}
 			}
+
+			if (msg.type === "player-death") {
+				const msgId = String(msg.id);
+				const mesh = msgId === me.id ? me.mesh : others.get(msgId);
+				if (mesh) {
+					mesh.visible = false;
+				}
+				if (msgId === me.id) {
+					me.respawnTime = msg.respawnTime;
+					console.log(`[Game] You died! Respawning in ${(msg.respawnTime - Date.now()) / 1000}s`);
+				}
+			}
+
+			if (msg.type === "player-respawn") {
+				const msgId = String(msg.id);
+				if (msgId === me.id) {
+					px = msg.x;
+					py = msg.y;
+					pz = msg.z;
+					me.health = msg.health;
+					me.maxHealth = msg.maxHealth;
+					me.mana = msg.mana;
+					me.maxMana = msg.maxMana;
+					me.respawnTime = null;
+					if (me.mesh) {
+						me.mesh.position.set(px, py, pz);
+						me.mesh.visible = true;
+						updateHealthBar(me.mesh, me.health, me.maxHealth);
+						updateManaBar(me.mesh, me.mana, me.maxMana);
+					}
+					gameUI.updatePlayerInfo(
+						charactersData[me.character]?.name || "Player",
+						1,
+						me.health,
+						me.maxHealth,
+						me.mana,
+						me.maxMana,
+						0,
+						100
+					);
+					console.log(`[Game] You respawned!`);
+				} else {
+					const m = others.get(msgId);
+					if (m) {
+						m.position.set(msg.x, msg.y, msg.z);
+						m.visible = true;
+						m.userData.health = msg.health;
+						m.userData.maxHealth = msg.maxHealth;
+						m.userData.mana = msg.mana;
+						m.userData.maxMana = msg.maxMana;
+						updateHealthBar(m, m.userData.health, m.userData.maxHealth);
+						updateManaBar(m, m.userData.mana, m.userData.maxMana);
+					}
+				}
+			}
 		};
 
 		ws.onclose = () => {
 			console.log("[WS] Disconnected from game");
-			gameState = "connecting"; // Reset on disconnect
+			gameState = "connecting";
 		};
 
 		ws.onerror = (error) => {

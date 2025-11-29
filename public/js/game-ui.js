@@ -104,11 +104,28 @@ export function initGameUI(onModeChange) {
             const mpBar = document.getElementById("bar-mp");
 
             if (nameEl) nameEl.textContent = name;
-            if (levelEl) levelEl.textContent = `Niveau ${level} `;
+            if (levelEl) levelEl.textContent = `Niveau ${level}`;
 
-            if (xpBar) xpBar.style.width = `${Math.min(100, Math.max(0, (xp / maxXp) * 100))}% `;
-            if (hpBar) hpBar.style.width = `${Math.min(100, Math.max(0, (health / maxHealth) * 100))}% `;
-            if (mpBar) mpBar.style.width = `${Math.min(100, Math.max(0, (mana / maxMana) * 100))}% `;
+            if (xpBar) xpBar.style.width = `${Math.min(100, Math.max(0, (xp / maxXp) * 100))}%`;
+            if (hpBar) hpBar.style.width = `${Math.min(100, Math.max(0, (health / maxHealth) * 100))}%`;
+            if (mpBar) mpBar.style.width = `${Math.min(100, Math.max(0, (mana / maxMana) * 100))}%`;
+        },
+        showRespawnTimer: (seconds) => {
+            let timerEl = document.getElementById("respawn-timer");
+            if (!timerEl) {
+                timerEl = document.createElement("div");
+                timerEl.id = "respawn-timer";
+                timerEl.style.cssText = "position:fixed; bottom:20px; right:20px; background:rgba(0,0,0,0.8); color:#ff4444; padding:15px 25px; border-radius:8px; font-size:24px; font-weight:bold; border:2px solid #ff4444;";
+                document.body.appendChild(timerEl);
+            }
+            timerEl.textContent = `Respawn dans ${seconds}s`;
+            timerEl.hidden = false;
+        },
+        hideRespawnTimer: () => {
+            const timerEl = document.getElementById("respawn-timer");
+            if (timerEl) {
+                timerEl.hidden = true;
+            }
         }
     };
 }

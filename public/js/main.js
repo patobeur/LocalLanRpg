@@ -392,6 +392,26 @@ async function connectToRoomGame() {
 					}
 				}
 			}
+
+
+			if (msg.type === "player-xp") {
+				const msgId = String(msg.id);
+				if (msgId === me.id) {
+					me.xp = msg.xp;
+					me.maxXp = msg.maxXp;
+					gameUI.updatePlayerInfo(
+						charactersData[me.character]?.name || "Player",
+						msg.level,
+						me.health,
+						me.maxHealth,
+						me.mana,
+						me.maxMana,
+						me.xp,
+						me.maxXp
+					);
+					console.log(`[Game] XP updated: ${me.xp}/${me.maxXp} (Level ${msg.level})`);
+				}
+			}
 		};
 
 		ws.onclose = () => {

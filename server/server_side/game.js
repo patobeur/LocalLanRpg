@@ -50,6 +50,8 @@ class Game {
             maxMana: charStats.mana,
             faction: faction,
             level: 1, // Default level
+            xp: 0,
+            maxXp: 100,
             isDead: false,
             respawnTime: null,
             disconnected: false,
@@ -186,6 +188,34 @@ class Game {
                 });
 
                 console.log(`[Game] Player ${p.id} died, respawn in ${respawnDelay / 1000}s`);
+
+                // XP Gain for Attacker
+                if (p.lastAttackerId) {
+                    const attacker = this.players.get(p.lastAttackerId);
+                    if (attacker && attacker.faction !== p.faction) {
+                        const xpGain = 50 * p.level;
+                        attacker.xp += xpGain;
+                        console.log(`[Game] Player ${attacker.id} gained ${xpGain} XP`);
+
+                        // Check Level Up
+                        while (attacker.xp >= attacker.maxXp) {
+                            attacker.xp -= attacker.maxXp;
+                            attacker.level++;
+                            attacker.maxXp = attacker.level * 100;
+                            attacker.health = attacker.maxHealth; // Heal on level up? Maybe.
+                            attacker.mana = attacker.maxMana;
+                            console.log(`[Game] Player ${attacker.id} leveled up to ${attacker.level}!`);
+                        }
+
+                        events.push({
+                            type: "player-xp",
+                            id: attacker.id,
+                            xp: attacker.xp,
+                            maxXp: attacker.maxXp,
+                            level: attacker.level
+                        });
+                    }
+                }
             }
 
             // Check for respawn
@@ -204,6 +234,7 @@ class Game {
                 p.mana = p.maxMana;
                 p.isDead = false;
                 p.respawnTime = null;
+                p.lastAttackerId = null; // Reset attacker
 
                 events.push({
                     type: "player-respawn",
@@ -246,6 +277,7 @@ class Game {
                         const damage = charStats ? charStats.autoAttackDamage[0] : 10;
 
                         player.health -= damage;
+                        player.lastAttackerId = p.shooterId; // Track attacker
                         if (player.health < 0) player.health = 0;
 
                         events.push({

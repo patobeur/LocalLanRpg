@@ -538,6 +538,14 @@ setInterval(() => {
 						mana: e.mana,
 						maxMana: e.maxMana,
 					});
+				} else if (e.type === "player-xp") {
+					broadcastToRoom(room.id, {
+						type: "player-xp",
+						id: e.id,
+						xp: e.xp,
+						maxXp: e.maxXp,
+						level: e.level
+					});
 				}
 			});
 		}

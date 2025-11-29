@@ -10,10 +10,20 @@ export const renderer = new THREE.WebGLRenderer({
 });
 
 const gridSize = 60;
-const ZOOM_SCALE = 100; // Pixels per world unit
+let ZOOM_SCALE = 100;
+const MIN_ZOOM = 20;
+const MAX_ZOOM = 200;
+const ZOOM_SPEED = 0.1;
+
 const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
 let planeMesh = null;
+
+function handleZoom(delta) {
+	ZOOM_SCALE += delta * ZOOM_SPEED * -1; // Invert delta for intuitive zoom
+	ZOOM_SCALE = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, ZOOM_SCALE));
+	updateCameraProjection();
+}
 
 export function initScene() {
 	scene.background = new THREE.Color(0x0b1020);
@@ -41,6 +51,19 @@ export function initScene() {
 	addEventListener("resize", () => {
 		updateCameraProjection();
 		renderer.setSize(innerWidth, innerHeight);
+	});
+
+	// Zoom listeners
+	addEventListener("wheel", (e) => {
+		handleZoom(e.deltaY);
+	});
+
+	addEventListener("keydown", (e) => {
+		if (e.key === "+" || e.key === "=") { // = is often on the same key as +
+			handleZoom(-100); // Zoom in
+		} else if (e.key === "-" || e.key === "_") {
+			handleZoom(100); // Zoom out
+		}
 	});
 }
 

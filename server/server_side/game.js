@@ -22,20 +22,33 @@ class Game {
         }
         const charStats = characters.chars[charName];
 
+        const faction = msg.faction || "blue";
+        let spawn = config.locations.spawnTeamA;
+        if (faction === "red") {
+            spawn = config.locations.spawnTeamB;
+        }
+
+        // Random offset within spawn radius (w is diameter)
+        const radius = (spawn.w || 5) / 2;
+        const angle = Math.random() * Math.PI * 2;
+        const dist = Math.random() * radius;
+        const spawnX = spawn.x + Math.cos(angle) * dist;
+        const spawnZ = spawn.y + Math.sin(angle) * dist; // Config y is Z in 3D
+
         const player = {
             id,
             name: (msg.name || `Joueur ${id}`).slice(0, 16),
             color: msg.color || "#4CAF50",
             character: charName,
-            x: 0,
+            x: spawnX,
             y: 0.5,
-            z: 0,
+            z: spawnZ,
             rotY: 0,
             health: charStats.health,
             maxHealth: charStats.health,
             mana: charStats.mana,
             maxMana: charStats.mana,
-            faction: msg.faction || "blue",
+            faction: faction,
             disconnected: false,
             ts: Date.now(),
         };

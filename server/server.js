@@ -326,10 +326,26 @@ wss.on("connection", (ws) => {
 
 			console.log(`[WS] Player ${msg.playerId} joined game in room ${roomId}`);
 
-			// Mark as connected
-			room.game.setPlayerDisconnected(msg.playerId, false);
+			// Add player to game if not already present
+			if (!room.game.players.has(msg.playerId)) {
+				const roomPlayer = room.players.get(msg.playerId);
+				if (roomPlayer) {
+					// Create a message with player info including faction
+					const playerMsg = {
+						name: roomPlayer.username,
+						color: roomPlayer.faction === "blue" ? "#4A90E2" : "#E74C3C",
+						character: roomPlayer.character,
+						faction: roomPlayer.faction
+					};
+					room.game.addPlayer(msg.playerId, playerMsg);
+					console.log(`[WS] Added player ${msg.playerId} to game with faction ${roomPlayer.faction}`);
+				}
+			} else {
+				// Player reconnecting
+				room.game.setPlayerDisconnected(msg.playerId, false);
+			}
 
-			// Send hello with room's game state
+			// Send hello with room's game state (now includes this player)
 			ws.send(JSON.stringify({
 				type: "hello",
 				id: msg.playerId,
@@ -347,9 +363,9 @@ wss.on("connection", (ws) => {
 			const room = roomManager.getRoom(ws.roomId);
 			if (!room || !room.game) return;
 
-			// Only add if not already in game (reconnection check)
-			if (!room.game.players.has(ws.playerId)) {
-				const player = room.game.addPlayer(ws.playerId, msg);
+			// Player was already added during "join-game", just broadcast to others
+			const player = room.game.players.get(ws.playerId);
+			if (player) {
 				broadcastToRoom(ws.roomId, { type: "player-join", player }, ws);
 			}
 		}

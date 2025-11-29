@@ -1,4 +1,5 @@
 import * as THREE from "/node_modules/three/build/three.module.js";
+import { GLTFLoader } from "/node_modules/three/examples/jsm/loaders/GLTFLoader.js";
 
 export const scene = new THREE.Scene();
 export const world = new THREE.Group();
@@ -96,6 +97,24 @@ export function createMapObjects(mapConfig) {
 			} else if (str.type === "CylinderGeometry") {
 				const radius = str.w / 2;
 				geometry = new THREE.CylinderGeometry(radius, radius, str.h, 32);
+			} else if (str.type === "GLB") {
+				const loader = new GLTFLoader();
+				loader.load(str.filepath, (gltf) => {
+					const model = gltf.scene;
+					model.position.set(str.x, str.z, str.y);
+
+					if (str.rotation) {
+						model.rotation.set(
+							THREE.MathUtils.degToRad(str.rotation.x || 0),
+							THREE.MathUtils.degToRad(str.rotation.y || 0),
+							THREE.MathUtils.degToRad(str.rotation.z || 0)
+						);
+					}
+
+					world.add(model);
+				}, undefined, (error) => {
+					console.error('An error happened loading GLB:', str.filepath, error);
+				});
 			}
 
 			if (geometry) {

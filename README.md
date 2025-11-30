@@ -79,26 +79,20 @@ Users table created or already exists.
 
 ```
 .
-├── js/                # Frontend JavaScript modules
-│   ├── auth.js        # Handles login/registration forms
-│   ├── input.js       # Manages player input (keyboard/mouse)
-│   ├── lobby.js       # Logic for the lobby screen
-│   ├── main.js        # Main game client logic
-│   ├── room.js        # Logic for the room screen
-│   └── scene.js       # Three.js scene setup and rendering
-├── server_side/       # Backend logic modules
-│   ├── characters.js  # Character stats and definitions
-│   ├── game.js        # Core game state logic for a single room
-│   └── rooms.js       # Room management system
+├── public/              # All frontend static assets
+│   ├── js/              # Frontend JavaScript modules
+│   ├── media/           # Game assets (models, textures)
+│   └── *.html, *.css    # HTML pages and stylesheets
+├── server/              # Backend server files
+│   ├── server/          # Core server modules (config, routes, websocket)
+│   ├── server_side/     # Game-specific logic (game, rooms, characters)
+│   ├── data/            # SQLite database file is stored here
+│   ├── authRoutes.js    # Express routes for authentication
+│   ├── database.js      # Database connection and user model setup
+│   └── server.js        # Main server entry point
 ├── .gitignore
-├── authRoutes.js      # Express routes for authentication
-├── database.js        # SQLite database connection and user functions
-├── *.html             # HTML files for different pages (login, lobby, room, game)
-├── *.css              # CSS files for styling
-├── package.json       # Project dependencies and scripts
-├── package-lock.json
-├── README.md
-└── server.js          # Main server entry point (Express and WebSocket setup)
+├── package.json         # Project dependencies and scripts
+└── README.md
 ```
 
 ## How to Play

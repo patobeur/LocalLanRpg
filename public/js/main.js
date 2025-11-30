@@ -273,7 +273,7 @@ async function connectToRoomGame() {
 				m.rotation.y = msg.rotY;
 			}
 
-			if (msg.type === "player-leave") {
+			if (msg.type === "player-left") {
 				const msgId = String(msg.id);
 				const m = others.get(msgId);
 				if (m) {
@@ -379,8 +379,7 @@ async function connectToRoomGame() {
 				if (msgId === me.id) {
 					me.respawnTime = msg.respawnTime;
 					console.log(
-						`[Game] You died! Respawning in ${
-							(msg.respawnTime - Date.now()) / 1000
+						`[Game] You died! Respawning in ${(msg.respawnTime - Date.now()) / 1000
 						}s`
 					);
 				}

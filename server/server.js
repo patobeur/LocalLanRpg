@@ -199,10 +199,24 @@ app.post("/api/rooms/:roomId/join", requireAuth, (req, res) => {
 app.post("/api/rooms/:roomId/leave", requireAuth, (req, res) => {
 	const { roomId } = req.params;
 	try {
+		const room = roomManager.getRoom(roomId);
+		if (!room) {
+			return res.status(404).json({ error: "Room not found" });
+		}
+
 		const { removed, leftGame } = roomManager.leaveRoom(
 			roomId,
 			req.session.userId
 		);
+
+		if (removed) {
+			// Broadcast to all clients in the room that the player has left.
+			broadcastToRoom(roomId, {
+				type: "room-update",
+				players: room.getPlayersList(),
+			});
+		}
+
 		if (leftGame) {
 			broadcastToRoom(roomId, {
 				type: "player-left",

@@ -1,7 +1,7 @@
 // Room Routes Module
 // API routes for room management
 
-const characters = require("../characters.js");
+const characters = require("../server_side/characters.js");
 
 /**
  * Setup all room API routes

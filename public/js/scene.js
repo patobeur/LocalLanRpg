@@ -136,6 +136,13 @@ export function createMapObjects(mapConfig) {
 								THREE.MathUtils.degToRad(str.rotation.z || 0)
 							);
 						}
+						if (str.scale) {
+							model.scale.set(
+								str.scale.x || 0,
+								str.scale.y || 0,
+								str.scale.z || 0
+							);
+						}
 
 						world.add(model);
 					},

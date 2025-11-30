@@ -2,72 +2,72 @@
 
 [FR](https://github.com/patobeur/LocalLanRpg/blob/main/README_FR.md) [US](https://github.com/patobeur/LocalLanRpg/blob/main/README.md)
 
-A mini MOBA-style game designed to be played over a local network. Players can create accounts, join rooms, select characters, and engage in real-time multiplayer battles.
+Un mini-jeu de style MOBA conçu pour être joué sur un réseau local. Les joueurs peuvent créer des comptes, rejoindre des salles, sélectionner des personnages et participer à des batailles multijoueurs en temps réel.
 
-## Table of Contents
+## Table des matières
 
--  [Project Overview](#project-overview)
--  [Technology Stack](#technology-stack)
--  [Getting Started](#getting-started)
-   -  [Prerequisites](#prerequisites)
+-  [Aperçu du projet](#aperçu-du-projet)
+-  [Pile technologique](#pile-technologique)
+-  [Démarrage](#démarrage)
+   -  [Prérequis](#prérequis)
    -  [Installation](#installation)
-   -  [Running the Application](#running-the-application)
--  [Project Structure](#project-structure)
--  [How to Play](#how-to-play)
+   -  [Lancement de l'application](#lancement-de-lapplication)
+-  [Structure du projet](#structure-du-projet)
+-  [Comment jouer](#comment-jouer)
 
-## Project Overview
+## Aperçu du projet
 
-This project is a real-time multiplayer game where players can battle each other in rooms. It features a Node.js backend with an Express server for handling HTTP requests and a WebSocket server for real-time communication. The frontend is built with vanilla JavaScript and uses the three.js library for 3D rendering of the game world. User data is stored in a SQLite database.
+Ce projet est un jeu multijoueur en temps réel où les joueurs peuvent s'affronter dans des salles. Il dispose d'un backend Node.js avec un serveur Express pour gérer les requêtes HTTP et d'un serveur WebSocket pour la communication en temps réel. Le frontend est construit en JavaScript vanilla et utilise la bibliothèque three.js pour le rendu 3D du monde du jeu. Les données des utilisateurs sont stockées dans une base de données SQLite.
 
-## Technology Stack
+## Pile technologique
 
 ### Backend
 
--  **[Node.js](https://nodejs.org/)**: JavaScript runtime environment.
--  **[Express.js](https://expressjs.com/)**: Web framework for Node.js, used for the HTTP server and API.
--  **[ws](https://github.com/websockets/ws)**: WebSocket library for real-time communication.
--  **[SQLite3](https://www.sqlite.org/index.html)**: For the user database.
--  **[bcrypt](https://www.npmjs.com/package/bcrypt)**: For hashing passwords.
--  **[express-session](https://www.npmjs.com/package/express-session)**: For managing user sessions.
+-  **[Node.js](https://nodejs.org/)**: Environnement d'exécution JavaScript.
+-  **[Express.js](https://expressjs.com/)**: Framework web pour Node.js, utilisé pour le serveur HTTP et l'API.
+-  **[ws](https://github.com/websockets/ws)**: Bibliothèque WebSocket pour la communication en temps réel.
+-  **[SQLite3](https://www.sqlite.org/index.html)**: Pour la base de données des utilisateurs.
+-  **[bcrypt](https://www.npmjs.com/package/bcrypt)**: Pour le hachage des mots de passe.
+-  **[express-session](https://www.npmjs.com/package/express-session)**: Pour la gestion des sessions utilisateur.
 
 ### Frontend
 
 -  **HTML5, CSS3, JavaScript (ESM)**
--  **[three.js](https://threejs.org/)**: 3D graphics library for rendering the game.
+-  **[three.js](https://threejs.org/)**: Bibliothèque graphique 3D pour le rendu du jeu.
 
-## Getting Started
+## Démarrage
 
-### Prerequisites
+### Prérequis
 
--  [Node.js](https://nodejs.org/en/download/) (v14 or later recommended)
--  [npm](https://www.npmjs.com/get-npm) (comes with Node.js)
+-  [Node.js](https://nodejs.org/en/download/) (v14 ou ultérieure recommandée)
+-  [npm](https://www.npmjs.com/get-npm) (fourni avec Node.js)
 
 ### Installation
 
-1. **Clone the repository:**
+1. **Clonez le dépôt :**
 
    ```bash
    git clone https://github.com/patobeur/LocalLanRpg.git
    cd LocalLanRpg
    ```
 
-2. **Install dependencies:**
-   Run the following command in the root directory of the project to install all the necessary packages defined in `package.json`.
+2. **Installez les dépendances :**
+   Exécutez la commande suivante à la racine du projet pour installer tous les paquets nécessaires définis dans `package.json`.
    ```bash
    npm install
    ```
 
-### Running the Application
+### Lancement de l'application
 
-Once the dependencies are installed, you can start the server with the following command:
+Une fois les dépendances installées, vous pouvez démarrer le serveur avec la commande suivante :
 
 ```bash
 npm start
 ```
 
-The server will start on port 8080 by default. You can access the application by opening your browser and navigating to `http://localhost:8080`.
+Le serveur démarrera sur le port 8080 par défaut. Vous pouvez accéder à l'application en ouvrant votre navigateur et en naviguant vers `http://localhost:8080`.
 
-The console will display messages indicating that the HTTP and WebSocket servers are running:
+La console affichera des messages indiquant que les serveurs HTTP et WebSocket sont en cours d'exécution :
 
 ```
 [HTTP] Serveur démarré sur http://0.0.0.0:8080
@@ -77,35 +77,35 @@ Connected to SQLite database.
 Users table created or already exists.
 ```
 
-## Project Structure
+## Structure du projet
 
 ```
 .
-├── public/              # All frontend static assets
-│   ├── js/              # Frontend JavaScript modules
-│   ├── media/           # Game assets (models, textures)
-│   └── *.html, *.css    # HTML pages and stylesheets
-├── server/              # Backend server files
-│   ├── server/          # Core server modules (config, routes, websocket)
-│   ├── server_side/     # Game-specific logic (game, rooms, characters)
-│   ├── data/            # SQLite database file is stored here
-│   ├── authRoutes.js    # Express routes for authentication
-│   ├── database.js      # Database connection and user model setup
-│   └── server.js        # Main server entry point
+├── public/              # Tous les actifs statiques du frontend
+│   ├── js/              # Modules JavaScript du frontend
+│   ├── media/           # Actifs du jeu (modèles, textures)
+│   └── *.html, *.css    # Pages HTML et feuilles de style
+├── server/              # Fichiers du serveur backend
+│   ├── server/          # Modules principaux du serveur (config, routes, websocket)
+│   ├── server_side/     # Logique spécifique au jeu (jeu, salles, personnages)
+│   ├── data/            # Le fichier de la base de données SQLite est stocké ici
+│   ├── authRoutes.js    # Routes Express pour l'authentification
+│   ├── database.js      # Connexion à la base de données et configuration du modèle utilisateur
+│   └── server.js        # Point d'entrée principal du serveur
 ├── .gitignore
-├── package.json         # Project dependencies and scripts
+├── package.json         # Dépendances et scripts du projet
 └── README.md
 ```
 
-## How to Play
+## Comment jouer
 
-1. **Start the server:** Run `npm start`.
-2. **Open the game:** Navigate to `http://localhost:8080` in your web browser.
-3. **Create an account:** Register a new user.
-4. **Lobby:** After logging in, you'll be taken to the lobby where you can see a list of available rooms.
-5. **Create or Join a Room:** You can create your own room or join an existing one.
-6. **Room:** Inside the room, choose your faction (Blue or Red) and then select a character.
-7. **Start Game:** The room creator can start the game once at least two players have chosen a character.
-8. **Play:** You will be redirected to the game page to play.
+1. **Démarrez le serveur :** Exécutez `npm start`.
+2. **Ouvrez le jeu :** Accédez à `http://localhost:8080` dans votre navigateur web.
+3. **Créez un compte :** Enregistrez un nouvel utilisateur.
+4. **Lobby :** Après vous être connecté, vous serez redirigé vers le lobby où vous pourrez voir la liste des salles disponibles.
+5. **Créez ou rejoignez une salle :** Vous pouvez créer votre propre salle ou en rejoindre une existante.
+6. **Salle :** À l'intérieur de la salle, choisissez votre faction (Bleu ou Rouge), puis sélectionnez un personnage.
+7. **Démarrer le jeu :** Le créateur de la salle peut démarrer le jeu une fois qu'au moins deux joueurs ont choisi un personnage.
+8. **Jouer :** Vous serez redirigé vers la page du jeu pour jouer.
 
-Glb model sources : https://poly.pizza/m/UyH95ZAeJ2
+Sources des modèles Glb : https://poly.pizza/m/UyH95ZAeJ2

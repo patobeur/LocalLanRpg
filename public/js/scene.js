@@ -59,7 +59,8 @@ export function initScene() {
 	});
 
 	addEventListener("keydown", (e) => {
-		if (e.key === "+" || e.key === "=") { // = is often on the same key as +
+		if (e.key === "+" || e.key === "=") {
+			// = is often on the same key as +
 			handleZoom(-100); // Zoom in
 		} else if (e.key === "-" || e.key === "_") {
 			handleZoom(100); // Zoom out
@@ -72,12 +73,12 @@ export function createMapObjects(mapConfig) {
 
 	// Color mapping for different spawn types
 	const colorMap = {
-		spawnTeamA: 0x4A90E2,      // Blue
-		spawnTeamB: 0xE74C3C,      // Red
-		spawnMinionsA: 0x85C1E9,   // Light blue
-		spawnMinionsB: 0xF1948A,   // Light red
-		BaseTeamA: 0x2E86DE,       // Darker blue
-		BaseTeamB: 0xC0392B        // Darker red
+		spawnTeamA: 0x4a90e2, // Blue
+		spawnTeamB: 0xe74c3c, // Red
+		spawnMinionsA: 0x85c1e9, // Light blue
+		spawnMinionsB: 0xf1948a, // Light red
+		BaseTeamA: 0x2e86de, // Darker blue
+		BaseTeamB: 0xc0392b, // Darker red
 	};
 
 	// Create locations (spawn points)
@@ -99,7 +100,7 @@ export function createMapObjects(mapConfig) {
 				const material = new THREE.MeshStandardMaterial({
 					color: colorMap[key] || 0x888888,
 					transparent: true,
-					opacity: 0.6
+					opacity: 0.6,
 				});
 				const mesh = new THREE.Mesh(geometry, material);
 				// Position: x, z from config (y is up in 3D)
@@ -122,29 +123,38 @@ export function createMapObjects(mapConfig) {
 				geometry = new THREE.CylinderGeometry(radius, radius, str.h, 32);
 			} else if (str.type === "GLB") {
 				const loader = new GLTFLoader();
-				loader.load(str.filepath, (gltf) => {
-					const model = gltf.scene;
-					model.position.set(str.x, str.z, str.y);
+				loader.load(
+					str.filepath,
+					(gltf) => {
+						const model = gltf.scene;
+						model.position.set(str.x, str.z, str.y);
 
-					if (str.rotation) {
-						model.rotation.set(
-							THREE.MathUtils.degToRad(str.rotation.x || 0),
-							THREE.MathUtils.degToRad(str.rotation.y || 0),
-							THREE.MathUtils.degToRad(str.rotation.z || 0)
+						if (str.rotation) {
+							model.rotation.set(
+								THREE.MathUtils.degToRad(str.rotation.x || 0),
+								THREE.MathUtils.degToRad(str.rotation.y || 0),
+								THREE.MathUtils.degToRad(str.rotation.z || 0)
+							);
+						}
+
+						world.add(model);
+					},
+					undefined,
+					(error) => {
+						console.error(
+							"An error happened loading GLB:",
+							str.filepath,
+							error
 						);
 					}
-
-					world.add(model);
-				}, undefined, (error) => {
-					console.error('An error happened loading GLB:', str.filepath, error);
-				});
+				);
 			}
 
 			if (geometry) {
 				const material = new THREE.MeshStandardMaterial({
 					color: colorMap[key] || 0x666666,
 					transparent: true,
-					opacity: 0.7
+					opacity: 0.7,
 				});
 				const mesh = new THREE.Mesh(geometry, material);
 				mesh.position.set(str.x, str.z, str.y);
@@ -167,7 +177,7 @@ function updateCameraProjection() {
 
 export function updateCameraPosition(x, z) {
 	camera.position.x = x;
-	camera.position.z = z + 0.01;
+	camera.position.z = z + 5;
 	camera.lookAt(x, 0, z);
 }
 

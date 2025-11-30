@@ -177,164 +177,104 @@ function updateCameraProjection() {
 
 export function updateCameraPosition(x, z) {
 	camera.position.x = x;
-	camera.position.z = z + 8;
+	camera.position.z = z + 5;
 	camera.lookAt(x, 0, z);
 }
 
-// NOUVEAU: Fonction unifiée pour créer le HUD
-function createPlayerHUD(name, level, factionColor) {
-	const hudGroup = new THREE.Group();
-	const barWidth = 1.2;
-	const healthBarHeight = 0.3;
-	const manaBarHeight = 0.2;
+function createHealthBar() {
+	const barGroup = new THREE.Group();
 
-	// --- Nom ---
-	const nameCanvas = document.createElement("canvas");
-	nameCanvas.width = 256;
-	nameCanvas.height = 64;
-	const nameContext = nameCanvas.getContext("2d");
-	nameContext.font = "bold 24px Arial";
-	nameContext.fillStyle = "white";
-	nameContext.textAlign = "center";
-	nameContext.fillText(name, 128, 30);
-	const nameTexture = new THREE.CanvasTexture(nameCanvas);
-	const nameMaterial = new THREE.SpriteMaterial({
-		map: nameTexture,
-		depthTest: false,
-	});
-	const nameSprite = new THREE.Sprite(nameMaterial);
-	nameSprite.scale.set(2, 0.5, 1);
-	nameSprite.position.y = 0.45;
-	hudGroup.add(nameSprite);
+	// Background bar (black)
+	const bgGeometry = new THREE.PlaneGeometry(0.8, 0.1);
+	const bgMaterial = new THREE.MeshBasicMaterial({ color: 0x000000 });
+	const bgBar = new THREE.Mesh(bgGeometry, bgMaterial);
+	barGroup.add(bgBar);
 
-	// --- Niveau ---
-	const levelCanvas = document.createElement("canvas");
-	levelCanvas.width = 64;
-	levelCanvas.height = 64;
-	const levelContext = levelCanvas.getContext("2d");
-	const drawLevel = (lvl) => {
-		levelContext.clearRect(0, 0, 64, 64);
-		levelContext.fillStyle = "black";
-		levelContext.fillRect(0, 0, 64, 64);
-		levelContext.strokeStyle = "gold";
-		levelContext.lineWidth = 4;
-		levelContext.strokeRect(2, 2, 60, 60);
-		levelContext.font = "bold 32px Arial";
-		levelContext.fillStyle = "white";
-		levelContext.textAlign = "center";
-		levelContext.textBaseline = "middle";
-		levelContext.fillText(lvl, 32, 32);
-	};
-	drawLevel(level);
-	const levelTexture = new THREE.CanvasTexture(levelCanvas);
-	const levelMaterial = new THREE.SpriteMaterial({
-		map: levelTexture,
-		depthTest: false,
-	});
-	const levelSprite = new THREE.Sprite(levelMaterial);
-	levelSprite.scale.set(0.3, 0.3, 1);
-	levelSprite.position.x = -barWidth / 2 - 0.25;
-	hudGroup.add(levelSprite);
+	// Health bar (green to red based on health)
+	const healthGeometry = new THREE.PlaneGeometry(0.8, 0.1);
+	const healthMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+	const healthBar = new THREE.Mesh(healthGeometry, healthMaterial);
+	healthBar.position.z = 0.01; // Slightly in front of background
+	barGroup.add(healthBar);
 
-	// --- Barre de vie ---
-	const healthBarGroup = new THREE.Group();
-	const healthBgGeom = new THREE.PlaneGeometry(barWidth, healthBarHeight);
-	const healthBgMat = new THREE.MeshBasicMaterial({
-		color: 0x111111,
-		depthTest: false,
-	});
-	const healthBg = new THREE.Mesh(healthBgGeom, healthBgMat);
-	healthBarGroup.add(healthBg);
+	// Store reference to health bar for updates
+	barGroup.userData.healthBar = healthBar;
+	barGroup.userData.maxWidth = 0.8;
 
-	const healthFgGeom = new THREE.PlaneGeometry(barWidth, healthBarHeight);
-	const healthFgMat = new THREE.MeshBasicMaterial({
-		color: factionColor,
-		depthTest: false,
-	});
-	const healthFg = new THREE.Mesh(healthFgGeom, healthFgMat);
-	healthFg.position.z = 0.001;
-	healthBarGroup.add(healthFg);
-	hudGroup.add(healthBarGroup);
+	// Billboard effect (always face camera)
+	barGroup.rotation.x = -Math.PI / 2;
+	barGroup.position.y = 1.7; // Above the player's head
 
-	// --- Barre de mana ---
-	const manaBarGroup = new THREE.Group();
-	const manaBgGeom = new THREE.PlaneGeometry(barWidth, manaBarHeight);
-	const manaBgMat = new THREE.MeshBasicMaterial({
-		color: 0x111111,
-		depthTest: false,
-	});
-	const manaBg = new THREE.Mesh(manaBgGeom, manaBgMat);
-	manaBarGroup.add(manaBg);
-
-	const manaFgGeom = new THREE.PlaneGeometry(barWidth, manaBarHeight);
-	const manaFgMat = new THREE.MeshBasicMaterial({
-		color: 0x3498db,
-		depthTest: false,
-	});
-	const manaFg = new THREE.Mesh(manaFgGeom, manaFgMat);
-	manaFg.position.z = 0.001;
-	manaBarGroup.add(manaFg);
-	manaBarGroup.position.y = -(healthBarHeight / 2) - manaBarHeight / 2 + 0.03;
-	hudGroup.add(manaBarGroup);
-
-	// Stocker les références pour les mises à jour
-	hudGroup.userData = {
-		healthBar: healthFg,
-		manaBar: manaFg,
-		levelContext: levelContext,
-		levelTexture: levelTexture,
-		drawLevel: drawLevel,
-		barWidth: barWidth,
-		nameContext: nameContext,
-		nameTexture: nameTexture,
-	};
-
-	hudGroup.position.y = 1.7; // Positionner au-dessus de la tête du joueur
-
-	return hudGroup;
+	return barGroup;
 }
 
-// NOUVEAU: Fonction unifiée de mise à jour du HUD
-export function updatePlayerHUD(
-	playerMesh,
-	health,
-	maxHealth,
-	mana,
-	maxMana,
-	level
-) {
-	if (!playerMesh || !playerMesh.userData.hud) return;
+function createManaBar() {
+	const barGroup = new THREE.Group();
 
-	const hud = playerMesh.userData.hud;
-	const {
-		healthBar,
-		manaBar,
-		levelContext,
-		levelTexture,
-		drawLevel,
-		barWidth,
-	} = hud.userData;
+	// Background bar (black)
+	const bgGeometry = new THREE.PlaneGeometry(0.8, 0.1);
+	const bgMaterial = new THREE.MeshBasicMaterial({ color: 0x000000 });
+	const bgBar = new THREE.Mesh(bgGeometry, bgMaterial);
+	barGroup.add(bgBar);
 
-	// Mettre à jour la vie
+	// Mana bar (blue)
+	const manaGeometry = new THREE.PlaneGeometry(0.8, 0.1);
+	const manaMaterial = new THREE.MeshBasicMaterial({ color: 0x3498db });
+	const manaBar = new THREE.Mesh(manaGeometry, manaMaterial);
+	manaBar.position.z = 0.01;
+	barGroup.add(manaBar);
+
+	barGroup.userData.manaBar = manaBar;
+	barGroup.userData.maxWidth = 0.8;
+
+	barGroup.rotation.x = -Math.PI / 2;
+	barGroup.position.y = 1.55; // Below health bar (1.7)
+
+	return barGroup;
+}
+
+export function updateHealthBar(playerMesh, health, maxHealth) {
+	if (!playerMesh.userData.healthBarGroup) return;
+
+	const barGroup = playerMesh.userData.healthBarGroup;
+	const healthBar = barGroup.userData.healthBar;
+	const maxWidth = barGroup.userData.maxWidth;
+
+	// Calculate health percentage
 	const healthPercent = Math.max(0, Math.min(1, health / maxHealth));
+
+	// Update width
 	healthBar.scale.x = healthPercent;
-	healthBar.position.x = -barWidth / 2 + (barWidth * healthPercent) / 2;
+	healthBar.position.x = -maxWidth / 2 + (maxWidth * healthPercent) / 2;
 
-	// Mettre à jour le mana
-	const manaPercent = Math.max(0, Math.min(1, mana / maxMana));
-	manaBar.scale.x = manaPercent;
-	manaBar.position.x = -barWidth / 2 + (barWidth * manaPercent) / 2;
-
-	// Mettre à jour le niveau
-	if (playerMesh.userData.level !== level) {
-		playerMesh.userData.level = level;
-		drawLevel(level);
-		levelTexture.needsUpdate = true;
+	// Update color based on health percentage
+	let color;
+	if (healthPercent > 0.6) {
+		color = 0x00ff00; // Green
+	} else if (healthPercent > 0.3) {
+		color = 0xffff00; // Yellow
+	} else if (healthPercent > 0) {
+		color = 0xff0000; // Red
+	} else {
+		color = 0x666666; // Gray for dead
 	}
+	healthBar.material.color.setHex(color);
 }
 
-// REFACTORISÉ: makePlayerMesh
-export function makePlayerMesh(name, level, hexColor) {
+export function updateManaBar(playerMesh, mana, maxMana) {
+	if (!playerMesh.userData.manaBarGroup) return;
+
+	const barGroup = playerMesh.userData.manaBarGroup;
+	const manaBar = barGroup.userData.manaBar;
+	const maxWidth = barGroup.userData.maxWidth;
+
+	const percent = Math.max(0, Math.min(1, mana / maxMana));
+
+	manaBar.scale.x = percent;
+	manaBar.position.x = -maxWidth / 2 + (maxWidth * percent) / 2;
+}
+
+export function makePlayerMesh(hexColor) {
 	const g = new THREE.Group();
 	const body = new THREE.Mesh(
 		new THREE.CylinderGeometry(0.35, 0.35, 0.9, 12),
@@ -358,11 +298,15 @@ export function makePlayerMesh(name, level, hexColor) {
 	dir.position.set(0, 1.1, 0.35);
 	g.add(dir);
 
-	// Ajouter le HUD unifié
-	const hud = createPlayerHUD(name, level, new THREE.Color(hexColor));
-	g.add(hud);
-	g.userData.hud = hud;
-	g.userData.level = level;
+	// Add health bar
+	const healthBarGroup = createHealthBar();
+	g.add(healthBarGroup);
+	g.userData.healthBarGroup = healthBarGroup;
+
+	// Add mana bar
+	const manaBarGroup = createManaBar();
+	g.add(manaBarGroup);
+	g.userData.manaBarGroup = manaBarGroup;
 
 	return g;
 }
@@ -389,16 +333,16 @@ export function getPlayerIntersection(clientX, clientY, playersMap) {
 	raycaster.setFromCamera(mouse, camera);
 
 	const meshes = Array.from(playersMap.values());
-	// Raycast récursif car les joueurs sont des groupes
+	// Raycast recursively because players are Groups
 	const intersects = raycaster.intersectObjects(meshes, true);
 
 	if (intersects.length > 0) {
-		// Trouver à quel groupe de joueur ce maillage appartient
+		// Find which player group this mesh belongs to
 		let obj = intersects[0].object;
 		while (obj.parent && obj.parent !== world) {
 			obj = obj.parent;
 		}
-		// Trouver l'ID associé à ce maillage
+		// Find the ID associated with this mesh
 		for (const [id, mesh] of playersMap.entries()) {
 			if (mesh === obj) {
 				return { id, point: intersects[0].point };

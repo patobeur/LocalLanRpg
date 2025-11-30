@@ -17,7 +17,8 @@ import {
 	updateCameraPosition,
 	world,
 	scene,
-	updatePlayerHUD,
+	updateHealthBar,
+	updateManaBar,
 	createMapObjects,
 } from "./scene.js";
 import * as THREE from "/node_modules/three/build/three.module.js";
@@ -38,7 +39,6 @@ const me = {
 	character: null,
 	health: 100,
 	maxHealth: 100,
-	level: 1,
 };
 const others = new Map();
 setPlayersMap(others);
@@ -126,7 +126,6 @@ async function connectToRoomGame() {
 		}
 
 		me.character = myPlayer.character;
-		me.username = myPlayer.username;
 		const playerColor = myPlayer.faction === "blue" ? "#4A90E2" : "#E74C3C";
 
 		// Connect to WebSocket
@@ -162,7 +161,7 @@ async function connectToRoomGame() {
 				console.log(`[Game] My player ID is ${me.id}`);
 
 				if (!me.mesh) {
-					me.mesh = makePlayerMesh(me.username, me.level, playerColor);
+					me.mesh = makePlayerMesh(playerColor);
 					world.add(me.mesh);
 				}
 
@@ -178,14 +177,8 @@ async function connectToRoomGame() {
 					rotY = myData.rotY || 0;
 					me.mesh.position.set(px, py, pz);
 					me.mesh.rotation.y = rotY;
-					updatePlayerHUD(
-						me.mesh,
-						me.health,
-						me.maxHealth,
-						me.mana,
-						me.maxMana,
-						me.level
-					);
+					updateHealthBar(me.mesh, me.health, me.maxHealth);
+					updateManaBar(me.mesh, me.mana, me.maxMana);
 				}
 
 				if (msg.config) {
@@ -195,22 +188,15 @@ async function connectToRoomGame() {
 				for (const [id, p] of Object.entries(msg.players || {})) {
 					if (id === me.id) continue;
 					if (others.has(id)) continue;
-					const m = makePlayerMesh(p.name, p.level || 1, p.color);
+					const m = makePlayerMesh(p.color);
 					m.position.set(p.x, p.y, p.z);
 					m.rotation.y = p.rotY;
 					m.userData.health = p.health || 100;
 					m.userData.maxHealth = p.maxHealth || 100;
 					m.userData.mana = p.mana || 100;
 					m.userData.maxMana = p.maxMana || 100;
-					m.userData.level = p.level || 1;
-					updatePlayerHUD(
-						m,
-						m.userData.health,
-						m.userData.maxHealth,
-						m.userData.mana,
-						m.userData.maxMana,
-						m.userData.level
-					);
+					updateHealthBar(m, m.userData.health, m.userData.maxHealth);
+					updateManaBar(m, m.userData.mana, m.userData.maxMana);
 					others.set(id, m);
 					world.add(m);
 				}
@@ -242,22 +228,15 @@ async function connectToRoomGame() {
 				const p = msg.player;
 				const pId = String(p.id);
 				if (pId !== me.id && !others.has(pId)) {
-					const m = makePlayerMesh(p.name, p.level || 1, p.color);
+					const m = makePlayerMesh(p.color);
 					m.position.set(p.x, p.y, p.z);
 					m.rotation.y = p.rotY;
 					m.userData.health = p.health || 100;
 					m.userData.maxHealth = p.maxHealth || 100;
 					m.userData.mana = p.mana || 100;
 					m.userData.maxMana = p.maxMana || 100;
-					m.userData.level = p.level || 1;
-					updatePlayerHUD(
-						m,
-						m.userData.health,
-						m.userData.maxHealth,
-						m.userData.mana,
-						m.userData.maxMana,
-						m.userData.level
-					);
+					updateHealthBar(m, m.userData.health, m.userData.maxHealth);
+					updateManaBar(m, m.userData.mana, m.userData.maxMana);
 					others.set(pId, m);
 					world.add(m);
 				}
@@ -300,15 +279,10 @@ async function connectToRoomGame() {
 						me.mana = msg.mana;
 						me.maxMana = msg.maxMana;
 					}
-					updatePlayerHUD(
-						me.mesh,
-						me.health,
-						me.maxHealth,
-						me.mana,
-						me.maxMana,
-						me.level
-					);
-
+					updateHealthBar(me.mesh, me.health, me.maxHealth);
+					if (msg.mana !== undefined) {
+						updateManaBar(me.mesh, me.mana, me.maxMana);
+					}
 					gameUI.updatePlayerInfo(
 						charactersData[me.character]?.name || "Player",
 						1,
@@ -328,14 +302,10 @@ async function connectToRoomGame() {
 							m.userData.mana = msg.mana;
 							m.userData.maxMana = msg.maxMana;
 						}
-						updatePlayerHUD(
-							m,
-							m.userData.health,
-							m.userData.maxHealth,
-							m.userData.mana,
-							m.userData.maxMana,
-							m.userData.level
-						);
+						updateHealthBar(m, m.userData.health, m.userData.maxHealth);
+						if (msg.mana !== undefined) {
+							updateManaBar(m, m.userData.mana, m.userData.maxMana);
+						}
 					}
 				}
 			}
@@ -376,11 +346,7 @@ async function connectToRoomGame() {
 				}
 				if (msgId === me.id) {
 					me.respawnTime = msg.respawnTime;
-					console.log(
-						`[Game] You died! Respawning in ${
-							(msg.respawnTime - Date.now()) / 1000
-						}s`
-					);
+					console.log(`[Game] You died! Respawning in ${(msg.respawnTime - Date.now()) / 1000}s`);
 				}
 			}
 
@@ -398,14 +364,8 @@ async function connectToRoomGame() {
 					if (me.mesh) {
 						me.mesh.position.set(px, py, pz);
 						me.mesh.visible = true;
-						updatePlayerHUD(
-							me.mesh,
-							me.health,
-							me.maxHealth,
-							me.mana,
-							me.maxMana,
-							me.level
-						);
+						updateHealthBar(me.mesh, me.health, me.maxHealth);
+						updateManaBar(me.mesh, me.mana, me.maxMana);
 					}
 					gameUI.updatePlayerInfo(
 						charactersData[me.character]?.name || "Player",
@@ -427,32 +387,18 @@ async function connectToRoomGame() {
 						m.userData.maxHealth = msg.maxHealth;
 						m.userData.mana = msg.mana;
 						m.userData.maxMana = msg.maxMana;
-						updatePlayerHUD(
-							m,
-							m.userData.health,
-							m.userData.maxHealth,
-							m.userData.mana,
-							m.userData.maxMana,
-							m.userData.level
-						);
+						updateHealthBar(m, m.userData.health, m.userData.maxHealth);
+						updateManaBar(m, m.userData.mana, m.userData.maxMana);
 					}
 				}
 			}
+
 
 			if (msg.type === "player-xp") {
 				const msgId = String(msg.id);
 				if (msgId === me.id) {
 					me.xp = msg.xp;
 					me.maxXp = msg.maxXp;
-					me.level = msg.level;
-					updatePlayerHUD(
-						me.mesh,
-						me.health,
-						me.maxHealth,
-						me.mana,
-						me.maxMana,
-						me.level
-					);
 					gameUI.updatePlayerInfo(
 						charactersData[me.character]?.name || "Player",
 						msg.level,
@@ -463,22 +409,7 @@ async function connectToRoomGame() {
 						me.xp,
 						me.maxXp
 					);
-					console.log(
-						`[Game] XP updated: ${me.xp}/${me.maxXp} (Level ${msg.level})`
-					);
-				} else {
-					const m = others.get(msgId);
-					if (m) {
-						m.userData.level = msg.level;
-						updatePlayerHUD(
-							m,
-							m.userData.health,
-							m.userData.maxHealth,
-							m.userData.mana,
-							m.userData.maxMana,
-							m.userData.level
-						);
-					}
+					console.log(`[Game] XP updated: ${me.xp}/${me.maxXp} (Level ${msg.level})`);
 				}
 			}
 		};
@@ -597,22 +528,13 @@ function tick(t) {
 		rotY = Math.atan2(vx, vz);
 	}
 
-	const half = gridSize; // * 0.5;// - 0.6;
+	const half = gridSize;// * 0.5;// - 0.6;
 	px = Math.max(-half, Math.min(half, px));
 	pz = Math.max(-half, Math.min(half, pz));
 
 	if (me.mesh) {
 		me.mesh.position.set(px, py, pz);
 		me.mesh.rotation.y = rotY;
-		if (me.mesh.userData.hud) {
-			me.mesh.userData.hud.rotation.y = -rotY;
-		}
-	}
-
-	for (const playerMesh of others.values()) {
-		if (playerMesh.userData.hud) {
-			playerMesh.userData.hud.rotation.y = -playerMesh.rotation.y;
-		}
 	}
 
 	// Update Projectiles

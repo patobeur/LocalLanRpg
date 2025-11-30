@@ -32,12 +32,12 @@ function setupApp(app) {
     app.use("/api/auth", authRoutes);
 
     // Serve static files (HTML, CSS, JS)
-    app.use(express.static(path.join(__dirname, "../../../public")));
+    app.use(express.static(path.join(__dirname, "../../public")));
     app.use(
         "/node_modules",
-        express.static(path.join(__dirname, "../../../node_modules"))
+        express.static(path.join(__dirname, "../../node_modules"))
     );
-    app.use("/media", express.static(path.join(__dirname, "../../../public/media")));
+    app.use("/media", express.static(path.join(__dirname, "../../public/media")));
 }
 
 /**

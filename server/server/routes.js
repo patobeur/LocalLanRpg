@@ -37,7 +37,7 @@ function setupRoutes(app, requireAuth, roomManager) {
                 return res.redirect(`/jouer.html?roomId=${room.id}`);
             }
         }
-        res.sendFile(path.join(__dirname, "../../../public/lobby.html"));
+        res.sendFile(path.join(__dirname, "../../public/lobby.html"));
     });
 
     // Route de room - nécessite authentification
@@ -50,17 +50,17 @@ function setupRoutes(app, requireAuth, roomManager) {
                 return res.redirect(`/jouer.html?roomId=${roomId}`);
             }
         }
-        res.sendFile(path.join(__dirname, "../../../public/room.html"));
+        res.sendFile(path.join(__dirname, "../../public/room.html"));
     });
 
     // Route du jeu - nécessite authentification
     app.get("/jouer.html", requireAuth, (req, res) => {
-        res.sendFile(path.join(__dirname, "../../../public/jouer.html"));
+        res.sendFile(path.join(__dirname, "../../public/jouer.html"));
     });
 
     // Route de connexion - accessible sans auth
     app.get("/login.html", (req, res) => {
-        res.sendFile(path.join(__dirname, "../../../public/login.html"));
+        res.sendFile(path.join(__dirname, "../../public/login.html"));
     });
 
     // API Personnages

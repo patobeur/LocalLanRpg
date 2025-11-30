@@ -167,7 +167,7 @@ function updateCameraProjection() {
 
 export function updateCameraPosition(x, z) {
 	camera.position.x = x;
-	camera.position.z = z + 0.01;
+	camera.position.z = z + 1;
 	camera.lookAt(x, 0, z);
 }
 

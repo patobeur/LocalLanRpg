@@ -14,6 +14,7 @@ import {
 	initScene,
 	render,
 	makePlayerMesh,
+	removePlayerMesh,
 	updateCameraPosition,
 	world,
 	scene,
@@ -276,7 +277,8 @@ async function connectToRoomGame() {
 				const msgId = String(msg.id);
 				const m = others.get(msgId);
 				if (m) {
-					world.remove(m);
+					// world.remove(m);
+					removePlayerMesh(m);
 					others.delete(msgId);
 				}
 			}

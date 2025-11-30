@@ -2,7 +2,7 @@
 // HTTP routes for serving HTML pages
 
 const path = require("path");
-const characters = require("../characters.js");
+const characters = require("../server_side/characters.js");
 
 /**
  * Setup all HTTP routes for pages

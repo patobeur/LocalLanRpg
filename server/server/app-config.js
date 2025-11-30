@@ -4,7 +4,7 @@
 const express = require("express");
 const path = require("path");
 const session = require("express-session");
-const authRoutes = require("../../authRoutes");
+const authRoutes = require("../authRoutes");
 
 /**
  * Configure Express app with all middleware

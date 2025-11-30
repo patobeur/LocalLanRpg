@@ -6,12 +6,12 @@ const http = require("http");
 const roomManager = require("./server_side/rooms.js");
 
 // Import server modules
-const { setupApp, requireAuth } = require("./server_side/server/app-config.js");
-const { setupRoutes } = require("./server_side/server/routes.js");
-const { setupRoomRoutes } = require("./server_side/server/room-routes.js");
-const { setupWebSocket, broadcastToRoom } = require("./server_side/server/websocket.js");
-const { setupGameLoop } = require("./server_side/server/game-events.js");
-const { startServer, setupShutdownHandlers } = require("./server_side/server/lifecycle.js");
+const { setupApp, requireAuth } = require("./server/app-config.js");
+const { setupRoutes } = require("./server/routes.js");
+const { setupRoomRoutes } = require("./server/room-routes.js");
+const { setupWebSocket, broadcastToRoom } = require("./server/websocket.js");
+const { setupGameLoop } = require("./server/game-events.js");
+const { startServer, setupShutdownHandlers } = require("./server/lifecycle.js");
 
 const app = express();
 const server = http.createServer(app);

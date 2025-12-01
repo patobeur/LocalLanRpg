@@ -65,6 +65,8 @@ class Game {
     updatePlayer(id, msg) {
         const p = this.players.get(id);
         if (!p) return null;
+        if (p.isDead) return p; // Prevent movement if dead
+
         p.x = +msg.x || 0;
         p.y = +msg.y || 0.5;
         p.z = +msg.z || 0;
@@ -87,6 +89,9 @@ class Game {
     }
 
     addProjectile(shooterId, x, y, z, angle) {
+        const shooter = this.players.get(shooterId);
+        if (shooter && shooter.isDead) return; // Prevent shooting if dead
+
         this.projectiles.push({
             shooterId,
             x,

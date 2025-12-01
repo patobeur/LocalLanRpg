@@ -20,6 +20,7 @@ import {
 
 let gameUI = null;
 let playerColor = null;
+let respawnInterval = null;
 
 /**
  * Set the game UI instance for updates
@@ -330,6 +331,24 @@ function handlePlayerDeath(msg) {
     if (msgId === me.id) {
         me.respawnTime = msg.respawnTime;
         clearAttackTarget(); // We died, lose focus on our target
+
+        // Start countdown
+        if (respawnInterval) clearInterval(respawnInterval);
+        const statusEl = document.getElementById("status");
+
+        const updateTimer = () => {
+            const remaining = Math.ceil((me.respawnTime - Date.now()) / 1000);
+            if (remaining > 0) {
+                if (statusEl) statusEl.textContent = `Respawn dans ${remaining}s...`;
+            } else {
+                if (statusEl) statusEl.textContent = "Respawn...";
+                clearInterval(respawnInterval);
+            }
+        };
+
+        updateTimer();
+        respawnInterval = setInterval(updateTimer, 1000);
+
         console.log(
             `[Game] You died! Respawning in ${(msg.respawnTime - Date.now()) / 1000}s`
         );
@@ -354,6 +373,15 @@ function handlePlayerRespawn(msg) {
         me.mana = msg.mana;
         me.maxMana = msg.maxMana;
         me.respawnTime = null;
+
+        // Clear countdown and reset status
+        if (respawnInterval) {
+            clearInterval(respawnInterval);
+            respawnInterval = null;
+        }
+        const statusEl = document.getElementById("status");
+        if (statusEl) statusEl.textContent = "En jeu...";
+
         if (me.mesh) {
             me.mesh.position.set(playerTransform.x, playerTransform.y, playerTransform.z);
             me.mesh.visible = true;

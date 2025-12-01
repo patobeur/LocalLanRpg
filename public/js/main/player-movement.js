@@ -18,6 +18,11 @@ import { shootProjectile } from "./projectiles.js";
  * @returns {{vx: number, vz: number, attacking: boolean}} Movement vector and attack status
  */
 export function updatePlayerMovement(dt) {
+    // Block movement and attack if dead
+    if (me.respawnTime) {
+        return { vx: 0, vz: 0, attacking: false };
+    }
+
     let vx = 0;
     let vz = 0;
     let attacking = false;

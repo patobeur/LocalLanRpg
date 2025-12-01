@@ -136,6 +136,7 @@ function handleHello(msg) {
 
     const myData = msg.players[me.id];
     if (myData) {
+        me.faction = myData.faction; // Store my faction
         me.health = myData.health || 100;
         me.maxHealth = myData.maxHealth || 100;
         me.mana = myData.mana || 100;
@@ -167,6 +168,7 @@ function handleHello(msg) {
         const m = makePlayerMesh(p.name, p.level || 1, p.color);
         m.position.set(p.x, p.y, p.z);
         m.rotation.y = p.rotY;
+        m.userData.faction = p.faction; // Store faction
         m.userData.health = p.health || 100;
         m.userData.maxHealth = p.maxHealth || 100;
         m.userData.mana = p.mana || 100;
@@ -207,6 +209,7 @@ function handlePlayerJoin(msg) {
         const m = makePlayerMesh(p.name, p.level || 1, p.color);
         m.position.set(p.x, p.y, p.z);
         m.rotation.y = p.rotY;
+        m.userData.faction = p.faction; // Store faction
         m.userData.health = p.health || 100;
         m.userData.maxHealth = p.maxHealth || 100;
         m.userData.mana = p.mana || 100;

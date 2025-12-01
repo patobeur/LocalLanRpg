@@ -279,10 +279,17 @@ class Game {
             p.z += p.vz * move;
             p.distTraveled += move;
 
+            const shooter = this.players.get(p.shooterId);
+            if (!shooter) {
+                // Shooter might have disconnected, remove projectile to be safe
+                this.projectiles.splice(i, 1);
+                continue;
+            }
+
             // Collision Detection
             let hit = false;
             for (const [id, player] of this.players) {
-                if (id === p.shooterId) continue; // Don't hit self
+                if (id === p.shooterId || player.isDead || player.faction === shooter.faction) continue; // Don't hit self, dead, or friendly players
 
                 const dx = p.x - player.x;
                 const dz = p.z - player.z;
@@ -291,24 +298,21 @@ class Game {
                     hit = true;
 
                     // Apply Damage
-                    const shooter = this.players.get(p.shooterId);
-                    if (shooter) {
-                        const charStats = characters.chars[shooter.character];
-                        const damage = charStats ? charStats.autoAttackDamage[0] : 10;
+                    const charStats = characters.chars[shooter.character];
+                    const damage = charStats ? charStats.autoAttackDamage[0] : 10;
 
-                        player.health -= damage;
-                        player.lastAttackerId = p.shooterId; // Track attacker
-                        if (player.health < 0) player.health = 0;
+                    player.health -= damage;
+                    player.lastAttackerId = p.shooterId; // Track attacker
+                    if (player.health < 0) player.health = 0;
 
-                        events.push({
-                            type: "hit",
-                            shooterId: p.shooterId,
-                            targetId: id,
-                            damage,
-                            targetHealth: player.health,
-                            targetMaxHealth: player.maxHealth
-                        });
-                    }
+                    events.push({
+                        type: "hit",
+                        shooterId: p.shooterId,
+                        targetId: id,
+                        damage,
+                        targetHealth: player.health,
+                        targetMaxHealth: player.maxHealth
+                    });
                     break;
                 }
             }

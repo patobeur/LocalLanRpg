@@ -1,4 +1,5 @@
 import { getGroundIntersection, getPlayerIntersection } from "./scene.js";
+import { me } from "./main/game-state.js";
 
 const keys = new Set();
 let mode = "keyboard"; // 'keyboard' | 'mouse'
@@ -28,9 +29,12 @@ export function initInput() {
             if (playersMap) {
                 const playerHit = getPlayerIntersection(e.clientX, e.clientY, playersMap);
                 if (playerHit) {
-                    attackTarget = playerHit.id;
-                    target = null; // Stop moving to ground
-                    return;
+                    const targetMesh = playersMap.get(playerHit.id);
+                    if (targetMesh && targetMesh.userData.faction !== me.faction) {
+                        attackTarget = playerHit.id;
+                        target = null; // Stop moving to ground
+                    }
+                    return; // Return whether we found a valid target or not
                 }
             }
 

@@ -15,6 +15,7 @@ export const me = {
     id: null,
     mesh: null,
     character: null,
+    faction: null,
     username: null,
     health: 100,
     maxHealth: 100,

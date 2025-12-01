@@ -73,9 +73,32 @@ export function handleMessage(msg) {
         case "player-xp":
             handlePlayerXp(msg);
             break;
+        case "level-up":
+            handleLevelUp(msg);
+            break;
         default:
             // Unknown message type
             break;
+    }
+}
+
+function handleLevelUp(msg) {
+    const msgId = String(msg.id);
+    const player = msgId === me.id ? me : others.get(msgId);
+
+    if (player) {
+        player.level = msg.level;
+        const mesh = msgId === me.id ? me.mesh : player;
+        if (mesh) {
+            updatePlayerHUD(
+                mesh,
+                mesh.userData.health || me.health,
+                mesh.userData.maxHealth || me.maxHealth,
+                mesh.userData.mana || me.mana,
+                mesh.userData.maxMana || me.maxMana,
+                player.level
+            );
+        }
     }
 }
 
@@ -148,7 +171,7 @@ function handleHello(msg) {
     if (gameUI) {
         gameUI.updatePlayerInfo(
             me.username,
-            1,
+            me.level,
             me.health,
             me.maxHealth,
             me.mana,
@@ -227,7 +250,7 @@ function handlePlayerHealth(msg) {
         if (gameUI) {
             gameUI.updatePlayerInfo(
                 charactersData[me.character]?.name || "Player",
-                1,
+                me.level,
                 me.health,
                 me.maxHealth,
                 me.mana,
@@ -319,7 +342,7 @@ function handlePlayerRespawn(msg) {
         if (gameUI) {
             gameUI.updatePlayerInfo(
                 charactersData[me.character]?.name || "Player",
-                1,
+                me.level,
                 me.health,
                 me.maxHealth,
                 me.mana,

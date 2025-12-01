@@ -15,7 +15,8 @@ let db = new sqlite3.Database(DB_PATH, (err) => {
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             username TEXT UNIQUE NOT NULL,
             email TEXT UNIQUE NOT NULL,
-            password TEXT NOT NULL
+            password TEXT NOT NULL,
+            level INTEGER DEFAULT 1
         )`,
 			(err) => {
 				if (err) {
@@ -70,4 +71,23 @@ module.exports = {
 	createUser,
 	findUserByUsername,
 	bcrypt,
+    updateUserLevel,
 };
+
+function updateUserLevel(userId, newLevel) {
+    return new Promise((resolve, reject) => {
+        db.run(
+            `UPDATE users SET level = ? WHERE id = ?`,
+            [newLevel, userId],
+            function (err) {
+                if (err) {
+                    reject(err);
+                } else if (this.changes === 0) {
+                    reject(new Error("User not found."));
+                } else {
+                    resolve({ id: userId, level: newLevel });
+                }
+            }
+        );
+    });
+}

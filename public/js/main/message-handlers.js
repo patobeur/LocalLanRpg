@@ -114,6 +114,7 @@ function handleLevelUp(msg) {
                 m.userData.maxMana,
                 m.userData.level // Pass the newly updated level
             );
+            console.log(`[Game] Le joueur '${m.userData.name}' a atteint le niveau ${m.userData.level} !`);
         }
     }
 }

@@ -186,6 +186,7 @@ export function makePlayerMesh(name, level, hexColor) {
     g.add(hud);
     g.userData.hud = hud;
     g.userData.level = level;
+    g.userData.name = name;
 
     return g;
 }

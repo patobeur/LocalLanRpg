@@ -282,7 +282,7 @@ class Game {
             // Collision Detection
             let hit = false;
             for (const [id, player] of this.players) {
-                if (id === p.shooterId) continue; // Don't hit self
+                if (id === p.shooterId || player.isDead) continue; // Don't hit self or dead players
 
                 const dx = p.x - player.x;
                 const dz = p.z - player.z;

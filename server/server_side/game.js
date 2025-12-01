@@ -1,5 +1,6 @@
 const characters = require("./characters.js");
 const config = require("./config.js");
+const { updateUserLevel } = require("../database.js");
 
 class Game {
     constructor() {
@@ -49,7 +50,7 @@ class Game {
             mana: charStats.mana,
             maxMana: charStats.mana,
             faction: faction,
-            level: 1, // Default level
+            level: msg.level || 1,
             xp: 0,
             maxXp: 100,
             isDead: false,
@@ -198,13 +199,27 @@ class Game {
                         console.log(`[Game] Player ${attacker.id} gained ${xpGain} XP`);
 
                         // Check Level Up
+                        let leveledUp = false;
                         while (attacker.xp >= attacker.maxXp) {
                             attacker.xp -= attacker.maxXp;
                             attacker.level++;
+                            leveledUp = true;
                             attacker.maxXp = attacker.level * 100;
                             attacker.health = attacker.maxHealth; // Heal on level up? Maybe.
                             attacker.mana = attacker.maxMana;
                             console.log(`[Game] Player ${attacker.id} leveled up to ${attacker.level}!`);
+                        }
+
+                        if (leveledUp) {
+                            updateUserLevel(attacker.id, attacker.level)
+                                .then(() => console.log(`[Database] Level for user ${attacker.id} updated to ${attacker.level}.`))
+                                .catch(err => console.error(`[Database] Error updating level for user ${attacker.id}:`, err));
+
+                            events.push({
+                                type: "level-up",
+                                id: attacker.id,
+                                level: attacker.level,
+                            });
                         }
 
                         events.push({

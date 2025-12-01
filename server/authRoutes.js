@@ -53,11 +53,12 @@ router.post("/login", async (req, res) => {
 		// Create session
 		req.session.userId = user.id;
 		req.session.username = user.username;
+		req.session.level = user.level;
 
 		res.status(200).json({
 			success: true,
 			message: "Connexion réussie.",
-			user: { id: user.id, username: user.username, email: user.email }
+			user: { id: user.id, username: user.username, email: user.email, level: user.level }
 		});
 	} catch (err) {
 		console.error("Login error:", err);
@@ -82,7 +83,8 @@ router.get("/session", (req, res) => {
 			authenticated: true,
 			user: {
 				id: req.session.userId,
-				username: req.session.username
+				username: req.session.username,
+				level: req.session.level
 			}
 		});
 	} else {

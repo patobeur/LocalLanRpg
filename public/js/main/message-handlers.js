@@ -73,9 +73,48 @@ export function handleMessage(msg) {
         case "player-xp":
             handlePlayerXp(msg);
             break;
+        case "level-up":
+            handleLevelUp(msg);
+            break;
         default:
             // Unknown message type
             break;
+    }
+}
+
+function handleLevelUp(msg) {
+    const msgId = String(msg.id);
+
+    if (msgId === me.id) {
+        // This is a level-up for our own player.
+        // The 'player-xp' message already handles the main HUD update.
+        // This handler just makes sure our local state and 3D HUD are correct.
+        me.level = msg.level;
+        if (me.mesh) {
+             updatePlayerHUD(
+                me.mesh,
+                me.health,
+                me.maxHealth,
+                me.mana,
+                me.maxMana,
+                me.level
+            );
+        }
+    } else {
+        // This is a level-up for another player.
+        const m = others.get(msgId);
+        if (m) {
+            // The state for other players is stored in `userData` of their mesh.
+            m.userData.level = msg.level;
+            updatePlayerHUD(
+                m,
+                m.userData.health,
+                m.userData.maxHealth,
+                m.userData.mana,
+                m.userData.maxMana,
+                m.userData.level // Pass the newly updated level
+            );
+        }
     }
 }
 
@@ -148,7 +187,7 @@ function handleHello(msg) {
     if (gameUI) {
         gameUI.updatePlayerInfo(
             me.username,
-            1,
+            me.level,
             me.health,
             me.maxHealth,
             me.mana,
@@ -227,7 +266,7 @@ function handlePlayerHealth(msg) {
         if (gameUI) {
             gameUI.updatePlayerInfo(
                 charactersData[me.character]?.name || "Player",
-                1,
+                me.level,
                 me.health,
                 me.maxHealth,
                 me.mana,
@@ -319,7 +358,7 @@ function handlePlayerRespawn(msg) {
         if (gameUI) {
             gameUI.updatePlayerInfo(
                 charactersData[me.character]?.name || "Player",
-                1,
+                me.level,
                 me.health,
                 me.maxHealth,
                 me.mana,

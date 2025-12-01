@@ -2,3 +2,4 @@ node_modules
 LocalLanRpg.code-workspace
 users.db
 public/media/characters/hd/*
+roadmap.md

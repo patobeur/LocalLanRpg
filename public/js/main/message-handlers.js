@@ -84,20 +84,37 @@ export function handleMessage(msg) {
 
 function handleLevelUp(msg) {
     const msgId = String(msg.id);
-    const player = msgId === me.id ? me : others.get(msgId);
 
-    if (player) {
-        player.level = msg.level;
-        const mesh = msgId === me.id ? me.mesh : player;
-        if (mesh) {
-            updatePlayerHUD(
-                mesh,
-                mesh.userData.health || me.health,
-                mesh.userData.maxHealth || me.maxHealth,
-                mesh.userData.mana || me.mana,
-                mesh.userData.maxMana || me.maxMana,
-                player.level
+    if (msgId === me.id) {
+        // This is a level-up for our own player.
+        // The 'player-xp' message already handles the main HUD update.
+        // This handler just makes sure our local state and 3D HUD are correct.
+        me.level = msg.level;
+        if (me.mesh) {
+             updatePlayerHUD(
+                me.mesh,
+                me.health,
+                me.maxHealth,
+                me.mana,
+                me.maxMana,
+                me.level
             );
+        }
+    } else {
+        // This is a level-up for another player.
+        const m = others.get(msgId);
+        if (m) {
+            // The state for other players is stored in `userData` of their mesh.
+            m.userData.level = msg.level;
+            updatePlayerHUD(
+                m,
+                m.userData.health,
+                m.userData.maxHealth,
+                m.userData.mana,
+                m.userData.maxMana,
+                m.userData.level // Pass the newly updated level
+            );
+            console.log(`[Game] Le joueur '${m.userData.name}' a atteint le niveau ${m.userData.level} !`);
         }
     }
 }

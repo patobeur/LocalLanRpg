@@ -19,7 +19,7 @@ function createPlayerHUD(name, level, factionColor) {
     const nameTexture = new THREE.CanvasTexture(nameCanvas);
     const nameMaterial = new THREE.SpriteMaterial({
         map: nameTexture,
-        depthTest: false,
+        depthTest: true,
     });
     const nameSprite = new THREE.Sprite(nameMaterial);
     nameSprite.scale.set(2, 0.5, 1);
@@ -48,7 +48,7 @@ function createPlayerHUD(name, level, factionColor) {
     const levelTexture = new THREE.CanvasTexture(levelCanvas);
     const levelMaterial = new THREE.SpriteMaterial({
         map: levelTexture,
-        depthTest: false,
+        depthTest: true,
     });
     const levelSprite = new THREE.Sprite(levelMaterial);
     levelSprite.scale.set(0.3, 0.3, 1);
@@ -60,7 +60,7 @@ function createPlayerHUD(name, level, factionColor) {
     const healthBgGeom = new THREE.PlaneGeometry(barWidth, healthBarHeight);
     const healthBgMat = new THREE.MeshBasicMaterial({
         color: 0x111111,
-        depthTest: false,
+        depthTest: true,
     });
     const healthBg = new THREE.Mesh(healthBgGeom, healthBgMat);
     healthBarGroup.add(healthBg);
@@ -68,7 +68,7 @@ function createPlayerHUD(name, level, factionColor) {
     const healthFgGeom = new THREE.PlaneGeometry(barWidth, healthBarHeight);
     const healthFgMat = new THREE.MeshBasicMaterial({
         color: factionColor,
-        depthTest: false,
+        depthTest: true,
     });
     const healthFg = new THREE.Mesh(healthFgGeom, healthFgMat);
     healthFg.position.z = 0.001;
@@ -80,7 +80,7 @@ function createPlayerHUD(name, level, factionColor) {
     const manaBgGeom = new THREE.PlaneGeometry(barWidth, manaBarHeight);
     const manaBgMat = new THREE.MeshBasicMaterial({
         color: 0x111111,
-        depthTest: false,
+        depthTest: true,
     });
     const manaBg = new THREE.Mesh(manaBgGeom, manaBgMat);
     manaBarGroup.add(manaBg);
@@ -88,12 +88,14 @@ function createPlayerHUD(name, level, factionColor) {
     const manaFgGeom = new THREE.PlaneGeometry(barWidth, manaBarHeight);
     const manaFgMat = new THREE.MeshBasicMaterial({
         color: 0x3498db,
-        depthTest: false,
+        depthTest: true,
     });
     const manaFg = new THREE.Mesh(manaFgGeom, manaFgMat);
     manaFg.position.z = 0.001;
     manaBarGroup.add(manaFg);
-    manaBarGroup.position.y = -(healthBarHeight / 2) - manaBarHeight / 2 + 0.03;
+    // manaBarGroup.position.y = -(healthBarHeight / 2) - manaBarHeight / 2 + 0.03;
+    const spacing = 0.03;
+    manaBarGroup.position.y = - (healthBarHeight + manaBarHeight) / 2;
     hudGroup.add(manaBarGroup);
 
     // Stocker les références pour les mises à jour
@@ -108,7 +110,9 @@ function createPlayerHUD(name, level, factionColor) {
         nameTexture: nameTexture,
     };
 
-    hudGroup.position.y = 1.7; // Positionner au-dessus de la tête du joueur
+    hudGroup.position.x = 0; // Positionner au-dessus de la tête du joueur
+    hudGroup.position.y = 2; // Positionner au-dessus de la tête du joueur
+    hudGroup.position.z = 0; // Positionner au-dessus de la tête du joueur
 
     return hudGroup;
 }

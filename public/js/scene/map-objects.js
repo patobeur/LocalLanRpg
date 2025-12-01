@@ -35,6 +35,8 @@ export function createMapObjects(mapConfig) {
                     color: colorMap[key] || 0x888888,
                     transparent: true,
                     opacity: 0.6,
+                    depthTest: true,   // IMPORTANT
+                    depthWrite: false, // pour éviter des artefacts
                 });
                 const mesh = new THREE.Mesh(geometry, material);
                 // Position: x, z from config (y is up in 3D)
@@ -96,6 +98,8 @@ export function createMapObjects(mapConfig) {
                     color: colorMap[key] || 0x666666,
                     transparent: true,
                     opacity: 0.7,
+                    depthTest: true,   // IMPORTANT
+                    depthWrite: false, // pour éviter des artefacts
                 });
                 const mesh = new THREE.Mesh(geometry, material);
                 mesh.position.set(str.x, str.z, str.y);

@@ -9,6 +9,7 @@ import {
     charactersData,
 } from "./game-state.js";
 import { shootProjectile, projectiles, removeProjectile } from "./projectiles.js";
+import { clearAttackTarget, getAttackTarget } from "../input.js";
 import {
     makePlayerMesh,
     removePlayerMesh,
@@ -324,11 +325,21 @@ function handlePlayerDeath(msg) {
     if (mesh) {
         mesh.visible = false;
     }
+
+    // Clear attack target if we died
     if (msgId === me.id) {
         me.respawnTime = msg.respawnTime;
+        clearAttackTarget(); // We died, lose focus on our target
         console.log(
             `[Game] You died! Respawning in ${(msg.respawnTime - Date.now()) / 1000}s`
         );
+    } else {
+        // If our current target died, clear the attack target
+        const currentTarget = getAttackTarget();
+        if (currentTarget && String(currentTarget) === msgId) {
+            clearAttackTarget();
+            console.log(`[Game] Target died, clearing attack focus`);
+        }
     }
 }
 

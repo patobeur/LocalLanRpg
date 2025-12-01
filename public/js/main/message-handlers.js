@@ -19,6 +19,7 @@ import {
     updateStructureHUD,
 } from "../scene.js";
 import { structures } from "./game-state.js";
+import { GAME_CONSTANTS } from "../config/constants.js";
 
 let gameUI = null;
 let playerColor = null;
@@ -333,7 +334,7 @@ function handleProjectileHit(msg) {
                 }
             }
         }
-        if (closest && minDst < 10) { // Increased range for structures
+        if (closest && minDst < GAME_CONSTANTS.COLLISION.PROJECTILE_HIT_RANGE_STRUCTURE) {
             removeProjectile(closest);
         }
     }

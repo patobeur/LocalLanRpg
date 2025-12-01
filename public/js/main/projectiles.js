@@ -4,13 +4,14 @@
 import * as THREE from "/node_modules/three/build/three.module.js";
 import { scene } from "../scene.js";
 import { me, ws } from "./game-state.js";
+import { GAME_CONSTANTS } from "../config/constants.js";
 
 // Projectiles array
 export const projectiles = [];
 
-// Constants
-export const PROJECTILE_SPEED = 10;
-export const PROJECTILE_RANGE = 30;
+// Re-export constants for backward compatibility (will be removed later)
+export const PROJECTILE_SPEED = GAME_CONSTANTS.PROJECTILE_SPEED;
+export const PROJECTILE_RANGE = GAME_CONSTANTS.PROJECTILE_RANGE;
 
 /**
  * Create and shoot a projectile
@@ -51,7 +52,7 @@ export function shootProjectile(x, y, z, angle, shooterId) {
 export function updateProjectiles(dt) {
     for (let i = projectiles.length - 1; i >= 0; i--) {
         const p = projectiles[i];
-        const move = PROJECTILE_SPEED * dt;
+        const move = GAME_CONSTANTS.PROJECTILE_SPEED * dt;
         p.x += p.vx * move;
         p.z += p.vz * move;
         p.distTraveled += move;
@@ -60,7 +61,7 @@ export function updateProjectiles(dt) {
         p.mesh.position.z = p.z;
 
         // Check range
-        if (projectiles[i] === p && p.distTraveled >= PROJECTILE_RANGE) {
+        if (projectiles[i] === p && p.distTraveled >= GAME_CONSTANTS.PROJECTILE_RANGE) {
             scene.remove(p.mesh);
             projectiles.splice(i, 1);
         }

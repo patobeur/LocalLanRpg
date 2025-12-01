@@ -46,11 +46,9 @@ export const playerTransform = {
     rotY: 0,
 };
 
-// Game constants
-export const GAME_CONSTANTS = {
-    speed: 3.5,
-    gridSize: 40,
-};
+// Import game constants from centralized config
+import { GAME_CONSTANTS } from "../config/constants.js";
+export { GAME_CONSTANTS };
 
 // Initialize game state with room ID
 export function initGameState(roomIdParam) {

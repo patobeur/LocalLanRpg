@@ -1,4 +1,17 @@
-const config = {
+// Game Configuration - Server Side
+// Centralizes all game constants, map data, and balancing values
+
+// Game Constants
+const GAME_CONSTANTS = {
+	PROJECTILE_SPEED: 10,
+	PROJECTILE_RANGE: 30,
+	PLAYER_COLLISION_RADIUS: 0.5,
+	STRUCTURE_DEFAULT_COLLISION_RADIUS: 4,
+	RESPAWN_TIME_MS: 5000,
+};
+
+// Map Configuration
+const MAP_CONFIG = {
 	locations: {
 		spawnTeamA: {
 			x: -22,
@@ -63,4 +76,12 @@ const config = {
 	},
 };
 
+// Legacy compatibility - export as single 'config' object
+const config = {
+	...MAP_CONFIG,
+	constants: GAME_CONSTANTS,
+};
+
 module.exports = config;
+module.exports.GAME_CONSTANTS = GAME_CONSTANTS;
+module.exports.MAP_CONFIG = MAP_CONFIG;

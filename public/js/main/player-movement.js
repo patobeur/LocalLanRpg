@@ -126,13 +126,13 @@ export function applyMovement(vx, vz, dt) {
         const len = Math.hypot(vx, vz) || 1;
         vx /= len;
         vz /= len;
-        playerTransform.x += vx * GAME_CONSTANTS.speed * dt;
-        playerTransform.z += vz * GAME_CONSTANTS.speed * dt;
+        playerTransform.x += vx * GAME_CONSTANTS.PLAYER_SPEED * dt;
+        playerTransform.z += vz * GAME_CONSTANTS.PLAYER_SPEED * dt;
         playerTransform.rotY = Math.atan2(vx, vz);
     }
 
     // Clamp to grid
-    const half = GAME_CONSTANTS.gridSize;
+    const half = GAME_CONSTANTS.GRID_SIZE;
     playerTransform.x = Math.max(-half, Math.min(half, playerTransform.x));
     playerTransform.z = Math.max(-half, Math.min(half, playerTransform.z));
 }

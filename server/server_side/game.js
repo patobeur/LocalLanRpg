@@ -1,5 +1,6 @@
 const characters = require("./characters.js");
 const config = require("./config.js");
+const { GAME_CONSTANTS } = require("./config.js");
 const { updateUserLevel } = require("../database.js");
 
 class Game {
@@ -7,8 +8,8 @@ class Game {
         this.players = new Map();
         this.projectiles = [];
         this.nextId = 1;
-        this.PROJECTILE_SPEED = 10;
-        this.PROJECTILE_RANGE = 30;
+        this.PROJECTILE_SPEED = GAME_CONSTANTS.PROJECTILE_SPEED;
+        this.PROJECTILE_RANGE = GAME_CONSTANTS.PROJECTILE_RANGE;
 
         // Initialize structures from config
         this.structures = {};

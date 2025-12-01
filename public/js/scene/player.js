@@ -149,7 +149,8 @@ export function updatePlayerHUD(
     manaBar.position.x = -barWidth / 2 + (barWidth * manaPercent) / 2;
 
     // Mettre à jour le niveau
-    if (playerMesh.userData.level !== level) {
+    const oldLevel = playerMesh.userData.level;
+    if (oldLevel !== level) {
         playerMesh.userData.level = level;
         drawLevel(level);
         levelTexture.needsUpdate = true;

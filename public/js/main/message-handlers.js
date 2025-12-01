@@ -91,7 +91,7 @@ function handleLevelUp(msg) {
         // This handler just makes sure our local state and 3D HUD are correct.
         me.level = msg.level;
         if (me.mesh) {
-             updatePlayerHUD(
+            updatePlayerHUD(
                 me.mesh,
                 me.health,
                 me.maxHealth,
@@ -104,17 +104,16 @@ function handleLevelUp(msg) {
         // This is a level-up for another player.
         const m = others.get(msgId);
         if (m) {
-            // The state for other players is stored in `userData` of their mesh.
-            m.userData.level = msg.level;
+            // updatePlayerHUD will update userData.level internally
             updatePlayerHUD(
                 m,
                 m.userData.health,
                 m.userData.maxHealth,
                 m.userData.mana,
                 m.userData.maxMana,
-                m.userData.level // Pass the newly updated level
+                msg.level // Pass the new level from the message
             );
-            console.log(`[Game] Le joueur '${m.userData.name}' a atteint le niveau ${m.userData.level} !`);
+            console.log(`[Game] Le joueur '${m.userData.name}' a atteint le niveau ${msg.level} !`);
         }
     }
 }
@@ -420,15 +419,16 @@ function handlePlayerXp(msg) {
     } else {
         const m = others.get(msgId);
         if (m) {
-            m.userData.level = msg.level;
+            // updatePlayerHUD will update userData.level internally
             updatePlayerHUD(
                 m,
                 m.userData.health,
                 m.userData.maxHealth,
                 m.userData.mana,
                 m.userData.maxMana,
-                m.userData.level
+                msg.level // Pass the new level from the message
             );
+            console.log(`[Game] Player XP update: ${m.userData.name || msgId} is now level ${msg.level}`);
         }
     }
 }

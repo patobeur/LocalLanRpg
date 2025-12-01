@@ -80,6 +80,13 @@ function setupGameLoop(roomManager, broadcastToRoom) {
                             maxXp: e.maxXp,
                             level: e.level,
                         });
+                    } else if (e.type === "level-up") {
+                        // Broadcast level-up to all clients in room
+                        broadcastToRoom(room.id, {
+                            type: "level-up",
+                            id: e.id,
+                            level: e.level,
+                        });
                     }
                 });
             }

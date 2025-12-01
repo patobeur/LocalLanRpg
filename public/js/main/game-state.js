@@ -30,6 +30,7 @@ export const me = {
 
 // Other players
 export const others = new Map();
+export const structures = new Map();
 
 // Game connection state
 let _gameState = "connecting"; // 'connecting', 'playing'

@@ -16,7 +16,9 @@ import {
     updatePlayerHUD,
     world,
     createMapObjects,
+    updateStructureHUD,
 } from "../scene.js";
+import { structures } from "./game-state.js";
 
 let gameUI = null;
 let playerColor = null;
@@ -77,6 +79,12 @@ export function handleMessage(msg) {
             break;
         case "level-up":
             handleLevelUp(msg);
+            break;
+        case "structure-hit":
+            handleStructureHit(msg);
+            break;
+        case "structure-death":
+            handleStructureDeath(msg);
             break;
         default:
             // Unknown message type
@@ -304,7 +312,15 @@ function handlePlayerHealth(msg) {
 function handleProjectileHit(msg) {
     const targetId = String(msg.targetId);
     const shooterId = String(msg.shooterId);
-    const target = others.get(targetId) || (targetId === me.id ? me.mesh : null);
+
+    // Find target - could be a player or structure
+    let target = others.get(targetId) || (targetId === me.id ? me.mesh : null);
+
+    // If not a player, check if it's a structure
+    if (!target) {
+        target = structures.get(targetId);
+    }
+
     if (target) {
         let closest = null;
         let minDst = Infinity;
@@ -317,7 +333,7 @@ function handleProjectileHit(msg) {
                 }
             }
         }
-        if (closest && minDst < 5) {
+        if (closest && minDst < 10) { // Increased range for structures
             removeProjectile(closest);
         }
     }
@@ -472,5 +488,27 @@ function handlePlayerXp(msg) {
             );
             console.log(`[Game] Player XP update: ${m.userData.name || msgId} is now level ${msg.level}`);
         }
+    }
+}
+
+function handleStructureHit(msg) {
+    updateStructureHUD(msg.structureId, msg.hp, msg.maxHp);
+}
+
+function handleStructureDeath(msg) {
+    console.log(`[Game] Structure ${msg.structureId} destroyed by player ${msg.killerId}!`);
+
+    const mesh = structures.get(msg.structureId);
+    if (mesh) {
+        // Remove HUD from world
+        if (mesh.userData.hud && mesh.userData.hud.group) {
+            world.remove(mesh.userData.hud.group);
+        }
+
+        // Remove mesh from world
+        world.remove(mesh);
+
+        // Remove from structures map
+        structures.delete(msg.structureId);
     }
 }

@@ -9,6 +9,18 @@ class Game {
         this.nextId = 1;
         this.PROJECTILE_SPEED = 10;
         this.PROJECTILE_RANGE = 30;
+
+        // Initialize structures from config
+        this.structures = {};
+        if (config.structures) {
+            for (const [key, str] of Object.entries(config.structures)) {
+                this.structures[key] = {
+                    ...str,
+                    maxHp: str.hp, // Store max HP
+                    isDead: false
+                };
+            }
+        }
     }
 
     generateId() {
@@ -288,6 +300,8 @@ class Game {
 
             // Collision Detection
             let hit = false;
+
+            // 1. Check Player Collision
             for (const [id, player] of this.players) {
                 if (id === p.shooterId || player.isDead || player.faction === shooter.faction) continue; // Don't hit self, dead, or friendly players
 
@@ -317,6 +331,58 @@ class Game {
                 }
             }
 
+            // 2. Check Structure Collision (if not hit player)
+            if (!hit) {
+                for (const [key, str] of Object.entries(this.structures)) {
+                    if (str.isDead) continue;
+
+                    // Check faction (don't hit friendly bases)
+                    // Assuming BaseTeamA is for Team A (blue) and BaseTeamB is for Team B (red)
+                    // If shooter is blue, they shouldn't hit BaseTeamA
+                    let isFriendly = false;
+                    if (shooter.faction === "blue" && key === "BaseTeamA") isFriendly = true;
+                    if (shooter.faction === "red" && key === "BaseTeamB") isFriendly = true;
+
+                    if (isFriendly) continue;
+
+                    const dx = p.x - str.x;
+                    const dz = p.z - str.y; // Config y is Z in 3D
+                    const radius = str.collisionRadius || 4; // Default to 4 if not set
+
+                    if (Math.hypot(dx, dz) < radius) {
+                        hit = true;
+
+                        // Apply Damage
+                        const charStats = characters.chars[shooter.character];
+                        const damage = charStats ? charStats.autoAttackDamage[0] : 10;
+
+                        str.hp -= damage;
+                        if (str.hp <= 0) {
+                            str.hp = 0;
+                            if (!str.isDead) {
+                                str.isDead = true;
+                                console.log(`[Game] Structure ${key} destroyed by ${shooter.name}!`);
+                                events.push({
+                                    type: "structure-death",
+                                    structureId: key,
+                                    killerId: shooter.id
+                                });
+                            }
+                        }
+
+                        events.push({
+                            type: "structure-hit",
+                            structureId: key,
+                            damage,
+                            hp: str.hp,
+                            maxHp: str.maxHp,
+                            shooterId: shooter.id
+                        });
+                        break;
+                    }
+                }
+            }
+
             if (hit || p.distTraveled >= this.PROJECTILE_RANGE) {
                 this.projectiles.splice(i, 1);
             }
@@ -335,9 +401,12 @@ class Game {
             character: p.character,
         }));
     }
+
+    getStructures() {
+        return this.structures;
+    }
 }
 
 // Export the class itself, not an instance
 // Each room will create its own Game instance
 module.exports = Game;
-

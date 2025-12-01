@@ -1,10 +1,10 @@
-import { getGroundIntersection, getPlayerIntersection } from "./scene.js";
-import { me } from "./main/game-state.js";
+import { getGroundIntersection, getPlayerIntersection, getStructureIntersection } from "./scene.js";
+import { me, structures } from "./main/game-state.js";
 
 const keys = new Set();
 let mode = "keyboard"; // 'keyboard' | 'mouse'
 let target = null; // {x, z}
-let attackTarget = null; // player id
+let attackTarget = null; // player id or structure id
 let playersMap = null;
 
 export function setPlayersMap(map) {
@@ -35,6 +35,29 @@ export function initInput() {
                         target = null; // Stop moving to ground
                     }
                     return; // Return whether we found a valid target or not
+                }
+            }
+
+            // Check structure click
+            if (structures) {
+                const structureHit = getStructureIntersection(e.clientX, e.clientY, structures);
+                if (structureHit) {
+                    console.log("[Input] Structure hit:", structureHit.id);
+                    const targetMesh = structures.get(structureHit.id);
+                    // Check if enemy structure (simple check based on ID naming convention or userData)
+                    // Assuming BaseTeamA is blue and BaseTeamB is red
+                    let isEnemy = false;
+                    if (me.faction === "blue" && structureHit.id === "BaseTeamB") isEnemy = true;
+                    if (me.faction === "red" && structureHit.id === "BaseTeamA") isEnemy = true;
+
+                    if (isEnemy) {
+                        console.log("[Input] Enemy structure targeted:", structureHit.id);
+                        attackTarget = structureHit.id;
+                        target = null;
+                        return;
+                    } else {
+                        console.log("[Input] Friendly structure clicked, ignoring.");
+                    }
                 }
             }
 

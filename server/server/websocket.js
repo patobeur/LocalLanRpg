@@ -129,7 +129,7 @@ function setupWebSocket(server, roomManager) {
                         players: room.game.getPlayers(),
                         config: {
                             locations: config.locations,
-                            structures: config.structures,
+                            structures: room.game.getStructures(),
                         },
                     })
                 );

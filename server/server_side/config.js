@@ -47,6 +47,7 @@ const config = {
 			filepath: "./media/structures/glb/house.glb",
 			rotation: { x: 0, y: 45, z: 0 },
 			scale: { x: 10, y: 10, z: 10 },
+			collisionRadius: 4,
 		},
 		BaseTeamB: {
 			x: 25,
@@ -57,6 +58,7 @@ const config = {
 			filepath: "./media/structures/glb/house.glb",
 			rotation: { x: 0, y: -135, z: 0 },
 			scale: { x: 10, y: 10, z: 10 },
+			collisionRadius: 4,
 		},
 	},
 };

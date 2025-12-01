@@ -9,7 +9,7 @@ import {
     getAttackTarget,
     clearAttackTarget,
 } from "../input.js";
-import { me, others, playerTransform, charactersData, GAME_CONSTANTS } from "./game-state.js";
+import { me, others, structures, playerTransform, charactersData, GAME_CONSTANTS } from "./game-state.js";
 import { shootProjectile } from "./projectiles.js";
 
 /**
@@ -30,7 +30,7 @@ export function updatePlayerMovement(dt) {
     // Auto Attack Logic
     const attackId = String(getAttackTarget());
 
-    if (attackId && others.has(attackId)) {
+    if (attackId && (others.has(attackId) || structures.has(attackId))) {
         // Check if we should break attack due to keyboard movement
         if (getMovementMode() === "keyboard") {
             const d = getMoveDir();
@@ -43,43 +43,47 @@ export function updatePlayerMovement(dt) {
 
     // Re-check attackId after potential clear
     const currentAttackId = String(getAttackTarget());
-    if (currentAttackId && others.has(currentAttackId) && !attacking) {
-        const targetMesh = others.get(currentAttackId);
-        const dx = targetMesh.position.x - playerTransform.x;
-        const dz = targetMesh.position.z - playerTransform.z;
-        const dist = Math.hypot(dx, dz);
+    if (currentAttackId && !attacking) {
+        let targetMesh = others.get(currentAttackId);
+        if (!targetMesh) targetMesh = structures.get(currentAttackId);
 
-        const myChar = charactersData[me.character] || charactersData["Moumba"];
-        const range = myChar ? myChar.hitDistance : 5;
-        const cdSeconds = myChar && myChar.autoAttackCd ? myChar.autoAttackCd[0] : 1;
-        const cdMs = cdSeconds * 1000;
+        if (targetMesh) {
+            const dx = targetMesh.position.x - playerTransform.x;
+            const dz = targetMesh.position.z - playerTransform.z;
+            const dist = Math.hypot(dx, dz);
 
-        if (dist > range) {
-            // Move towards target
-            vx = dx / dist;
-            vz = dz / dist;
-        } else {
-            // In range, stop and shoot
-            attacking = true;
-            vx = 0;
-            vz = 0;
-            // Face target
-            playerTransform.rotY = Math.atan2(dx, dz);
+            const myChar = charactersData[me.character] || charactersData["Moumba"];
+            const range = myChar ? myChar.hitDistance : 5;
+            const cdSeconds = myChar && myChar.autoAttackCd ? myChar.autoAttackCd[0] : 1;
+            const cdMs = cdSeconds * 1000;
 
-            // Shoot if cooldown ready
-            const now = performance.now();
-            if (me.lastAttack === undefined) me.lastAttack = -cdMs;
+            if (dist > range) {
+                // Move towards target
+                vx = dx / dist;
+                vz = dz / dist;
+            } else {
+                // In range, stop and shoot
+                attacking = true;
+                vx = 0;
+                vz = 0;
+                // Face target
+                playerTransform.rotY = Math.atan2(dx, dz);
 
-            if (now - me.lastAttack > cdMs) {
-                me.lastAttack = now;
-                shootProjectile(
-                    playerTransform.x,
-                    playerTransform.y,
-                    playerTransform.z,
-                    playerTransform.rotY,
-                    me.id
-                );
-                console.log(`[AutoAttack] Fired! CD: ${cdSeconds}s`);
+                // Shoot if cooldown ready
+                const now = performance.now();
+                if (me.lastAttack === undefined) me.lastAttack = -cdMs;
+
+                if (now - me.lastAttack > cdMs) {
+                    me.lastAttack = now;
+                    shootProjectile(
+                        playerTransform.x,
+                        playerTransform.y,
+                        playerTransform.z,
+                        playerTransform.rotY,
+                        me.id
+                    );
+                    console.log(`[AutoAttack] Fired! CD: ${cdSeconds}s`);
+                }
             }
         }
     }

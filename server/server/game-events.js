@@ -87,6 +87,28 @@ function setupGameLoop(roomManager, broadcastToRoom) {
                             id: e.id,
                             level: e.level,
                         });
+                    } else if (e.type === "structure-hit") {
+                        broadcastToRoom(room.id, {
+                            type: "structure-hit",
+                            structureId: e.structureId,
+                            damage: e.damage,
+                            hp: e.hp,
+                            maxHp: e.maxHp,
+                            shooterId: e.shooterId
+                        });
+
+                        // Broadcast projectile-hit so clients can remove the projectile
+                        broadcastToRoom(room.id, {
+                            type: "projectile-hit",
+                            shooterId: e.shooterId,
+                            targetId: e.structureId,
+                        });
+                    } else if (e.type === "structure-death") {
+                        broadcastToRoom(room.id, {
+                            type: "structure-death",
+                            structureId: e.structureId,
+                            killerId: e.killerId
+                        });
                     }
                 });
             }

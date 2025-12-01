@@ -8,7 +8,7 @@ export { scene, world, camera, renderer, initScene } from "./scene/core.js";
 export { updateCameraPosition } from "./scene/camera.js";
 
 // Map object creation
-export { createMapObjects } from "./scene/map-objects.js";
+export { createMapObjects, updateStructureHUD } from "./scene/map-objects.js";
 
 // Player mesh and HUD
 export { makePlayerMesh, updatePlayerHUD } from "./scene/player.js";
@@ -17,6 +17,7 @@ export { makePlayerMesh, updatePlayerHUD } from "./scene/player.js";
 export {
 	getGroundIntersection,
 	getPlayerIntersection,
+	getStructureIntersection,
 } from "./scene/raycasting.js";
 
 // Scene utilities

@@ -34,7 +34,8 @@ const characters = {
 			speed: [1, 1.1, 1.2, 1.3, 1.4],
 			hitDistance: [5, 6, 7, 8, 9],
 			autoAttackDamage: [40, 50, 70, 80, 90], // [skill lv1, lv2, lv3, lv4, lv5 ]
-			autoAttackCd: [0.5, 0.3, 0.1, 0.1, 0.1],
+			autoAttackCd: [2, 1.8, 1.6, 1.4, 1.3],
+
 			skill1Id: 0,
 			skill2Id: 1,
 			skill3Id: 2,
@@ -44,8 +45,8 @@ const characters = {
 			mana: [80, 100, 120, 140, 160],
 			HealthRegeneration: [1.5, 2, 2.5, 3, 3.5],
 			manaRegeneration: [1, 1.5, 2, 2.5, 3],
-			physiqueArmor: [2, 2.5, 3, 3.5, 4],
-			magicArmor: [1.5, 2, 2.5, 3, 3.5],
+			physiqueArmor: [20, 25, 30, 35, 40],
+			magicArmor: [20, 25, 30, 35, 40],
 			scale: 1,
 			svg: "moumba.svg",
 			png: "Moumba.jpg",
@@ -54,10 +55,10 @@ const characters = {
 		Wiko: {
 			name: "Wiko",
 			type: "dps",
-			speed: [1, 1.1, 1.2, 1.3, 1.4],
+			speed: [30, 35, 40, 45, 50],
 			hitDistance: [5, 6, 7, 8, 9],
 			autoAttackDamage: [40, 50, 70, 80, 90],
-			autoAttackCd: [2, 1.8, 1.6, 1.4, 1.3],
+			autoAttackCd: [0.8, 0.7, 0.6, 0.5, 0.4],
 			skill1Id: 0,
 			skill2Id: 1,
 			skill3Id: 2,
@@ -65,7 +66,7 @@ const characters = {
 
 			health: [90, 110, 130, 150, 170],
 			mana: [110, 130, 150, 170, 190],
-			HealthRegeneration: [1.1, 1.2, 1.3, 1.4, 1.5],
+			HealthRegeneration: [10.1, 10.2, 10.3, 10.4, 10.5],
 			manaRegeneration: [1, 1.5, 2, 2.5, 3],
 			physiqueArmor: [1.2, 1.4, 1.6, 1.8, 2],
 			magicArmor: [1.2, 1.4, 1.6, 1.8, 2],

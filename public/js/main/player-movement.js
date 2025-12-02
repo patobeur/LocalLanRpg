@@ -53,7 +53,12 @@ export function updatePlayerMovement(dt) {
             const dist = Math.hypot(dx, dz);
 
             const myChar = charactersData[me.character] || charactersData["Moumba"];
-            const range = myChar ? myChar.hitDistance : 5;
+            const levelIndex = Math.max(0, (me.level || 1) - 1);
+            const range = myChar
+                ? (Array.isArray(myChar.hitDistance)
+                    ? myChar.hitDistance[Math.min(levelIndex, myChar.hitDistance.length - 1)]
+                    : myChar.hitDistance)
+                : 5;
             const cdSeconds = myChar && myChar.autoAttackCd ? myChar.autoAttackCd[0] : 1;
             const cdMs = cdSeconds * 1000;
 

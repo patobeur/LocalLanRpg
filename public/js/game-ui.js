@@ -125,8 +125,16 @@ export function initGameUI(onModeChange) {
                 const levelIndex = Math.max(0, level - 1);
 
                 if (statType) statType.textContent = charStats.type || "-";
-                if (statSpeed) statSpeed.textContent = charStats.speed || "-";
-                if (statRange) statRange.textContent = charStats.hitDistance || "-";
+                if (statSpeed) {
+                    statSpeed.textContent = Array.isArray(charStats.speed)
+                        ? charStats.speed[Math.min(levelIndex, charStats.speed.length - 1)]
+                        : charStats.speed || "-";
+                }
+                if (statRange) {
+                    statRange.textContent = Array.isArray(charStats.hitDistance)
+                        ? charStats.hitDistance[Math.min(levelIndex, charStats.hitDistance.length - 1)]
+                        : charStats.hitDistance || "-";
+                }
 
                 // Arrays: autoAttackDamage, autoAttackCd, HealthRegeneration, manaRegeneration, physiqueArmor, magicArmor
                 if (statAtk) {

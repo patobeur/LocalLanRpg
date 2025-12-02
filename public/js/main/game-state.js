@@ -103,3 +103,15 @@ export function updatePlayerPosition(dx, dy, dz, dRotY) {
         playerTransform.rotY += dRotY;
     }
 }
+
+// UI State
+export let gameUI = null;
+export let playerColor = null;
+
+export function setGameUI(ui) {
+    gameUI = ui;
+}
+
+export function setPlayerColor(color) {
+    playerColor = color;
+}

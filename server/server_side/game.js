@@ -50,6 +50,7 @@ class Game {
         const spawnX = spawn.x + Math.cos(angle) * dist;
         const spawnZ = spawn.y + Math.sin(angle) * dist; // Config y is Z in 3D
 
+        const levelIndex = Math.max(0, (msg.level || 1) - 1);
         const player = {
             id,
             name: (msg.name || `Joueur ${id}`).slice(0, 16),
@@ -59,10 +60,10 @@ class Game {
             y: 0.5,
             z: spawnZ,
             rotY: 0,
-            health: charStats.health,
-            maxHealth: charStats.health,
-            mana: charStats.mana,
-            maxMana: charStats.mana,
+            health: Array.isArray(charStats.health) ? charStats.health[Math.min(levelIndex, charStats.health.length - 1)] : charStats.health,
+            maxHealth: Array.isArray(charStats.health) ? charStats.health[Math.min(levelIndex, charStats.health.length - 1)] : charStats.health,
+            mana: Array.isArray(charStats.mana) ? charStats.mana[Math.min(levelIndex, charStats.mana.length - 1)] : charStats.mana,
+            maxMana: Array.isArray(charStats.mana) ? charStats.mana[Math.min(levelIndex, charStats.mana.length - 1)] : charStats.mana,
             faction: faction,
             level: msg.level || 1,
             xp: 0,
@@ -165,16 +166,25 @@ class Game {
 
             let updated = false;
 
+            // Get level-based stat index
+            const levelIndex = Math.max(0, (p.level || 1) - 1);
+
             // Health regeneration
             if (p.health < p.maxHealth) {
-                p.health += charStats.HealthRegeneration * dt;
+                const regenRate = Array.isArray(charStats.HealthRegeneration)
+                    ? charStats.HealthRegeneration[Math.min(levelIndex, charStats.HealthRegeneration.length - 1)]
+                    : charStats.HealthRegeneration;
+                p.health += regenRate * dt;
                 if (p.health > p.maxHealth) p.health = p.maxHealth;
                 updated = true;
             }
 
             // Mana regeneration
             if (p.mana < p.maxMana) {
-                p.mana += charStats.manaRegeneration * dt;
+                const regenRate = Array.isArray(charStats.manaRegeneration)
+                    ? charStats.manaRegeneration[Math.min(levelIndex, charStats.manaRegeneration.length - 1)]
+                    : charStats.manaRegeneration;
+                p.mana += regenRate * dt;
                 if (p.mana > p.maxMana) p.mana = p.maxMana;
                 updated = true;
             }

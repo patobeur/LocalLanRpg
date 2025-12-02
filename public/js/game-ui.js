@@ -122,16 +122,43 @@ export function initGameUI(onModeChange) {
                 const statPhysArmor = document.getElementById("stat-physarmor");
                 const statMagArmor = document.getElementById("stat-magarmor");
 
+                const levelIndex = Math.max(0, level - 1);
+
                 if (statType) statType.textContent = charStats.type || "-";
                 if (statSpeed) statSpeed.textContent = charStats.speed || "-";
                 if (statRange) statRange.textContent = charStats.hitDistance || "-";
-                // autoAttackDamage is array, show current level value
-                if (statAtk) statAtk.textContent = charStats.autoAttackDamage ? charStats.autoAttackDamage[Math.min(level - 1, charStats.autoAttackDamage.length - 1)] : "-";
-                if (statAtkCd) statAtkCd.textContent = charStats.autoAttackCd ? charStats.autoAttackCd[Math.min(level - 1, charStats.autoAttackCd.length - 1)] : "-";
-                if (statHpRegen) statHpRegen.textContent = charStats.HealthRegeneration || "-";
-                if (statMpRegen) statMpRegen.textContent = charStats.manaRegeneration || "-";
-                if (statPhysArmor) statPhysArmor.textContent = charStats.physiqueArmor || "-";
-                if (statMagArmor) statMagArmor.textContent = charStats.magicArmor || "-";
+
+                // Arrays: autoAttackDamage, autoAttackCd, HealthRegeneration, manaRegeneration, physiqueArmor, magicArmor
+                if (statAtk) {
+                    statAtk.textContent = Array.isArray(charStats.autoAttackDamage)
+                        ? charStats.autoAttackDamage[Math.min(levelIndex, charStats.autoAttackDamage.length - 1)]
+                        : charStats.autoAttackDamage || "-";
+                }
+                if (statAtkCd) {
+                    statAtkCd.textContent = Array.isArray(charStats.autoAttackCd)
+                        ? charStats.autoAttackCd[Math.min(levelIndex, charStats.autoAttackCd.length - 1)]
+                        : charStats.autoAttackCd || "-";
+                }
+                if (statHpRegen) {
+                    statHpRegen.textContent = Array.isArray(charStats.HealthRegeneration)
+                        ? charStats.HealthRegeneration[Math.min(levelIndex, charStats.HealthRegeneration.length - 1)]
+                        : charStats.HealthRegeneration || "-";
+                }
+                if (statMpRegen) {
+                    statMpRegen.textContent = Array.isArray(charStats.manaRegeneration)
+                        ? charStats.manaRegeneration[Math.min(levelIndex, charStats.manaRegeneration.length - 1)]
+                        : charStats.manaRegeneration || "-";
+                }
+                if (statPhysArmor) {
+                    statPhysArmor.textContent = Array.isArray(charStats.physiqueArmor)
+                        ? charStats.physiqueArmor[Math.min(levelIndex, charStats.physiqueArmor.length - 1)]
+                        : charStats.physiqueArmor || "-";
+                }
+                if (statMagArmor) {
+                    statMagArmor.textContent = Array.isArray(charStats.magicArmor)
+                        ? charStats.magicArmor[Math.min(levelIndex, charStats.magicArmor.length - 1)]
+                        : charStats.magicArmor || "-";
+                }
             }
         },
         showRespawnTimer: (seconds) => {

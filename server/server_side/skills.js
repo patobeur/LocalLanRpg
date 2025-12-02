@@ -33,8 +33,8 @@ const skills = {
 		areaOfEffect: null,
 	},
 	3: {
-		name: "Self Groupe Heal",
-		type: ["hot", "heal"],
+		name: "Self Heal Area",
+		type: ["hot", "heal", "area"],
 		projectile_speed: null,
 		hitDistance: null,
 		damage: [1, 50, 70, 80, 90], // consider it as heal

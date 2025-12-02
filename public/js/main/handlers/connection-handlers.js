@@ -8,6 +8,7 @@ import {
     charactersData
 } from "../game-state.js";
 import { makePlayerMesh, removePlayerMesh, updatePlayerHUD, world, createMapObjects } from "../../scene.js";
+import { initSkillManager } from "../../skills/skill-manager.js";
 
 export function handleServerShutdown() {
     alert("Le serveur a été arrêté. Retour à l'accueil.");
@@ -18,6 +19,9 @@ export function handleHello(msg) {
     me.id = String(msg.id);
     console.log(`[Game] My player ID is ${me.id}`);
 
+    // Initialize Skills UI
+    initSkillManager();
+
     if (!me.mesh) {
         me.mesh = makePlayerMesh(me.username, me.level, playerColor);
         world.add(me.mesh);
@@ -26,6 +30,7 @@ export function handleHello(msg) {
     const myData = msg.players[me.id];
     if (myData) {
         me.faction = myData.faction; // Store my faction
+        me.character = myData.character; // Store character for skills
         me.health = myData.health || 100;
         me.maxHealth = myData.maxHealth || 100;
         me.mana = myData.mana || 100;

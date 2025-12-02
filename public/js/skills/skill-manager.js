@@ -42,28 +42,32 @@ function useSkill(key) {
     }
 
     // Determine cooldown duration based on key and level
-    // Assuming level 1 for now if me.level is not fully synced or using array index 0
-    // Arrays in characters.js are [lv1, lv2, ...]
+    // charData.skills is now an array of skill objects populated by the API
+    // [skill1, skill2, skill3, ultimate]
+
+    // Map key to skill index
+    const keyMap = {
+        "A": 0,
+        "Z": 1,
+        "E": 2,
+        "R": 3
+    };
+
+    const skillIndex = keyMap[key];
+    if (skillIndex === undefined || !charData.skills || !charData.skills[skillIndex]) {
+        console.error("Skill data not found for key", key);
+        return;
+    }
+
+    const skill = charData.skills[skillIndex];
+
+    // Assuming level 1 for now if me.level is not fully synced
+    // Arrays in skills.js are [lv1, lv2, ...]
     // me.level is 1-based, so index is me.level - 1
     const levelIndex = Math.max(0, (me.level || 1) - 1);
 
-    let cdDuration = 0;
-
-    switch (key) {
-        case "A": // Skill 1
-            cdDuration = charData.skill1Cd[Math.min(levelIndex, charData.skill1Cd.length - 1)];
-            break;
-        case "Z": // Skill 2
-            cdDuration = charData.skill2Cd[Math.min(levelIndex, charData.skill2Cd.length - 1)];
-            break;
-        case "E": // Skill 3
-            cdDuration = charData.skill3Cd[Math.min(levelIndex, charData.skill3Cd.length - 1)];
-            break;
-        case "R": // Ultimate
-            // Note: characters.js has a typo 'ultimatCd'
-            cdDuration = charData.ultimatCd[Math.min(levelIndex, charData.ultimatCd.length - 1)];
-            break;
-    }
+    // Get cooldown from skill data
+    const cdDuration = skill.cd[Math.min(levelIndex, skill.cd.length - 1)];
 
     if (cdDuration) {
         console.log(`Used skill ${key}, cooldown: ${cdDuration}s`);

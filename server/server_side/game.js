@@ -1,4 +1,5 @@
 const characters = require("./characters.js");
+const skills = require("./skills.js");
 const config = require("./config.js");
 const { GAME_CONSTANTS } = require("./config.js");
 const { updateUserLevel } = require("../database.js");

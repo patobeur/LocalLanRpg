@@ -3,6 +3,7 @@
 
 const path = require("path");
 const characters = require("../server_side/characters.js");
+const skills = require("../server_side/skills.js");
 
 /**
  * Setup all HTTP routes for pages
@@ -67,7 +68,21 @@ function setupRoutes(app, requireAuth, roomManager) {
 	});
 	// API Personnages
 	app.get("/api/characters", (req, res) => {
-		res.json(characters);
+		// Enrich character data with skills
+		const enrichedChars = JSON.parse(JSON.stringify(characters)); // Deep copy
+
+		for (const charKey in enrichedChars.chars) {
+			const char = enrichedChars.chars[charKey];
+			char.skills = [];
+
+			// Map skill IDs to skill objects
+			if (char.skill1Id !== undefined && skills[char.skill1Id]) char.skills.push(skills[char.skill1Id]);
+			if (char.skill2Id !== undefined && skills[char.skill2Id]) char.skills.push(skills[char.skill2Id]);
+			if (char.skill3Id !== undefined && skills[char.skill3Id]) char.skills.push(skills[char.skill3Id]);
+			if (char.ultimatId !== undefined && skills[char.ultimatId]) char.skills.push(skills[char.ultimatId]);
+		}
+
+		res.json(enrichedChars);
 	});
 }
 

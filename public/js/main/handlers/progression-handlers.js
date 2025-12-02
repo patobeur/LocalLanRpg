@@ -24,7 +24,8 @@ export function handlePlayerXp(msg) {
                 me.mana,
                 me.maxMana,
                 me.xp,
-                me.maxXp
+                me.maxXp,
+                charactersData[me.character]
             );
         }
         console.log(`[Game] XP updated: ${me.xp}/${me.maxXp} (Level ${msg.level})`);

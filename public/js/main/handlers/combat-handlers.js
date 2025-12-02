@@ -74,7 +74,8 @@ export function handlePlayerHealth(msg) {
                 me.mana,
                 me.maxMana,
                 0,
-                100
+                100,
+                charactersData[me.character]
             );
         }
     } else {
@@ -181,7 +182,8 @@ export function handlePlayerRespawn(msg) {
                 me.mana,
                 me.maxMana,
                 0,
-                100
+                100,
+                charactersData[me.character]
             );
         }
         console.log(`[Game] You respawned!`);

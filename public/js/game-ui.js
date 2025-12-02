@@ -96,7 +96,7 @@ export function initGameUI(onModeChange) {
 
     return {
         toggle: toggleModal,
-        updatePlayerInfo: (name, level, health, maxHealth, mana, maxMana, xp, maxXp) => {
+        updatePlayerInfo: (name, level, health, maxHealth, mana, maxMana, xp, maxXp, charStats = null) => {
             const nameEl = document.getElementById("player-name");
             const levelEl = document.getElementById("player-level");
             const xpBar = document.getElementById("bar-xp");
@@ -109,6 +109,30 @@ export function initGameUI(onModeChange) {
             if (xpBar) xpBar.style.width = `${Math.min(100, Math.max(0, (xp / maxXp) * 100))}%`;
             if (hpBar) hpBar.style.width = `${Math.min(100, Math.max(0, (health / maxHealth) * 100))}%`;
             if (mpBar) mpBar.style.width = `${Math.min(100, Math.max(0, (mana / maxMana) * 100))}%`;
+
+            // Update character stats if provided
+            if (charStats) {
+                const statType = document.getElementById("stat-type");
+                const statSpeed = document.getElementById("stat-speed");
+                const statRange = document.getElementById("stat-range");
+                const statAtk = document.getElementById("stat-atk");
+                const statAtkCd = document.getElementById("stat-atkcd");
+                const statHpRegen = document.getElementById("stat-hpregen");
+                const statMpRegen = document.getElementById("stat-mpregen");
+                const statPhysArmor = document.getElementById("stat-physarmor");
+                const statMagArmor = document.getElementById("stat-magarmor");
+
+                if (statType) statType.textContent = charStats.type || "-";
+                if (statSpeed) statSpeed.textContent = charStats.speed || "-";
+                if (statRange) statRange.textContent = charStats.hitDistance || "-";
+                // autoAttackDamage is array, show current level value
+                if (statAtk) statAtk.textContent = charStats.autoAttackDamage ? charStats.autoAttackDamage[Math.min(level - 1, charStats.autoAttackDamage.length - 1)] : "-";
+                if (statAtkCd) statAtkCd.textContent = charStats.autoAttackCd ? charStats.autoAttackCd[Math.min(level - 1, charStats.autoAttackCd.length - 1)] : "-";
+                if (statHpRegen) statHpRegen.textContent = charStats.HealthRegeneration || "-";
+                if (statMpRegen) statMpRegen.textContent = charStats.manaRegeneration || "-";
+                if (statPhysArmor) statPhysArmor.textContent = charStats.physiqueArmor || "-";
+                if (statMagArmor) statMagArmor.textContent = charStats.magicArmor || "-";
+            }
         },
         showRespawnTimer: (seconds) => {
             let timerEl = document.getElementById("respawn-timer");

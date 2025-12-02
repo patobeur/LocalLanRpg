@@ -34,7 +34,7 @@ const characters = {
 			speed: 1,
 			hitDistance: 5,
 			autoAttackDamage: [40, 50, 70, 80, 90], // [skill lv1, lv2, lv3, lv4, lv5 ]
-			autoAttackCd: [2, 1.8, 1.6, 1.4, 1.3],
+			autoAttackCd: [0.5, 0.3, 0.1, 0.1, 0.1],
 			skill1Id: 0,
 			skill2Id: 1,
 			skill3Id: 2,

@@ -91,7 +91,8 @@ export function handleHello(msg) {
             me.mana,
             me.maxMana,
             0,
-            100
+            100,
+            charactersData[me.character]
         );
     }
 }

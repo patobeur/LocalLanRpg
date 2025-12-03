@@ -265,11 +265,12 @@ function createCharacterCard(char) {
     card.innerHTML = `
 		<h4>${char.name}</h4>
 		<div class="type">${char.type}</div>
+		<p>${char.description_rapide}</p>
 		<div class="stats">
-			<div class="stat-row"><span>❤️ HP:</span> <strong>${char.health}</strong></div>
-			<div class="stat-row"><span>💎 Mana:</span> <strong>${char.mana}</strong></div>
-			<div class="stat-row"><span>⚡ Vitesse:</span> <strong>${char.speed}</strong></div>
-			<div class="stat-row"><span>🗡️ Dégâts:</span> <strong>${char.autoAttackDamage[0]}</strong></div>
+			<div class="stat-row"><span>❤️ HP:</span> <strong>${char.health[0]} - ${char.health[17]}</strong></div>
+			<div class="stat-row"><span>💎 Mana:</span> <strong>${char.mana[0]} - ${char.mana[17]}</strong></div>
+			<div class="stat-row"><span>⚡ Vitesse:</span> <strong>${char.speed[0]} - ${char.speed[17]}</strong></div>
+			<div class="stat-row"><span>🗡️ Dégâts:</span> <strong>${char.autoAttackDamage[0]} - ${char.autoAttackDamage[17]}</strong></div>
 		</div>
 	`;
 

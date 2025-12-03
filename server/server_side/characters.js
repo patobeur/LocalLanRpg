@@ -32,6 +32,7 @@ const characters = {
 		Moumba: {
 			name: "Moumba",
 			type: "tank",
+			description_rapide: "Un tank robuste qui protège ses alliés.",
 			speed: [
 				1, 1.1, 1.2, 1.3, 1.4, 1.4, 1.4, 1.4, 1.4, 1.4, 1.4, 1.4, 1.4, 1.4,
 				1.4, 1.4, 1.4, 1.4,
@@ -83,6 +84,7 @@ const characters = {
 		Wiko: {
 			name: "Wiko",
 			type: "dps",
+			description_rapide: "Un dps à distance qui inflige de lourds dégâts.",
 			speed: [
 				1, 1.1, 1.2, 1.3, 1.4, 1.4, 1.4, 1.4, 1.4, 1.4, 1.4, 1.4, 1.4, 1.4,
 				1.4, 1.4, 1.4, 1.4,
@@ -134,6 +136,7 @@ const characters = {
 		Squazzzza: {
 			name: "Squazzzza",
 			type: "support",
+			description_rapide: "Un support qui entrave les ennemis et aide ses alliés.",
 			speed: [
 				1, 1.1, 1.2, 1.3, 1.4, 1.4, 1.4, 1.4, 1.4, 1.4, 1.4, 1.4, 1.4, 1.4,
 				1.4, 1.4, 1.4, 1.4,
@@ -185,6 +188,7 @@ const characters = {
 		Gromp: {
 			name: "Gromp",
 			type: "tank",
+			description_rapide: "Un tank effrayant qui fonce dans le tas.",
 			speed: [
 				1, 1.1, 1.2, 1.3, 1.4, 1.4, 1.4, 1.4, 1.4, 1.4, 1.4, 1.4, 1.4, 1.4,
 				1.4, 1.4, 1.4, 1.4,
@@ -236,6 +240,7 @@ const characters = {
 		Zephyr: {
 			name: "Zephyr",
 			type: "speedster",
+			description_rapide: "Un speedster agile qui frappe vite et fort.",
 			speed: [
 				1, 1.1, 1.2, 1.3, 1.4, 1.4, 1.4, 1.4, 1.4, 1.4, 1.4, 1.4, 1.4, 1.4,
 				1.4, 1.4, 1.4, 1.4,
@@ -287,6 +292,7 @@ const characters = {
 		Ignis: {
 			name: "Ignis",
 			type: "mage",
+			description_rapide: "Un mage puissant qui contrôle le feu.",
 			speed: [
 				1, 1.1, 1.2, 1.3, 1.4, 1.4, 1.4, 1.4, 1.4, 1.4, 1.4, 1.4, 1.4, 1.4,
 				1.4, 1.4, 1.4, 1.4,
@@ -338,6 +344,7 @@ const characters = {
 		Flora: {
 			name: "Flora",
 			type: "healer",
+			description_rapide: "Une soigneuse qui utilise le pouvoir de la nature.",
 			speed: [
 				1, 1.1, 1.2, 1.3, 1.4, 1.4, 1.4, 1.4, 1.4, 1.4, 1.4, 1.4, 1.4, 1.4,
 				1.4, 1.4, 1.4, 1.4,
@@ -389,6 +396,7 @@ const characters = {
 		Shadow: {
 			name: "Shadow",
 			type: "assassin",
+			description_rapide: "Un assassin furtif qui frappe depuis l'ombre.",
 			speed: [
 				1, 1.1, 1.2, 1.3, 1.4, 1.4, 1.4, 1.4, 1.4, 1.4, 1.4, 1.4, 1.4, 1.4,
 				1.4, 1.4, 1.4, 1.4,
@@ -440,6 +448,7 @@ const characters = {
 		Adventurer: {
 			name: "Adventurer",
 			type: "Lambda",
+			description_rapide: "Un aventurier polyvalent prêt à tout.",
 			speed: [
 				1, 1.1, 1.2, 1.3, 1.4, 1.4, 1.4, 1.4, 1.4, 1.4, 1.4, 1.4, 1.4, 1.4,
 				1.4, 1.4, 1.4, 1.4,
@@ -491,6 +500,7 @@ const characters = {
 		ChefRipley: {
 			name: "ChefRipley",
 			type: "Lambda",
+			description_rapide: "Un chef cuisinier qui se bat avec ses ustensiles.",
 			speed: [
 				1, 1.1, 1.2, 1.3, 1.4, 1.4, 1.4, 1.4, 1.4, 1.4, 1.4, 1.4, 1.4, 1.4,
 				1.4, 1.4, 1.4, 1.4,

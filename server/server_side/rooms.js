@@ -183,6 +183,9 @@ class RoomManager {
         const Game = require('./game.js');
         room.game = new Game();
 
+        // Start the game (initializes minion spawning, etc.)
+        room.game.startGame();
+
         // DON'T pre-add players here - they will be added via WebSocket "join" message
         // This prevents duplicate players
 

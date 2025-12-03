@@ -26,6 +26,12 @@ import {
 import {
     handlePlayerState
 } from "./handlers/movement-handlers.js";
+import {
+    handleMinionSpawn,
+    handleMinionMove,
+    handleMinionHealth,
+    handleMinionDeath
+} from "./handlers/minion-handlers.js";
 
 // Re-export setters for compatibility
 export { setGameUI, setPlayerColor };
@@ -54,6 +60,10 @@ export function handleMessage(msg) {
         case "shoot":
             handleShoot(msg);
             break;
+        case "projectile":
+            // Handle both player and minion projectiles
+            handleShoot(msg);
+            break;
         case "player-health":
             handlePlayerHealth(msg);
             break;
@@ -77,6 +87,18 @@ export function handleMessage(msg) {
             break;
         case "structure-death":
             handleStructureDeath(msg);
+            break;
+        case "minion-spawn":
+            handleMinionSpawn(msg);
+            break;
+        case "minion-move":
+            handleMinionMove(msg);
+            break;
+        case "minion-health":
+            handleMinionHealth(msg);
+            break;
+        case "minion-death":
+            handleMinionDeath(msg);
             break;
         default:
             // Unknown message type

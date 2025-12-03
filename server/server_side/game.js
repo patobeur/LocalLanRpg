@@ -3,6 +3,7 @@ const skills = require("./skills.js");
 const config = require("./config.js");
 const { GAME_CONSTANTS } = require("./config.js");
 const { updateUserLevel } = require("../database.js");
+const MinionManager = require("../minions/minion-manager.js");
 
 class Game {
     constructor() {
@@ -11,6 +12,9 @@ class Game {
         this.nextId = 1;
         this.PROJECTILE_SPEED = GAME_CONSTANTS.PROJECTILE_SPEED;
         this.PROJECTILE_RANGE = GAME_CONSTANTS.PROJECTILE_RANGE;
+
+        // Initialize minion manager
+        this.minionManager = new MinionManager();
 
         // Initialize structures from config
         this.structures = {};
@@ -27,6 +31,11 @@ class Game {
 
     generateId() {
         return String(this.nextId++);
+    }
+
+    startGame() {
+        this.minionManager.startGame();
+        console.log("[Game] Game started, minion spawning initialized");
     }
 
     addPlayer(id, msg) {
@@ -202,6 +211,10 @@ class Game {
             }
         }
 
+        // Update Minions
+        const minionEvents = this.minionManager.update(dt, this.players, this.structures);
+        events.push(...minionEvents);
+
         // Death and Respawn System
         const now = Date.now();
         for (const p of this.players.values()) {
@@ -303,11 +316,20 @@ class Game {
             p.z += p.vz * move;
             p.distTraveled += move;
 
-            const shooter = this.players.get(p.shooterId);
+            // Check if shooter is a player or minion
+            let shooter = this.players.get(p.shooterId);
+            let shooterIsMinion = false;
+
             if (!shooter) {
-                // Shooter might have disconnected, remove projectile to be safe
-                this.projectiles.splice(i, 1);
-                continue;
+                // Check if shooter is a minion
+                shooter = this.minionManager.getMinionById(p.shooterId);
+                if (shooter) {
+                    shooterIsMinion = true;
+                } else {
+                    // Shooter doesn't exist anymore, remove projectile
+                    this.projectiles.splice(i, 1);
+                    continue;
+                }
             }
 
             // Collision Detection
@@ -323,9 +345,16 @@ class Game {
                 if (Math.hypot(dx, dz) < 0.5) {
                     hit = true;
 
-                    // Apply Damage
-                    const charStats = characters.chars[shooter.character];
-                    const damage = charStats ? charStats.autoAttackDamage[0] : 10;
+                    // Apply Damage based on shooter type
+                    let damage = 10;
+                    if (shooterIsMinion) {
+                        const minionsData = require("./minions.js");
+                        const minionStats = minionsData.chars[shooter.name];
+                        damage = minionStats ? minionStats.autoAttackDamage[0] : 10;
+                    } else {
+                        const charStats = characters.chars[shooter.character];
+                        damage = charStats ? charStats.autoAttackDamage[0] : 10;
+                    }
 
                     player.health -= damage;
                     player.lastAttackerId = p.shooterId; // Track attacker
@@ -334,7 +363,9 @@ class Game {
                     events.push({
                         type: "hit",
                         shooterId: p.shooterId,
+                        shooterType: shooterIsMinion ? "minion" : "player",
                         targetId: id,
+                        targetType: "player",
                         damage,
                         targetHealth: player.health,
                         targetMaxHealth: player.maxHealth
@@ -343,7 +374,54 @@ class Game {
                 }
             }
 
-            // 2. Check Structure Collision (if not hit player)
+            // 2. Check Minion Collision (if not hit player)
+            if (!hit) {
+                const minions = this.minionManager.getMinions();
+                for (const minion of minions) {
+                    if (minion.id === p.shooterId || minion.isDead || minion.faction === shooter.faction) continue;
+
+                    const dx = p.x - minion.x;
+                    const dz = p.z - minion.z;
+                    if (Math.hypot(dx, dz) < 0.5) {
+                        hit = true;
+
+                        // Apply Damage based on shooter type
+                        let damage = 10;
+                        if (shooterIsMinion) {
+                            const minionsData = require("./minions.js");
+                            const minionStats = minionsData.chars[shooter.name];
+                            damage = minionStats ? minionStats.autoAttackDamage[0] : 10;
+                        } else {
+                            const charStats = characters.chars[shooter.character];
+                            damage = charStats ? charStats.autoAttackDamage[0] : 10;
+                        }
+
+                        const damageResult = this.minionManager.damageMinion(minion.id, damage, p.shooterId);
+
+                        if (damageResult) {
+                            events.push({
+                                type: "minion-hit",
+                                shooterId: p.shooterId,
+                                shooterType: shooterIsMinion ? "minion" : "player",
+                                targetId: minion.id,
+                                targetType: "minion",
+                                damage,
+                                targetHealth: damageResult.health,
+                                targetMaxHealth: damageResult.maxHealth,
+                                isDead: damageResult.isDead
+                            });
+
+                            // If minion died, clean up its projectiles
+                            if (damageResult.isDead) {
+                                this.minionManager.cleanupMinionProjectiles(minion.id, this.projectiles);
+                            }
+                        }
+                        break;
+                    }
+                }
+            }
+
+            // 3. Check Structure Collision (if not hit player or minion)
             if (!hit) {
                 for (const [key, str] of Object.entries(this.structures)) {
                     if (str.isDead) continue;
@@ -364,16 +442,23 @@ class Game {
                     if (Math.hypot(dx, dz) < radius) {
                         hit = true;
 
-                        // Apply Damage
-                        const charStats = characters.chars[shooter.character];
-                        const damage = charStats ? charStats.autoAttackDamage[0] : 10;
+                        // Apply Damage based on shooter type
+                        let damage = 10;
+                        if (shooterIsMinion) {
+                            const minionsData = require("./minions.js");
+                            const minionStats = minionsData.chars[shooter.name];
+                            damage = minionStats ? minionStats.autoAttackDamage[0] : 10;
+                        } else {
+                            const charStats = characters.chars[shooter.character];
+                            damage = charStats ? charStats.autoAttackDamage[0] : 10;
+                        }
 
                         str.hp -= damage;
                         if (str.hp <= 0) {
                             str.hp = 0;
                             if (!str.isDead) {
                                 str.isDead = true;
-                                console.log(`[Game] Structure ${key} destroyed by ${shooter.name}!`);
+                                console.log(`[Game] Structure ${key} destroyed!`);
                                 events.push({
                                     type: "structure-death",
                                     structureId: key,
@@ -388,7 +473,8 @@ class Game {
                             damage,
                             hp: str.hp,
                             maxHp: str.maxHp,
-                            shooterId: shooter.id
+                            shooterId: shooter.id,
+                            shooterType: shooterIsMinion ? "minion" : "player"
                         });
                         break;
                     }

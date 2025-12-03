@@ -8,6 +8,10 @@ const GAME_CONSTANTS = {
 	PLAYER_COLLISION_RADIUS: 0.5,
 	STRUCTURE_DEFAULT_COLLISION_RADIUS: 4,
 	RESPAWN_TIME_MS: 5000,
+	MINION_SPAWN_INTERVAL: 30, // seconds between waves
+	MINION_FIRST_SPAWN_DELAY: 10, // seconds until first spawn
+	MINION_WAVE_SIZE: 3, // minions per wave per team
+	MINION_COLLISION_RADIUS: 0.5,
 };
 
 // Map Configuration

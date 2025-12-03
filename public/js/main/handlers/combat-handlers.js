@@ -10,6 +10,7 @@ import { shootProjectile, projectiles, removeProjectile } from "../projectiles.j
 import { clearAttackTarget, getAttackTarget } from "../../input.js";
 import { updatePlayerHUD } from "../../scene.js";
 import { GAME_CONSTANTS } from "../../config/constants.js";
+import { getMinionMesh } from "./minion-handlers.js";
 
 let respawnInterval = null;
 
@@ -21,10 +22,15 @@ export function handleProjectileHit(msg) {
     const targetId = String(msg.targetId);
     const shooterId = String(msg.shooterId);
 
-    // Find target - could be a player or structure
+    // Find target - could be a player, minion, or structure
     let target = others.get(targetId) || (targetId === me.id ? me.mesh : null);
 
-    // If not a player, check if it's a structure
+    // If not a player, check if it's a minion
+    if (!target) {
+        target = getMinionMesh(targetId);
+    }
+
+    // If not a minion, check if it's a structure
     if (!target) {
         target = structures.get(targetId);
     }

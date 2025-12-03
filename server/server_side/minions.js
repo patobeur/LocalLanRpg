@@ -160,4 +160,4 @@ const minions = {
 	},
 };
 
-module.exports = characters;
+module.exports = minions;

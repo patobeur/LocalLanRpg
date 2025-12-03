@@ -109,6 +109,60 @@ function setupGameLoop(roomManager, broadcastToRoom) {
                             structureId: e.structureId,
                             killerId: e.killerId
                         });
+                    } else if (e.type === "minion-spawn") {
+                        // Broadcast minion spawn to all clients
+                        broadcastToRoom(room.id, {
+                            type: "minion-spawn",
+                            minion: e.minion
+                        });
+                    } else if (e.type === "minion-death") {
+                        // Broadcast minion death to all clients
+                        broadcastToRoom(room.id, {
+                            type: "minion-death",
+                            minionId: e.minionId
+                        });
+                    } else if (e.type === "minion-move") {
+                        // Broadcast minion movement (throttled by minion manager)
+                        broadcastToRoom(room.id, {
+                            type: "minion-move",
+                            minionId: e.minionId,
+                            x: e.x,
+                            y: e.y,
+                            z: e.z,
+                            rotY: e.rotY
+                        });
+                    } else if (e.type === "minion-attack") {
+                        // Minion fired a projectile
+                        room.game.addProjectile(e.minionId, e.x, e.y, e.z, e.angle);
+
+                        // Broadcast projectile spawn to all clients
+                        broadcastToRoom(room.id, {
+                            type: "projectile",
+                            shooterId: e.minionId,
+                            shooterType: "minion",
+                            x: e.x,
+                            y: e.y,
+                            z: e.z,
+                            angle: e.angle
+                        });
+                    } else if (e.type === "minion-hit") {
+                        // Broadcast minion hit event
+                        broadcastToRoom(room.id, {
+                            type: "minion-health",
+                            minionId: e.targetId,
+                            health: e.targetHealth,
+                            maxHealth: e.targetMaxHealth
+                        });
+
+                        broadcastToRoom(room.id, {
+                            type: "projectile-hit",
+                            shooterId: e.shooterId,
+                            targetId: e.targetId
+                        });
+
+                        if (e.isDead) {
+                            console.log(`[Game Room ${room.id}] Minion ${e.targetId} killed by ${e.shooterType} ${e.shooterId}`);
+                        }
                     }
                 });
             }

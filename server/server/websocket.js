@@ -127,6 +127,7 @@ function setupWebSocket(server, roomManager) {
                         type: "hello",
                         id: msg.playerId,
                         players: room.game.getPlayers(),
+                        minions: room.game.minionManager.getMinions(),
                         config: {
                             locations: config.locations,
                             structures: room.game.getStructures(),

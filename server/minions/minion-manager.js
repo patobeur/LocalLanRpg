@@ -13,9 +13,9 @@ class MinionManager {
         this.lastSpawnTime = 0;
 
         // Configuration
-        this.FIRST_SPAWN_DELAY = 10; // seconds
-        this.SPAWN_INTERVAL = 30; // seconds
-        this.WAVE_SIZE = 3; // minions per wave
+        this.FIRST_SPAWN_DELAY = config.constants.MINION_FIRST_SPAWN_DELAY || 10;
+        this.SPAWN_INTERVAL = config.constants.MINION_SPAWN_INTERVAL || 30;
+        this.WAVE_SIZE = config.constants.MINION_WAVE_SIZE || 3;
     }
 
     /**
@@ -129,12 +129,31 @@ class MinionManager {
         for (let i = 0; i < count; i++) {
             const minionId = `minion_${this.nextMinionId++}`;
 
-            // Random position within spawn zone
-            const radius = (spawnLocation.w || 2) / 2;
-            const angle = Math.random() * Math.PI * 2;
-            const dist = Math.random() * radius;
-            const spawnX = spawnLocation.x + Math.cos(angle) * dist;
-            const spawnZ = spawnLocation.y + Math.sin(angle) * dist;
+            // Calculate spawn position based on formation
+            // First minion at center, subsequent ones behind
+            const spawnCenter = { x: spawnLocation.x, z: spawnLocation.y };
+
+            // Determine "forward" direction (towards enemy base)
+            // Team A (Blue) moves from negative to positive (approx 1, 1)
+            // Team B (Red) moves from positive to negative (approx -1, -1)
+            const dirX = faction === "blue" ? 1 : -1;
+            const dirZ = faction === "blue" ? 1 : -1;
+
+            // Normalize direction (approximate is fine for this)
+            const len = Math.hypot(dirX, dirZ);
+            const normDirX = dirX / len;
+            const normDirZ = dirZ / len;
+
+            // "Behind" vector is opposite of forward
+            const backX = -normDirX;
+            const backZ = -normDirZ;
+
+            // Spacing between minions
+            const spacing = 1.5;
+
+            // Calculate position: Center + (index * spacing * backwardVector)
+            const spawnX = spawnCenter.x + (i * spacing * backX);
+            const spawnZ = spawnCenter.z + (i * spacing * backZ);
 
             const level = 1;
             const levelIndex = 0;

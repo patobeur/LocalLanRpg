@@ -34,8 +34,10 @@ class MinionAI {
             ? minionStats.hitDistance[Math.min(levelIndex, minionStats.hitDistance.length - 1)]
             : minionStats.hitDistance;
 
+        const detectionRange = minionStats.detectionRange || 20;
+
         // Find or validate current target
-        const targetInfo = this.findTarget(minion, allMinions, players, structures, hitDistance);
+        const targetInfo = this.findTarget(minion, allMinions, players, structures, hitDistance, detectionRange);
 
         if (targetInfo.target) {
             minion.targetId = targetInfo.targetId;
@@ -97,7 +99,7 @@ class MinionAI {
      * Find the best target for the minion
      * @returns {Object} - { target, targetId, targetType, distance } or { target: null }
      */
-    static findTarget(minion, allMinions, players, structures, hitDistance) {
+    static findTarget(minion, allMinions, players, structures, hitDistance, detectionRange) {
         let closestTarget = null;
         let closestDistance = Infinity;
         let closestId = null;
@@ -108,8 +110,8 @@ class MinionAI {
             const currentTarget = this.getTargetById(minion.targetId, minion.targetType, allMinions, players, structures);
             if (currentTarget && !currentTarget.isDead && currentTarget.health > 0) {
                 const dist = this.getDistance(minion, currentTarget);
-                // Keep current target if still in extended range (hitDistance * 1.5)
-                if (dist <= hitDistance * 1.5) {
+                // Keep current target if still in detection range (plus a small buffer to prevent rapid switching)
+                if (dist <= detectionRange * 1.2) {
                     return {
                         target: currentTarget,
                         targetId: minion.targetId,
@@ -125,7 +127,7 @@ class MinionAI {
             if (player.faction === minion.faction || player.isDead) continue;
 
             const dist = this.getDistance(minion, player);
-            if (dist <= hitDistance && dist < closestDistance) {
+            if (dist <= detectionRange && dist < closestDistance) {
                 closestDistance = dist;
                 closestTarget = player;
                 closestId = playerId;
@@ -138,7 +140,7 @@ class MinionAI {
             if (otherMinion.id === minion.id || otherMinion.faction === minion.faction || otherMinion.isDead) continue;
 
             const dist = this.getDistance(minion, otherMinion);
-            if (dist <= hitDistance && dist < closestDistance) {
+            if (dist <= detectionRange && dist < closestDistance) {
                 closestDistance = dist;
                 closestTarget = otherMinion;
                 closestId = otherMinion.id;
@@ -197,7 +199,7 @@ class MinionAI {
             let vz = (dz / distance) * moveDistance;
 
             // Apply collision avoidance with other minions
-            const avoidanceForce = this.calculateAvoidanceForce(minion, allMinions);
+            const avoidanceForce = this.calculateAvoidanceForce(minion, allMinions, { x: dx / distance, z: dz / distance });
             vx += avoidanceForce.x;
             vz += avoidanceForce.z;
 
@@ -210,10 +212,12 @@ class MinionAI {
 
     /**
      * Calculate avoidance force to prevent minion overlap
+     * Adds tangential force to help go around obstacles
      */
-    static calculateAvoidanceForce(minion, allMinions) {
-        const COLLISION_RADIUS = GAME_CONSTANTS.PLAYER_COLLISION_RADIUS || 0.5;
-        const AVOIDANCE_STRENGTH = 0.3;
+    static calculateAvoidanceForce(minion, allMinions, desiredDir) {
+        const COLLISION_RADIUS = GAME_CONSTANTS.MINION_COLLISION_RADIUS || 0.5;
+        const AVOIDANCE_STRENGTH = 0.1; // Increased strength
+        const TANGENTIAL_STRENGTH = 0.1; // Force to go around
 
         let forceX = 0;
         let forceZ = 0;
@@ -226,10 +230,34 @@ class MinionAI {
             const distance = Math.hypot(dx, dz);
 
             // If too close, apply separation force
-            if (distance < COLLISION_RADIUS * 2 && distance > 0) {
+            if (distance < COLLISION_RADIUS * 1.1 && distance > 0) {
                 const force = AVOIDANCE_STRENGTH / distance;
+
+                // Repulsion (push away)
                 forceX += (dx / distance) * force;
                 forceZ += (dz / distance) * force;
+
+                // Tangential force (go around)
+                // If the other minion is roughly in front of us
+                // Dot product of desired direction and vector to other minion
+                const toOtherX = -dx;
+                const toOtherZ = -dz;
+                const dot = desiredDir.x * toOtherX + desiredDir.z * toOtherZ;
+
+                if (dot > 0) {
+                    // It's in front. Push sideways.
+                    // Cross product logic in 2D: (-z, x) is 90 degrees rotation
+                    // We want to push to the side that is easier
+
+                    // Simple approach: always push right relative to the obstacle
+                    // Or push away from the center line
+
+                    const tanX = -dz / distance;
+                    const tanZ = dx / distance;
+
+                    forceX += tanX * TANGENTIAL_STRENGTH;
+                    forceZ += tanZ * TANGENTIAL_STRENGTH;
+                }
             }
         }
 

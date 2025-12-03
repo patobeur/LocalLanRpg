@@ -5,7 +5,7 @@ import { world } from "../../scene.js";
 import { makeMinionMesh, updateMinionHealth } from "../../scene/minion.js";
 
 // Store minion meshes
-const minions = new Map();
+export const minions = new Map();
 
 /**
  * Handle minion spawn event

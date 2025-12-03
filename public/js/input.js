@@ -1,5 +1,6 @@
-import { getGroundIntersection, getPlayerIntersection, getStructureIntersection } from "./scene.js";
+import { getGroundIntersection, getPlayerIntersection, getStructureIntersection, getMinionIntersection } from "./scene.js";
 import { me, structures } from "./main/game-state.js";
+import { minions } from "./main/handlers/minion-handlers.js";
 
 const keys = new Set();
 let mode = "keyboard"; // 'keyboard' | 'mouse'
@@ -57,6 +58,20 @@ export function initInput() {
                         return;
                     } else {
                         console.log("[Input] Friendly structure clicked, ignoring.");
+                    }
+                }
+            }
+
+            // Check minion click
+            if (minions) {
+                const minionHit = getMinionIntersection(e.clientX, e.clientY, minions);
+                if (minionHit) {
+                    const targetMesh = minions.get(minionHit.id);
+                    if (targetMesh && targetMesh.userData.faction !== me.faction) {
+                        console.log("[Input] Enemy minion targeted:", minionHit.id);
+                        attackTarget = minionHit.id;
+                        target = null;
+                        return;
                     }
                 }
             }

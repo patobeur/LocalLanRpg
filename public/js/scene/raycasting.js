@@ -71,3 +71,25 @@ export function getStructureIntersection(clientX, clientY, structuresMap) {
     }
     return null;
 }
+
+export function getMinionIntersection(clientX, clientY, minionsMap) {
+    mouse.x = (clientX / window.innerWidth) * 2 - 1;
+    mouse.y = -(clientY / window.innerHeight) * 2 + 1;
+    raycaster.setFromCamera(mouse, camera);
+
+    const meshes = Array.from(minionsMap.values());
+    const intersects = raycaster.intersectObjects(meshes, true);
+
+    if (intersects.length > 0) {
+        let obj = intersects[0].object;
+        while (obj.parent && obj.parent !== world) {
+            obj = obj.parent;
+        }
+        for (const [id, mesh] of minionsMap.entries()) {
+            if (mesh === obj) {
+                return { id, point: intersects[0].point };
+            }
+        }
+    }
+    return null;
+}

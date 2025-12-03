@@ -17,6 +17,7 @@ const minions = {
 				1.4, 1.4, 1.4, 1.4,
 			], // [skill lv1, lv2, ..., lv18 ]
 
+			detectionRange: 8,
 			hitDistance: [2, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4],
 			autoAttackDamage: [
 				40, 50, 70, 80, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90,
@@ -54,6 +55,7 @@ const minions = {
 				1.4, 1.4, 1.4, 1.4,
 			], // [skill lv1, lv2, ..., lv18 ]
 
+			detectionRange: 8,
 			hitDistance: [2, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4],
 			autoAttackDamage: [
 				40, 50, 70, 80, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90,
@@ -91,6 +93,7 @@ const minions = {
 				1.4, 1.4, 1.4, 1.4,
 			], // [skill lv1, lv2, ..., lv18 ]
 
+			detectionRange: 8,
 			hitDistance: [5, 6, 7, 8, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9],
 			autoAttackDamage: [
 				40, 50, 70, 80, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90,
@@ -128,6 +131,8 @@ const minions = {
 				1.4, 1.4, 1.4, 1.4,
 			], // [skill lv1, lv2, ..., lv18 ]
 
+
+			detectionRange: 8,
 			hitDistance: [5, 6, 7, 8, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9],
 			autoAttackDamage: [
 				40, 50, 70, 80, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90,

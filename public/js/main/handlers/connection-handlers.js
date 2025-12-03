@@ -9,6 +9,7 @@ import {
 } from "../game-state.js";
 import { makePlayerMesh, removePlayerMesh, updatePlayerHUD, world, createMapObjects } from "../../scene.js";
 import { initSkillManager } from "../../skills/skill-manager.js";
+import { handleMinionSpawn } from "./minion-handlers.js";
 
 export function handleServerShutdown() {
     alert("Le serveur a été arrêté. Retour à l'accueil.");
@@ -53,6 +54,13 @@ export function handleHello(msg) {
 
     if (msg.config) {
         createMapObjects(msg.config);
+    }
+
+    // Spawn existing minions
+    if (msg.minions) {
+        for (const minion of msg.minions) {
+            handleMinionSpawn({ minion: minion });
+        }
     }
 
     // Add other players

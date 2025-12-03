@@ -11,6 +11,7 @@ import {
 } from "../input.js";
 import { me, others, structures, playerTransform, charactersData, GAME_CONSTANTS } from "./game-state.js";
 import { shootProjectile } from "./projectiles.js";
+import { minions } from "./handlers/minion-handlers.js";
 
 /**
  * Calculate player movement and auto-attack
@@ -30,7 +31,7 @@ export function updatePlayerMovement(dt) {
     // Auto Attack Logic
     const attackId = String(getAttackTarget());
 
-    if (attackId && (others.has(attackId) || structures.has(attackId))) {
+    if (attackId && (others.has(attackId) || structures.has(attackId) || minions.has(attackId))) {
         // Check if we should break attack due to keyboard movement
         if (getMovementMode() === "keyboard") {
             const d = getMoveDir();
@@ -46,6 +47,7 @@ export function updatePlayerMovement(dt) {
     if (currentAttackId && !attacking) {
         let targetMesh = others.get(currentAttackId);
         if (!targetMesh) targetMesh = structures.get(currentAttackId);
+        if (!targetMesh) targetMesh = minions.get(currentAttackId);
 
         if (targetMesh) {
             const dx = targetMesh.position.x - playerTransform.x;

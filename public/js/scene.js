@@ -18,6 +18,7 @@ export {
 	getGroundIntersection,
 	getPlayerIntersection,
 	getStructureIntersection,
+	getMinionIntersection,
 } from "./scene/raycasting.js";
 
 // Scene utilities

@@ -62,6 +62,13 @@ function setupRoutes(app, requireAuth, roomManager) {
 		res.sendFile(path.join(__dirname, "../../public/jouer.html"));
 	});
 
+	// Route pour la vue des modèles 3D - nécessite authentification
+	app.get("/vueDesModelEn3dPourTester.html", requireAuth, (req, res) => {
+		res.sendFile(
+			path.join(__dirname, "../../public/vueDesModelEn3dPourTester.html")
+		);
+	});
+
 	// Route de connexion - accessible sans auth
 	app.get("/login.html", (req, res) => {
 		res.sendFile(path.join(__dirname, "../../public/login.html"));

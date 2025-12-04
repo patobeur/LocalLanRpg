@@ -16,6 +16,7 @@
 				"imports": {
 					"three": "/node_modules/three/build/three.module.js",
 					"three/examples/jsm/loaders/FBXLoader.js": "/node_modules/three/examples/jsm/loaders/FBXLoader.js",
+					"three/examples/jsm/loaders/GLTFLoader.js": "/node_modules/three/examples/jsm/loaders/GLTFLoader.js",
 					"three/examples/jsm/controls/OrbitControls.js": "/node_modules/three/examples/jsm/controls/OrbitControls.js"
 				}
 			}
@@ -25,6 +26,7 @@
 		<script type="module">
 			import * as THREE from "three";
 			import { FBXLoader } from "three/examples/jsm/loaders/FBXLoader.js";
+			import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 			import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 
 			let scene, camera, renderer, controls;
@@ -34,14 +36,20 @@
 				minion_mage_blue: {
 					path: "/media/minions/glb/minion_mage_blue.fbx",
 				},
-				minion_mage_red: { path: "/media/minions/glb/minion_mage_red.fbx" },
 				minion_tank_blue: {
 					path: "/media/minions/glb/minion_tank_blue.fbx",
 				},
-				minion_tank_red: { path: "/media/minions/glb/minion_tank_red.fbx" },
+				//-----
+				minion_mage_red: { path: "/media/minions/glb/minion_mage_red.fbx" },
+				minion_tank_red: {
+					path: "/media/minions/glb/minion_tank_red.fbx",
+				},
+				// -----------
 				X_Bot: { path: "/media/characters/glb/X_Bot.fbx" },
 				Y_Bot: { path: "/media/characters/glb/Y_Bot.fbx" },
-				Y_Bot: { path: "/media/structures/glb/baseTeamB.glb" },
+				// -----------
+				baseTeamB: { path: "/media/structures/glb/baseTeamB.glb" },
+				baseTeamA: { path: "/media/structures/glb/baseTeamA.glb" },
 			};
 
 			function init() {
@@ -54,7 +62,7 @@
 					0.1,
 					1000
 				);
-				camera.position.set(0, 1.5, 5);
+				camera.position.set(0, 2, 8);
 
 				renderer = new THREE.WebGLRenderer({ antialias: true });
 				renderer.setSize(window.innerWidth, window.innerHeight);
@@ -62,30 +70,34 @@
 
 				controls = new OrbitControls(camera, renderer.domElement);
 
-				const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+				const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
 				scene.add(ambientLight);
 
-				const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+				const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
 				directionalLight.position.set(5, 10, 7.5);
 				scene.add(directionalLight);
 
 				loadModels();
-
 				animate();
 			}
 
 			function loadModels() {
-				const loader = new FBXLoader();
-				const modelPaths = Object.values(files).map((file) => file.path);
-				const numModels = modelPaths.length;
+				const fbxLoader = new FBXLoader();
+				const gltfLoader = new GLTFLoader();
+				const modelEntries = Object.values(files);
+				const numModels = modelEntries.length;
 				const modelsPerRow = 3;
-				const spacing = 2;
+				const spacing = 3;
 
-				modelPaths.forEach((path, index) => {
+				modelEntries.forEach((file, index) => {
+					const isFbx = file.path.toLowerCase().endsWith(".fbx");
+					const loader = isFbx ? fbxLoader : gltfLoader;
+
 					loader.load(
-						path,
-						(fbx) => {
-							const model = fbx;
+						file.path,
+						(object) => {
+							const model = isFbx ? object : object.scene;
+
 							const row = Math.floor(index / modelsPerRow);
 							const col = index % modelsPerRow;
 
@@ -95,7 +107,12 @@
 								0
 							);
 
-							model.scale.set(0.01, 0.01, 0.01);
+							if (isFbx) {
+								model.scale.set(0.01, 0.01, 0.01);
+							} else {
+								// GLB models might not need scaling, or different scaling
+								model.scale.set(1, 1, 1);
+							}
 
 							scene.add(model);
 							models.push(model);
@@ -103,7 +120,7 @@
 						undefined,
 						(error) => {
 							console.error(
-								"An error happened while loading the model:",
+								`An error happened while loading ${file.path}:`,
 								error
 							);
 						}
@@ -113,11 +130,9 @@
 
 			function animate() {
 				requestAnimationFrame(animate);
-
 				models.forEach((model) => {
 					model.rotation.y += 0.005;
 				});
-
 				controls.update();
 				renderer.render(scene, camera);
 			}

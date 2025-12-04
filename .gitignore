@@ -6,4 +6,5 @@ roadmap.md
 tables xp.xlsx
 server.log
 saves/*
-public/media/characters/glb/animations/*
+public/media/characters/glb/*
+public/media/minions/glb/*

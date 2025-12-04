@@ -62,6 +62,13 @@ function setupRoutes(app, requireAuth, roomManager) {
 		res.sendFile(path.join(__dirname, "../../public/jouer.html"));
 	});
 
+	// Route pour la vue des modèles 3D - nécessite authentification
+	app.get("/vueDesModelEn3dPourTester.html", requireAuth, (req, res) => {
+		res.sendFile(
+			path.join(__dirname, "../../public/vueDesModelEn3dPourTester.html")
+		);
+	});
+
 	// Route de connexion - accessible sans auth
 	app.get("/login.html", (req, res) => {
 		res.sendFile(path.join(__dirname, "../../public/login.html"));
@@ -76,10 +83,14 @@ function setupRoutes(app, requireAuth, roomManager) {
 			char.skills = [];
 
 			// Map skill IDs to skill objects
-			if (char.skill1Id !== undefined && skills[char.skill1Id]) char.skills.push(skills[char.skill1Id]);
-			if (char.skill2Id !== undefined && skills[char.skill2Id]) char.skills.push(skills[char.skill2Id]);
-			if (char.skill3Id !== undefined && skills[char.skill3Id]) char.skills.push(skills[char.skill3Id]);
-			if (char.ultimatId !== undefined && skills[char.ultimatId]) char.skills.push(skills[char.ultimatId]);
+			if (char.skill1Id !== undefined && skills[char.skill1Id])
+				char.skills.push(skills[char.skill1Id]);
+			if (char.skill2Id !== undefined && skills[char.skill2Id])
+				char.skills.push(skills[char.skill2Id]);
+			if (char.skill3Id !== undefined && skills[char.skill3Id])
+				char.skills.push(skills[char.skill3Id]);
+			if (char.ultimatId !== undefined && skills[char.ultimatId])
+				char.skills.push(skills[char.ultimatId]);
 		}
 
 		res.json(enrichedChars);

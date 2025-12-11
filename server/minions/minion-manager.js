@@ -26,7 +26,11 @@ class MinionManager {
 		this.lastSpawnTime = 0;
 		this.minions = [];
 		this.nextMinionId = 1;
-		console.log("[MinionManager] Game started, first spawn in " + this.FIRST_SPAWN_DELAY + "s");
+		console.log(
+			"[MinionManager] Game started, first spawn in " +
+				this.FIRST_SPAWN_DELAY +
+				"s"
+		);
 	}
 
 	/**
@@ -38,7 +42,11 @@ class MinionManager {
 		if (!this.gameStartTime) return events;
 
 		// Check if there are any players in the game
-		const activePlayers = players ? (players instanceof Map ? Array.from(players.values()) : Object.values(players)) : [];
+		const activePlayers = players
+			? players instanceof Map
+				? Array.from(players.values())
+				: Object.values(players)
+			: [];
 		if (activePlayers.length === 0) {
 			// No players, don't spawn or update minions
 			return events;
@@ -48,8 +56,11 @@ class MinionManager {
 		const gameTime = (currentTime - this.gameStartTime) / 1000; // Convert to seconds
 
 		// Check if it's time to spawn minions
-		const shouldSpawnFirst = gameTime >= this.FIRST_SPAWN_DELAY && this.lastSpawnTime === 0;
-		const shouldSpawnNext = this.lastSpawnTime > 0 && gameTime >= this.lastSpawnTime + this.SPAWN_INTERVAL;
+		const shouldSpawnFirst =
+			gameTime >= this.FIRST_SPAWN_DELAY && this.lastSpawnTime === 0;
+		const shouldSpawnNext =
+			this.lastSpawnTime > 0 &&
+			gameTime >= this.lastSpawnTime + this.SPAWN_INTERVAL;
 
 		if (shouldSpawnFirst || shouldSpawnNext) {
 			this.lastSpawnTime = gameTime;
@@ -65,7 +76,7 @@ class MinionManager {
 			if (minion.isDead || minion.health <= 0) {
 				events.push({
 					type: "minion-death",
-					minionId: minion.id
+					minionId: minion.id,
 				});
 				this.minions.splice(i, 1);
 				console.log(`[MinionManager] Minion ${minion.id} removed (dead)`);
@@ -73,12 +84,21 @@ class MinionManager {
 			}
 
 			// Update minion AI
-			const result = MinionAI.update(minion, this.minions, players, structures, dt);
+			const result = MinionAI.update(
+				minion,
+				this.minions,
+				players,
+				structures,
+				dt
+			);
 			this.minions[i] = result.minion;
 			events.push(...result.events);
 
 			// Broadcast position update periodically (throttled)
-			if (!minion.lastBroadcastTime || currentTime - minion.lastBroadcastTime > 100) {
+			if (
+				!minion.lastBroadcastTime ||
+				currentTime - minion.lastBroadcastTime > 100
+			) {
 				minion.lastBroadcastTime = currentTime;
 				events.push({
 					type: "minion-move",
@@ -86,7 +106,7 @@ class MinionManager {
 					x: minion.x,
 					y: minion.y,
 					z: minion.z,
-					rotY: minion.rotY
+					rotY: minion.rotY,
 				});
 			}
 		}
@@ -101,14 +121,24 @@ class MinionManager {
 		const events = [];
 
 		// Spawn for Team A (blue)
-		const teamAMinions = this.spawnMinionGroup("blue", this.WAVE_SIZE, structures);
+		const teamAMinions = this.spawnMinionGroup(
+			"blue",
+			this.WAVE_SIZE,
+			structures
+		);
 		events.push(...teamAMinions);
 
 		// Spawn for Team B (red)
-		const teamBMinions = this.spawnMinionGroup("red", this.WAVE_SIZE, structures);
+		const teamBMinions = this.spawnMinionGroup(
+			"red",
+			this.WAVE_SIZE,
+			structures
+		);
 		events.push(...teamBMinions);
 
-		console.log(`[MinionManager] Spawned wave: ${this.WAVE_SIZE} minions per team`);
+		console.log(
+			`[MinionManager] Spawned wave: ${this.WAVE_SIZE} minions per team`
+		);
 		return events;
 	}
 
@@ -129,20 +159,19 @@ class MinionManager {
 		}
 
 		// Determine spawn location and minion type based on faction
-		const spawnLocation = faction === "blue"
-			? config.locations.spawnMinionsA
-			: config.locations.spawnMinionsB;
+		const spawnLocation =
+			faction === "blue"
+				? config.locations.spawnMinionsA
+				: config.locations.spawnMinionsB;
 
-		const minionType = faction === "blue"
-			? "minion_tank_blue"
-			: "minion_tank_red";
+		const minionType =
+			faction === "blue" ? "minion_tank_blue" : "minion_tank_red";
 
 		const minionStats = minionsData.chars[minionType];
 		if (!minionStats) {
 			console.error(`[MinionManager] Minion type ${minionType} not found!`);
 			return events;
 		}
-
 
 		for (let i = 0; i < count; i++) {
 			const minionId = `minion_${this.nextMinionId++}`;
@@ -170,8 +199,8 @@ class MinionManager {
 			const spacing = 1.5;
 
 			// Calculate position: Center + (index * spacing * backwardVector)
-			const spawnX = spawnCenter.x + (i * spacing * backX);
-			const spawnZ = spawnCenter.z + (i * spacing * backZ);
+			const spawnX = spawnCenter.x + i * spacing * backX;
+			const spawnZ = spawnCenter.z + i * spacing * backZ;
 
 			const level = minionLevel;
 			const levelIndex = Math.max(0, level - 1);
@@ -195,7 +224,7 @@ class MinionManager {
 				targetType: null,
 				lastAttackTime: 0,
 				lastBroadcastTime: 0,
-				isDead: false
+				isDead: false,
 			};
 
 			this.minions.push(minion);
@@ -212,8 +241,8 @@ class MinionManager {
 					rotY: minion.rotY,
 					health: minion.health,
 					maxHealth: minion.maxHealth,
-					level: minion.level
-				}
+					level: minion.level,
+				},
 			});
 		}
 
@@ -224,7 +253,7 @@ class MinionManager {
 	 * Get minion by ID
 	 */
 	getMinionById(minionId) {
-		return this.minions.find(m => m.id === minionId);
+		return this.minions.find((m) => m.id === minionId);
 	}
 
 	/**
@@ -246,7 +275,7 @@ class MinionManager {
 			health: minion.health,
 			maxHealth: minion.maxHealth,
 			isDead: minion.isDead,
-			attackerId: attackerId
+			attackerId: attackerId,
 		};
 	}
 

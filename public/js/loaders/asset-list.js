@@ -24,8 +24,8 @@ export function getRequiredAssets(roomData) {
 	for (const characterName of characters) {
 		// Assuming GLTF format based on user's changes
 		assets.push({
-			type: "gltf",
-			path: `${basePath}/characters/glb/${characterName}.gltf`,
+			type: "fbx",
+			path: `${basePath}/characters/glb/${characterName}.fbx`,
 			name: `character_${characterName}`,
 		});
 	}

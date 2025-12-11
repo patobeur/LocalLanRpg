@@ -16,15 +16,19 @@ function setupGameLoop(roomManager, broadcastToRoom) {
 
                 events.forEach((e) => {
                     if (e.type === "server-player-move") {
-                        broadcastToRoom(room.id, {
-                            type: "player-state",
-                            id: e.id,
-                            x: e.x,
-                            y: e.y,
-                            z: e.z,
-                            rotY: e.rotY,
-                            ts: Date.now(), // Use current time for sync
-                        });
+                        const player = room.game.players.get(e.id);
+                        if (player) {
+                            broadcastToRoom(room.id, {
+                                type: "player-state",
+                                id: e.id,
+                                x: e.x,
+                                y: e.y,
+                                z: e.z,
+                                rotY: e.rotY,
+                                level: player.level,
+                                ts: Date.now(), // Use current time for sync
+                            });
+                        }
                     } else if (e.type === "player-regen") {
                         broadcastToRoom(room.id, {
                             type: "player-health",

@@ -25,5 +25,16 @@ export function handleStructureDeath(msg) {
 
 export function handleStructureLevelUp(msg) {
     console.log(`[Game] Structure ${msg.structureId} leveled up to ${msg.level}!`);
-    updateStructureHUD(msg.structureId, undefined, undefined, msg.level);
+    const structure = structures.get(msg.structureId);
+    if (structure) {
+        // Update the level in the structure's userData
+        structure.userData.level = msg.level;
+        // Call HUD update with all relevant info
+        updateStructureHUD(
+            msg.structureId,
+            structure.userData.hp,
+            structure.userData.maxHp,
+            structure.userData.level
+        );
+    }
 }

@@ -85,7 +85,7 @@ const minions = {
 			],
 
 			scale: 1,
-			fbx: "minion_tank_red_Idle.fbx",
+			fbx: "minion_tank_red.fbx",
 		},
 		minion_mage_red: {
 			name: "minion_mage_red",

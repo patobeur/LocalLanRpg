@@ -15,8 +15,8 @@ export function handleMinionSpawn(msg) {
     const { minion } = msg;
     if (!world) return;
 
-    // Create minion mesh
-    const minionMesh = makeMinionMesh(minion.name, minion.faction);
+    // Create minion mesh with FBX and scale from server
+    const minionMesh = makeMinionMesh(minion.name, minion.faction, minion.fbx, minion.scale);
     minionMesh.position.set(minion.x, minion.y, minion.z);
     minionMesh.rotation.y = minion.rotY || 0;
 

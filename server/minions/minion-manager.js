@@ -242,6 +242,8 @@ class MinionManager {
 					health: minion.health,
 					maxHealth: minion.maxHealth,
 					level: minion.level,
+					fbx: minionStats.fbx, // Add FBX path from server-side data
+					scale: minionStats.scale, // Add scale from server-side data
 				},
 			});
 		}

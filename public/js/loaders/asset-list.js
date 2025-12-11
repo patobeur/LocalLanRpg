@@ -30,27 +30,28 @@ export function getRequiredAssets(roomData) {
 		});
 	}
 
-	// Add minion models (all types for both factions)
-	const minionTypes = [
-		"minion_tank_blue",
-		"minion_tank_red",
-		"minion_mage_blue",
-		"minion_mage_red",
+	// Add minion models (using exact FBX filenames from server/server_side/minions.js)
+	const minionAssets = [
+		{ fbx: "minion_tank_blue.fbx" },
+		{ fbx: "minion_tank_red.fbx" },
+		{ fbx: "minion_mage_blue.fbx" },
+		{ fbx: "minion_mage_red.fbx" },
 	];
 
-	for (const minionType of minionTypes) {
+	for (const minion of minionAssets) {
+		// Use filename without extension as the asset key
+		const assetKey = minion.fbx.replace(".fbx", "");
 		assets.push({
 			type: "fbx",
-			path: `${basePath}/minions/glb/${minionType}.fbx`,
-			name: minionType,
+			path: `${basePath}/minions/glb/${minion.fbx}`,
+			name: assetKey, // This will be used as the cache key
 		});
 	}
 
 	// Add structure models
 	const structures = [
 		{ name: "baseTeamA", file: "baseTeamA.glb" },
-		{ name: "baseTeamB", file: "baseTeamB.glb" },
-		{ name: "house", file: "house.glb" },
+		{ name: "baseTeamB", file: "baseTeamB.glb" }
 	];
 
 	for (const structure of structures) {

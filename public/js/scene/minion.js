@@ -6,9 +6,11 @@ import { createHUD, updateHUD } from "./hud.js";
  * Create a 3D mesh for a minion
  * @param {string} name - Minion type name
  * @param {string} faction - "blue" or "red"
+ * @param {string} fbx - FBX filename from server-side data
+ * @param {number} scale - Scale from server-side data
  * @returns {THREE.Group} Minion mesh group
  */
-export function makeMinionMesh(name, faction) {
+export function makeMinionMesh(name, faction, fbx, scale = 1) {
 	const g = new THREE.Group();
 
 	// Health bar (create immediately)
@@ -38,22 +40,25 @@ export function makeMinionMesh(name, faction) {
 	g.userData.faction = faction;
 	g.userData.name = name;
 
+	// Use FBX filename (without extension) as the asset key
+	const assetKey = fbx ? fbx.replace('.fbx', '') : name;
+
 	// Get model from asset loader (already pre-loaded)
-	const model = assetLoader.getModel(name);
+	const model = assetLoader.getModel(assetKey);
 
 	if (model) {
-		// Setup model
-		model.scale.set(1, 1, 1);
+		// Setup model with server-defined scale
+		const modelScale = scale * 0.01; // Apply base scale factor
+		model.scale.set(modelScale, modelScale, modelScale);
 		model.traverse((child) => {
 			if (child.isMesh) {
 				child.castShadow = true;
 				child.receiveShadow = true;
 			}
 		});
-		model.scale.set(0.01, 0.01, 0.01);
 		g.add(model);
 	} else {
-		console.warn(`[Minion] Model ${name} not found in cache, using fallback`);
+		console.warn(`[Minion] Model ${assetKey} not found in cache, using fallback`);
 		createFallbackMesh(g, faction);
 	}
 

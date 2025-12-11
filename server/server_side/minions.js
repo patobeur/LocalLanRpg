@@ -1,7 +1,7 @@
 const minions = {
 	namesByFaction: {
 		red: ["minion_tank_blue", "minion_mage_blue"],
-		blue: ["minion_tank_red_Idle", "minion_mage_red"],
+		blue: ["minion_tank_red", "minion_mage_red"],
 	},
 	types: ["tank", "dps", "healer"],
 	xpRewardedPerLv: [
@@ -48,8 +48,8 @@ const minions = {
 			scale: 1,
 			fbx: "minion_tank_blue.fbx",
 		},
-		minion_tank_red_Idle: {
-			name: "minion_tank_red_Idle",
+		minion_tank_red: {
+			name: "minion_tank_red",
 			type: "tank",
 			speed: [
 				1, 1.1, 1.2, 1.3, 1.4, 1.4, 1.4, 1.4, 1.4, 1.4, 1.4, 1.4, 1.4, 1.4,

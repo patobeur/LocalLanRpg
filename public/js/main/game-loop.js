@@ -4,14 +4,33 @@
 import { me, others, playerTransform, getGameState, lastBroadcast, setLastBroadcast } from "./game-state.js";
 import { updateProjectiles } from "./projectiles.js";
 import { updatePlayerMovement, applyMovement } from "./player-movement.js";
+import { minions } from "./handlers/minion-handlers.js";
 import { render, updateCameraPosition } from "../scene.js";
 import { sendStateUpdate } from "./network.js";
 
 /**
  * Start the game loop
  */
+let animationFrameId = null;
+
+/**
+ * Start the game loop
+ */
 export function startGameLoop() {
-    requestAnimationFrame(tick);
+    if (!animationFrameId) {
+        tick(performance.now());
+    }
+}
+
+/**
+ * Stop the game loop
+ */
+export function stopGameLoop() {
+    if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId);
+        animationFrameId = null;
+        console.log("[Game] Loop stopped");
+    }
 }
 
 /**
@@ -19,7 +38,7 @@ export function startGameLoop() {
  * @param {number} t - Current timestamp
  */
 function tick(t) {
-    requestAnimationFrame(tick);
+    animationFrameId = requestAnimationFrame(tick);
     const dt = Math.min(0.033, tick.prevT ? (t - tick.prevT) / 1000 : 0.016);
     tick.prevT = t;
 
@@ -48,6 +67,13 @@ function tick(t) {
     for (const playerMesh of others.values()) {
         if (playerMesh.userData.hud) {
             playerMesh.userData.hud.rotation.y = -playerMesh.rotation.y;
+        }
+    }
+
+    // Update minions' HUD rotation (Counter-rotate to face camera/south)
+    for (const minionMesh of minions.values()) {
+        if (minionMesh.userData.hud) {
+            minionMesh.userData.hud.rotation.y = -minionMesh.rotation.y;
         }
     }
 

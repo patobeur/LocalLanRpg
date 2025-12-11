@@ -47,7 +47,7 @@ export const playerTransform = {
 };
 
 // Import game constants from centralized config
-import { GAME_CONSTANTS } from "../config/constants.js";
+import { GAME_CONSTANTS } from "../client-config.js";
 export { GAME_CONSTANTS };
 
 // Initialize game state with room ID
@@ -114,4 +114,8 @@ export function setGameUI(ui) {
 
 export function setPlayerColor(color) {
     playerColor = color;
+}
+
+export function getGameUI() {
+    return gameUI;
 }

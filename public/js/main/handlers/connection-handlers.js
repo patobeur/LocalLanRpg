@@ -24,7 +24,7 @@ export function handleHello(msg) {
     initSkillManager();
 
     if (!me.mesh) {
-        me.mesh = makePlayerMesh(me.username, me.level, playerColor);
+        me.mesh = makePlayerMesh(me.username, me.level, playerColor, me.character);
         world.add(me.mesh);
     }
 
@@ -67,8 +67,14 @@ export function handleHello(msg) {
     for (const [id, p] of Object.entries(msg.players || {})) {
         if (id === me.id) continue;
         if (others.has(id)) continue;
-        const m = makePlayerMesh(p.name, p.level || 1, p.color);
+        const m = makePlayerMesh(p.name, p.level || 1, p.color, p.character);
         m.position.set(p.x, p.y, p.z);
+        console.log('---------------')
+        console.log('---------------')
+        console.log(m)
+        console.log(m.position)
+        console.log('---------------')
+        console.log('---------------')
         m.rotation.y = p.rotY;
         m.userData.faction = p.faction; // Store faction
         m.userData.health = p.health || 100;
@@ -109,7 +115,7 @@ export function handlePlayerJoin(msg) {
     const p = msg.player;
     const pId = String(p.id);
     if (pId !== me.id && !others.has(pId)) {
-        const m = makePlayerMesh(p.name, p.level || 1, p.color);
+        const m = makePlayerMesh(p.name, p.level || 1, p.color, p.character);
         m.position.set(p.x, p.y, p.z);
         m.rotation.y = p.rotY;
         m.userData.faction = p.faction; // Store faction

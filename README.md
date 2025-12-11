@@ -1,4 +1,4 @@
-# Local LAN RPG
+# Little Moba
 
 [FR](https://github.com/patobeur/LocalLanRpg/blob/main/README_FR.md) [US](https://github.com/patobeur/LocalLanRpg/blob/main/README.md)
 

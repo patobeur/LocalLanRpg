@@ -9,7 +9,7 @@ import {
 import { shootProjectile, projectiles, removeProjectile } from "../projectiles.js";
 import { clearAttackTarget, getAttackTarget } from "../../input.js";
 import { updatePlayerHUD } from "../../scene.js";
-import { GAME_CONSTANTS } from "../../config/constants.js";
+import { GAME_CONSTANTS } from "../../client-config.js";
 import { getMinionMesh } from "./minion-handlers.js";
 
 let respawnInterval = null;

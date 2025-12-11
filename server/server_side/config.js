@@ -3,15 +3,43 @@
 
 // Game Constants
 const GAME_CONSTANTS = {
-	PROJECTILE_SPEED: 10,
-	PROJECTILE_RANGE: 30,
+	PROJECTILE_SPEED: 10, // exists dans server/server_side/characters.js
+	PROJECTILE_RANGE: 30, // exists dans server/server_side/characters.js
 	PLAYER_COLLISION_RADIUS: 0.5,
-	STRUCTURE_DEFAULT_COLLISION_RADIUS: 4,
+	PLAYER_RADIUS: 0.5,
+	// STRUCTURE_DEFAULT_COLLISION_RADIUS: 4,
 	RESPAWN_TIME_MS: 5000,
-	MINION_SPAWN_INTERVAL: 30, // seconds between waves
-	MINION_FIRST_SPAWN_DELAY: 10, // seconds until first spawn
+	MINION_SPAWN_INTERVAL: 60, // seconds between waves
+	MINION_FIRST_SPAWN_DELAY: 20, // seconds until first spawn
 	MINION_WAVE_SIZE: 5, // minions per wave per team
 	MINION_COLLISION_RADIUS: 0.3,
+	PLAYER_SPEED: 3.5,
+	GRID_SIZE: { x: 60, y: 60 },
+	CAMERA: {
+		ZOOM_SCALE: 100,
+		MIN_ZOOM: 20,
+		MAX_ZOOM: 150,
+		ZOOM_SPEED: 0.1,
+	},
+
+	MINION_AVOIDANCE_STRENGTH: 0.1, // Increased strength
+	MINION_TANGENTIAL_STRENGTH: 0.1, // Force to go around
+
+	// Collision
+	COLLISION: {
+		PROJECTILE_HIT_RANGE_STRUCTURE: 10,
+	},
+	// Respawn
+	RESPAWN: {
+		TIMER_MS: 5000,
+		COUNTDOWN_INTERVAL_MS: 1000,
+	},
+	// Camera
+	CAMERA: {
+		OFFSET_Y: 20,
+		OFFSET_Z: 15,
+		LOOK_AT_OFFSET_Y: 0,
+	},
 };
 
 // Map Configuration
@@ -65,6 +93,7 @@ const MAP_CONFIG = {
 			rotation: { x: 0, y: 45, z: 0 },
 			scale: { x: 10, y: 10, z: 10 },
 			collisionRadius: 4,
+			lv: 1,
 		},
 		BaseTeamB: {
 			x: 25,
@@ -76,6 +105,7 @@ const MAP_CONFIG = {
 			rotation: { x: 0, y: -135, z: 0 },
 			scale: { x: 10, y: 10, z: 10 },
 			collisionRadius: 4,
+			lv: 1,
 		},
 	},
 };

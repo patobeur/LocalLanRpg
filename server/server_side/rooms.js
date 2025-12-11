@@ -26,7 +26,8 @@ class Room {
             username,
             faction: null, // 'blue' | 'red'
             character: null,
-            ready: false
+            ready: false,
+            assetsLoaded: false
         });
     }
 
@@ -62,13 +63,23 @@ class Room {
         return true;
     }
 
+    allPlayersAssetsLoaded() {
+        // Check if all players have loaded their assets
+        if (this.players.size === 0) return false;
+        for (const player of this.players.values()) {
+            if (!player.assetsLoaded) return false;
+        }
+        return true;
+    }
+
     getPlayersList() {
         return Array.from(this.players.values()).map(p => ({
             id: p.id,
             username: p.username,
             faction: p.faction,
             character: p.character,
-            ready: p.ready
+            ready: p.ready,
+            assetsLoaded: p.assetsLoaded
         }));
     }
 
@@ -126,6 +137,27 @@ class RoomManager {
 
         // Remove from game instance if playing
         if (room.status === 'playing' && room.game) {
+            const gamePlayer = room.game.players.get(playerId);
+            if (gamePlayer && !gamePlayer.statsUpdated) {
+                const { updateUserStats } = require("../database.js");
+                updateUserStats(playerId, {
+                    played: 1,
+                    unfinished: 1,
+                    xp: gamePlayer.sessionXp || 0,
+                    kills: gamePlayer.kills || 0,
+                    assists: gamePlayer.assists || 0,
+                    damagePlayers: gamePlayer.damageDealtToPlayers || 0,
+                    damageBase: gamePlayer.damageDealtToBase || 0,
+                    damageMinions: gamePlayer.damageDealtToMinions || 0,
+                    minionsKilled: gamePlayer.minionsKilled || 0
+                }).then(() => {
+                    console.log(`[Rooms] Stats updated for leaver ${gamePlayer.name}`);
+                }).catch(err => {
+                    console.error(`[Rooms] Failed to update stats for leaver ${gamePlayer.name}:`, err);
+                });
+                gamePlayer.statsUpdated = true;
+            }
+
             if (room.game.removePlayer(playerId)) {
                 leftGame = true;
                 console.log(`[Rooms] Player ${playerId} removed from game in room ${roomId}`);
@@ -134,6 +166,12 @@ class RoomManager {
 
         // Delete room if empty
         if (room.isEmpty()) {
+            // Stop the game if it's running
+            if (room.status === 'playing' && room.game) {
+                console.log(`[Rooms] Room ${roomId} is now empty, stopping game...`);
+                room.game.stopGame();
+                room.game = null;
+            }
             this.rooms.delete(roomId);
             console.log(`[Rooms] Room ${roomId} deleted (empty)`);
         } else {
@@ -167,6 +205,15 @@ class RoomManager {
         return room;
     }
 
+    setPlayerAssetsLoaded(roomId, playerId) {
+        const room = this.rooms.get(roomId);
+        if (!room) throw new Error('Room not found');
+        const player = room.players.get(playerId);
+        if (!player) throw new Error('Player not in room');
+        player.assetsLoaded = true;
+        return room;
+    }
+
     startGame(roomId, requesterId) {
         const room = this.rooms.get(roomId);
         if (!room) throw new Error('Room not found');
@@ -181,6 +228,7 @@ class RoomManager {
 
         // Create game instance for this room
         const Game = require('./game.js');
+        const { updateUserStats } = require("../database.js");
         room.game = new Game();
 
         // Start the game (initializes minion spawning, etc.)

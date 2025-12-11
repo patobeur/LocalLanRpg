@@ -1,6 +1,7 @@
 import * as THREE from "/node_modules/three/build/three.module.js";
 import { GLTFLoader } from "/node_modules/three/examples/jsm/loaders/GLTFLoader.js";
 import { world } from "./core.js";
+import { createHUD, updateHUD } from "./hud.js";
 
 export function createMapObjects(mapConfig) {
     if (!mapConfig) return;
@@ -84,7 +85,7 @@ export function createMapObjects(mapConfig) {
                         world.add(model);
 
                         // Add HUD to GLB model
-                        addStructureHUD(model, str, key);
+                        addStructureHUD(model, str, key, colorMap[key]);
                     },
                     undefined,
                     (error) => {
@@ -110,7 +111,7 @@ export function createMapObjects(mapConfig) {
                 world.add(mesh);
 
                 // Add HUD to geometry mesh
-                addStructureHUD(mesh, str, key);
+                addStructureHUD(mesh, str, key, colorMap[key]);
             }
         }
     }
@@ -118,29 +119,21 @@ export function createMapObjects(mapConfig) {
 
 import { structures } from "../main/game-state.js";
 
-function addStructureHUD(mesh, strData, id) {
-    const hudGroup = new THREE.Group();
+function addStructureHUD(mesh, strData, id, color) {
     const barWidth = 4; // Wider for base
-    const healthBarHeight = 0.5;
+    // Helper to identify team color if not explicitly passed (fallback)
+    const teamColor = color || (id.includes("TeamA") ? 0x2e86de : (id.includes("TeamB") ? 0xc0392b : 0x2ecc71));
 
-    // --- Health Bar Background ---
-    const healthBgGeom = new THREE.PlaneGeometry(barWidth, healthBarHeight);
-    const healthBgMat = new THREE.MeshBasicMaterial({
-        color: 0x111111,
-        depthTest: true,
+    const hudGroup = createHUD({
+        name: id, // Show structure ID/Name
+        teamColor: teamColor,
+        width: barWidth,
+        height: 0.5,
+        showLevel: true, // Enable level display for bases
+        showMana: false,
+        showName: true,
+        level: strData.level || 1 // Pass level from data or default to 1
     });
-    const healthBg = new THREE.Mesh(healthBgGeom, healthBgMat);
-    hudGroup.add(healthBg);
-
-    // --- Health Bar Foreground ---
-    const healthFgGeom = new THREE.PlaneGeometry(barWidth, healthBarHeight);
-    const healthFgMat = new THREE.MeshBasicMaterial({
-        color: 0x2ecc71, // Green
-        depthTest: true,
-    });
-    const healthFg = new THREE.Mesh(healthFgGeom, healthFgMat);
-    healthFg.position.z = 0.01;
-    hudGroup.add(healthFg);
 
     // Calculate bounding box to position HUD correctly
     // Ensure mesh is updated
@@ -162,26 +155,26 @@ function addStructureHUD(mesh, strData, id) {
 
     // Store references on the mesh so we can find the HUD later
     mesh.userData.structureId = id;
-    mesh.userData.hud = {
-        healthBar: healthFg,
-        barWidth: barWidth,
-        group: hudGroup // Store group ref if needed
-    };
+    mesh.userData.hud = hudGroup;
 
     // Add to global structures map
     structures.set(id, mesh);
 
     // Initial update
-    updateStructureHUD(id, strData.hp || strData.maxHp, strData.maxHp || 1000);
+    updateHUD(hudGroup, {
+        health: strData.hp || strData.maxHp,
+        maxHealth: strData.maxHp || 1000,
+        level: strData.level || 1
+    });
 }
 
-export function updateStructureHUD(id, hp, maxHp) {
+export function updateStructureHUD(id, hp, maxHp, level) {
     const mesh = structures.get(id);
     if (!mesh || !mesh.userData.hud) return;
 
-    const { healthBar, barWidth } = mesh.userData.hud;
-    const healthPercent = Math.max(0, Math.min(1, hp / maxHp));
-
-    healthBar.scale.x = healthPercent;
-    healthBar.position.x = -barWidth / 2 + (barWidth * healthPercent) / 2;
+    updateHUD(mesh.userData.hud, {
+        health: hp,
+        maxHealth: maxHp,
+        level: level
+    });
 }

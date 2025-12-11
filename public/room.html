@@ -4,78 +4,106 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Salle - Local LAN RPG</title>
+    <title>Salle - LocalLanRpg</title>
     <link rel="stylesheet" href="room.css" />
 </head>
 
 <body>
     <div class="container">
-        <div class="header">
-            <div>
-                <h1 id="roomName">Salle</h1>
-                <p class="room-status" id="roomStatus">En attente de joueurs...</p>
+        <link rel="stylesheet" href="css/navbar.css" />
+
+        <div class="main-navbar">
+            <div class="nav-left">
+                <a href="/lobby.html" class="nav-brand">
+                    🎮 <span>LocalLanRpg</span>
+                </a>
+                <div class="nav-links">
+                    <div class="nav-dropdown">
+                        <button class="nav-dropbtn">Minions ▾</button>
+                        <div class="nav-dropdown-content">
+                            <a href="/meshes3d.html">Voir les modèles</a>
+                        </div>
+                    </div>
+                    <a href="/players.html" class="nav-link">Joueurs</a>
+                </div>
             </div>
-            <button class="btn-secondary" id="leaveBtn">Quitter la salle</button>
+            <div class="nav-right">
+                <div class="nav-user-info">
+                    👤 <span class="nav-username" id="navUsername">Chargement...</span>
+                </div>
+                <!-- Replaced Leave Button with themed ID but kept class or logic? existing logic uses leaveBtn -->
+                <button class="nav-btn nav-btn-danger" id="leaveBtn">Quitter la salle</button>
+            </div>
         </div>
 
-        <!-- Character Selection (shown after faction choice) -->
-        <div class="character-selection" id="characterSelection" style="display: none;">
-            <h3>Choisissez votre personnage</h3>
-            <div class="characters-grid" id="charactersGrid">
-                <div class="loading">Chargement...</div>
+        <div class="container">
+            <div class="header">
+                <div>
+                    <h1 id="roomName">Salle</h1>
+                    <p class="room-status" id="roomStatus">En attente de joueurs...</p>
+                </div>
+                <button class="btn-secondary" id="changeTeamBtn" style="display: none;">Changer d'équipe</button>
             </div>
-        </div>
 
-        <!-- No Faction Selected -->
-        <div class="faction-selection" id="factionSelection">
-            <h2>Choisissez votre équipe</h2>
-            <div class="faction-buttons">
-                <button class="btn-faction blue" id="joinBlueBtn">
-                    <span class="faction-icon">🛡️</span>
-                    <span class="faction-name">Équipe Bleue</span>
+            <!-- Character Selection (shown after faction choice) -->
+            <div class="character-selection" id="characterSelection" style="display: none;">
+                <h3>Choisissez votre personnage</h3>
+                <div class="characters-grid" id="charactersGrid">
+                    <div class="loading">Chargement...</div>
+                </div>
+            </div>
+
+            <!-- No Faction Selected -->
+            <div class="faction-selection" id="factionSelection">
+                <h2>Choisissez votre équipe</h2>
+                <div class="faction-buttons">
+                    <button class="btn-faction blue" id="joinBlueBtn">
+                        <span class="faction-icon">🛡️</span>
+                        <span class="faction-name">Équipe Bleue</span>
+                    </button>
+                    <button class="btn-faction red" id="joinRedBtn">
+                        <span class="faction-icon">⚔️</span>
+                        <span class="faction-name">Équipe Rouge</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Teams Display -->
+            <div class="teams-container" id="teamsContainer" style="display: none;">
+                <!-- Blue Team -->
+                <div class="team blue-team">
+                    <div class="team-header blue">
+                        <h3>🛡️ Équipe Bleue</h3>
+                        <span class="team-count" id="blueCount">0/5</span>
+                    </div>
+                    <div class="players-list" id="bluePlayers">
+                        <div class="empty-team">Aucun joueur</div>
+                    </div>
+                </div>
+
+                <!-- Red Team -->
+                <div class="team red-team">
+                    <div class="team-header red">
+                        <h3>⚔️ Équipe Rouge</h3>
+                        <span class="team-count" id="redCount">0/5</span>
+                    </div>
+                    <div class="players-list" id="redPlayers">
+                        <div class="empty-team">Aucun joueur</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Start Button (creator only) -->
+            <div class="start-container" id="startContainer" style="display: none;">
+                <button class="btn-start" id="startGameBtn" disabled>
+                    Lancer la partie
                 </button>
-                <button class="btn-faction red" id="joinRedBtn">
-                    <span class="faction-icon">⚔️</span>
-                    <span class="faction-name">Équipe Rouge</span>
-                </button>
+                <p class="start-hint" id="startHint">Tous les joueurs doivent choisir un personnage</p>
             </div>
         </div>
 
-        <!-- Teams Display -->
-        <div class="teams-container" id="teamsContainer" style="display: none;">
-            <!-- Blue Team -->
-            <div class="team blue-team">
-                <div class="team-header blue">
-                    <h3>🛡️ Équipe Bleue</h3>
-                    <span class="team-count" id="blueCount">0/5</span>
-                </div>
-                <div class="players-list" id="bluePlayers">
-                    <div class="empty-team">Aucun joueur</div>
-                </div>
-            </div>
-
-            <!-- Red Team -->
-            <div class="team red-team">
-                <div class="team-header red">
-                    <h3>⚔️ Équipe Rouge</h3>
-                    <span class="team-count" id="redCount">0/5</span>
-                </div>
-                <div class="players-list" id="redPlayers">
-                    <div class="empty-team">Aucun joueur</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Start Button (creator only) -->
-        <div class="start-container" id="startContainer" style="display: none;">
-            <button class="btn-start" id="startGameBtn" disabled>
-                Lancer la partie
-            </button>
-            <p class="start-hint" id="startHint">Tous les joueurs doivent choisir un personnage</p>
-        </div>
-    </div>
-
-    <script type="module" src="js/room.js"></script>
+        <script type="module" src="js/room.js"></script>
+        <script src="js/navbar.js"></script>
 </body>
 
 </html>

@@ -4,24 +4,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     const roomsGrid = document.getElementById('roomsGrid');
     const createRoomBtn = document.getElementById('createRoomBtn');
     const refreshBtn = document.getElementById('refreshBtn');
-    const logoutBtn = document.getElementById('logoutBtn');
-    const usernameEl = document.getElementById('username');
+    // logoutBtn moved to navbar.js
+    // usernameEl moved to navbar.js
     const createRoomModal = document.getElementById('createRoomModal');
     const createRoomForm = document.getElementById('createRoomForm');
     const cancelCreate = document.getElementById('cancelCreate');
     const createError = document.getElementById('createError');
     const roomNameInput = document.getElementById('roomName');
 
-    // Load username
-    try {
-        const sessionRes = await fetch('/api/auth/session');
-        const sessionData = await sessionRes.json();
-        if (sessionData.authenticated) {
-            usernameEl.textContent = `👤 ${sessionData.user.username}`;
-        }
-    } catch (err) {
-        console.error('Session fetch error:', err);
-    }
+    // Load username logic moved to navbar.js
 
     // Load rooms
     async function loadRooms() {
@@ -187,15 +178,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Refresh
     refreshBtn.addEventListener('click', loadRooms);
 
-    // Logout
-    logoutBtn.addEventListener('click', async () => {
-        try {
-            await fetch('/api/auth/logout', { method: 'POST' });
-            window.location.href = '/login.html';
-        } catch (error) {
-            console.error('Logout error:', error);
-        }
-    });
+    // Logout logic moved to navbar.js
 
     // Auto-refresh every 5 seconds
     setInterval(loadRooms, 5000);

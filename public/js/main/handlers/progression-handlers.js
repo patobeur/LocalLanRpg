@@ -2,6 +2,7 @@ import { me, others, gameUI, charactersData } from "../game-state.js";
 import { updatePlayerHUD } from "../../scene.js";
 
 export function handlePlayerXp(msg) {
+    console.log("[Client Debug] RECEIVED PLAYER-XP EVENT:", msg);
     const msgId = String(msg.id);
     if (msgId === me.id) {
         me.xp = msg.xp;

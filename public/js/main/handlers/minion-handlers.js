@@ -24,10 +24,14 @@ export function handleMinionSpawn(msg) {
     minionMesh.userData.health = minion.health;
     minionMesh.userData.maxHealth = minion.maxHealth;
     minionMesh.userData.id = minion.id;
+    minionMesh.userData.level = minion.level || 1;
 
     // Add to scene
     world.add(minionMesh);
     minions.set(minion.id, minionMesh);
+
+    // Force HUD update to show correct level immediately
+    updateMinionHealth(minionMesh, minion.health, minion.maxHealth, minion.level);
 
     console.log(`[Minion] Spawned ${minion.id} at (${minion.x.toFixed(1)}, ${minion.z.toFixed(1)})`);
 }

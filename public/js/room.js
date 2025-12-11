@@ -126,7 +126,10 @@ function updateUI() {
 		factionSelection.style.display = "block";
 		teamsContainer.style.display = "none";
 		characterSelection.style.display = "none";
+		characterSelection.style.display = "none";
 		startContainer.style.display = "none";
+		// Hide change team button
+		if (changeTeamBtn) changeTeamBtn.style.display = "none";
 	} else {
 		factionSelection.style.display = "none";
 		teamsContainer.style.display = "grid";
@@ -144,6 +147,9 @@ function updateUI() {
 			startContainer.style.display = "block";
 			updateStartButton();
 		}
+
+		// Show change team button
+		if (changeTeamBtn) changeTeamBtn.style.display = "block";
 	}
 
 	// Update teams display
@@ -364,6 +370,16 @@ leaveBtn.addEventListener("click", async () => {
 
 	window.location.href = "/lobby.html";
 });
+
+// Change Team
+const changeTeamBtn = document.getElementById("changeTeamBtn");
+if (changeTeamBtn) {
+	changeTeamBtn.addEventListener("click", () => {
+		myFaction = null;
+		myCharacter = null;
+		updateUI();
+	});
+}
 
 // Initial load
 loadRoom();

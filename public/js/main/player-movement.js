@@ -139,7 +139,7 @@ export function applyMovement(vx, vz, dt) {
     }
 
     // Clamp to grid
-    const half = GAME_CONSTANTS.GRID_SIZE;
+    const half = GAME_CONSTANTS.GRID_SIZE.x;
     playerTransform.x = Math.max(-half, Math.min(half, playerTransform.x));
     playerTransform.z = Math.max(-half, Math.min(half, playerTransform.z));
 }

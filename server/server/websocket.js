@@ -194,6 +194,38 @@ function setupWebSocket(server, roomManager) {
                     ws
                 );
             }
+
+            // Handle assets-loaded
+            if (msg.type === "assets-loaded") {
+                if (!ws.roomId || !ws.playerId) return;
+
+                const room = roomManager.getRoom(ws.roomId);
+                if (!room) return;
+
+                // Mark player as asset-ready
+                roomManager.setPlayerAssetsLoaded(ws.roomId, ws.playerId);
+                console.log(`[WS] Player ${ws.playerId} assets loaded`);
+
+                // Get list of ready players
+                const readyPlayers = room.getPlayersList()
+                    .filter(p => p.assetsLoaded)
+                    .map(p => p.username);
+
+                // Broadcast updated ready list to all in room
+                broadcastToRoom(ws.roomId, {
+                    type: "ready-players-update",
+                    readyPlayers: readyPlayers
+                });
+
+                // Check if all players are ready
+                if (room.allPlayersAssetsLoaded()) {
+                    console.log(`[WS] All players in room ${ws.roomId} have loaded assets!`);
+                    // Broadcast game start
+                    broadcastToRoom(ws.roomId, {
+                        type: "all-players-ready"
+                    });
+                }
+            }
         });
 
         ws.on("close", () => {

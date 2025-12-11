@@ -22,3 +22,8 @@ export function handleStructureDeath(msg) {
         structures.delete(msg.structureId);
     }
 }
+
+export function handleStructureLevelUp(msg) {
+    console.log(`[Game] Structure ${msg.structureId} leveled up to ${msg.level}!`);
+    updateStructureHUD(msg.structureId, undefined, undefined, msg.level);
+}

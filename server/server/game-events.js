@@ -34,24 +34,21 @@ function setupGameLoop(roomManager, broadcastToRoom) {
                             mana: e.mana,
                             maxMana: e.maxMana,
                         });
-                    } else if (e.type === "hit") {
-                        // Broadcast to room only
+                    } else if (e.type === "player-health") {
                         broadcastToRoom(room.id, {
                             type: "player-health",
-                            id: e.targetId,
-                            health: e.targetHealth,
-                            maxHealth: e.targetMaxHealth,
+                            id: e.id,
+                            health: e.health,
+                            maxHealth: e.maxHealth,
+                            mana: e.mana,
+                            maxMana: e.maxMana,
                         });
-
+                    } else if (e.type === "projectile-hit") {
                         broadcastToRoom(room.id, {
                             type: "projectile-hit",
                             shooterId: e.shooterId,
                             targetId: e.targetId,
                         });
-
-                        console.log(
-                            `[Game Room ${room.id}] Player ${e.shooterId} hit Player ${e.targetId} for ${e.damage} dmg. HP: ${e.targetHealth}`
-                        );
                     } else if (e.type === "player-death") {
                         // Broadcast death to all clients
                         broadcastToRoom(room.id, {
@@ -86,6 +83,12 @@ function setupGameLoop(roomManager, broadcastToRoom) {
                             type: "level-up",
                             id: e.id,
                             level: e.level,
+                        });
+                    } else if (e.type === "structure-level-up") {
+                        broadcastToRoom(room.id, {
+                            type: "structure-level-up",
+                            structureId: e.structureId,
+                            level: e.level
                         });
                     } else if (e.type === "structure-hit") {
                         broadcastToRoom(room.id, {
@@ -145,24 +148,21 @@ function setupGameLoop(roomManager, broadcastToRoom) {
                             z: e.z,
                             angle: e.angle
                         });
-                    } else if (e.type === "minion-hit") {
-                        // Broadcast minion hit event
+                    } else if (e.type === "minion-health") {
                         broadcastToRoom(room.id, {
                             type: "minion-health",
-                            minionId: e.targetId,
-                            health: e.targetHealth,
-                            maxHealth: e.targetMaxHealth
+                            minionId: e.minionId,
+                            health: e.health,
+                            maxHealth: e.maxHealth
                         });
-
+                    } else if (e.type === "game-over") {
+                        // Broadcast game-over to all clients
+                        console.log(`[Game Room ${room.id}] Game Over! Team ${e.winningTeam} wins!`);
                         broadcastToRoom(room.id, {
-                            type: "projectile-hit",
-                            shooterId: e.shooterId,
-                            targetId: e.targetId
+                            type: "game-over",
+                            winningTeam: e.winningTeam,
+                            players: e.players
                         });
-
-                        if (e.isDead) {
-                            console.log(`[Game Room ${room.id}] Minion ${e.targetId} killed by ${e.shooterType} ${e.shooterId}`);
-                        }
                     }
                 });
             }

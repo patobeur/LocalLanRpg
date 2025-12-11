@@ -1,4 +1,5 @@
 import * as THREE from "/node_modules/three/build/three.module.js";
+import { GAME_CONSTANTS } from "../client-config.js";
 
 export const scene = new THREE.Scene();
 export const world = new THREE.Group();
@@ -8,21 +9,23 @@ export const renderer = new THREE.WebGLRenderer({
     antialias: true,
 });
 
-const gridSize = 60;
-let ZOOM_SCALE = 100;
-const MIN_ZOOM = 20;
-const MAX_ZOOM = 150;
-const ZOOM_SPEED = 0.1;
+// Constants are fetched from server via GAME_CONSTANTS
+// Access via GAME_CONSTANTS.GRID_SIZE and GAME_CONSTANTS.CAMERA
+
+let currentZoom = GAME_CONSTANTS.CAMERA?.ZOOM_SCALE || 100;
 
 function handleZoom(delta) {
-    ZOOM_SCALE += delta * ZOOM_SPEED * -1; // Invert delta for intuitive zoom
-    ZOOM_SCALE = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, ZOOM_SCALE));
+    currentZoom += delta * (GAME_CONSTANTS.CAMERA?.ZOOM_SPEED || 0.1) * -1; // Invert delta for intuitive zoom
+    currentZoom = Math.max(
+        GAME_CONSTANTS.CAMERA?.MIN_ZOOM || 20,
+        Math.min(GAME_CONSTANTS.CAMERA?.MAX_ZOOM || 150, currentZoom)
+    );
     updateCameraProjection();
 }
 
 function updateCameraProjection() {
     const aspect = innerWidth / innerHeight;
-    const viewSize = innerHeight / ZOOM_SCALE;
+    const viewSize = innerHeight / currentZoom;
 
     camera.left = -viewSize * aspect;
     camera.right = viewSize * aspect;
@@ -39,14 +42,29 @@ export function initScene() {
     dl.position.set(2, 3, 1);
     scene.add(dl);
 
+    // Load floor texture
+    const textureLoader = new THREE.TextureLoader();
+    const floorTexture = textureLoader.load('/media/floors/floor.png');
+
+    // Configure texture for tiling
+    floorTexture.wrapS = THREE.RepeatWrapping;
+    floorTexture.wrapT = THREE.RepeatWrapping;
+    floorTexture.repeat.set(1, 1); // Adjust repetition based on grid size
+
     const plane = new THREE.Mesh(
-        new THREE.PlaneGeometry(gridSize, gridSize),
-        new THREE.MeshStandardMaterial({ color: 0x0d1527 })
+        new THREE.PlaneGeometry(
+            GAME_CONSTANTS.GRID_SIZE?.x || 60,
+            GAME_CONSTANTS.GRID_SIZE?.y || 60
+        ),
+        new THREE.MeshStandardMaterial({
+            map: floorTexture,
+            side: THREE.DoubleSide
+        })
     );
     plane.rotation.x = -Math.PI / 2;
     plane.userData.isGroundPlane = true; // Mark as ground plane for raycasting module
     world.add(plane);
-    world.add(new THREE.GridHelper(gridSize, gridSize, 0x335, 0x224));
+    // world.add(new THREE.GridHelper(gridSize.x, gridSize.y, 0x335, 0x224));
 
     renderer.setSize(innerWidth, innerHeight);
     updateCameraProjection();

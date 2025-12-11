@@ -4,7 +4,7 @@
 import * as THREE from "/node_modules/three/build/three.module.js";
 import { scene } from "../scene.js";
 import { me, ws } from "./game-state.js";
-import { GAME_CONSTANTS } from "../config/constants.js";
+import { GAME_CONSTANTS } from "../client-config.js";
 
 // Projectiles array
 export const projectiles = [];

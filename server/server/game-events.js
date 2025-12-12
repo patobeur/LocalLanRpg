@@ -7,7 +7,7 @@
  * @param {Function} broadcastToRoom - Broadcast function
  */
 function setupGameLoop(roomManager, broadcastToRoom) {
-    setInterval(() => {
+    const gameLoopId = setInterval(() => {
         const dt = 1 / 60;
 
         for (const room of roomManager.rooms.values()) {
@@ -172,6 +172,11 @@ function setupGameLoop(roomManager, broadcastToRoom) {
             }
         }
     }, 1000 / 60);
+
+    return () => {
+        clearInterval(gameLoopId);
+        console.log("[Game] Loop stopped");
+    };
 }
 
 module.exports = {

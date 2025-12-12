@@ -28,8 +28,8 @@ setupRoomRoutes(app, requireAuth, roomManager, broadcastToRoom);
 const wss = setupWebSocket(server, roomManager);
 
 // Setup game loop (60 FPS)
-setupGameLoop(roomManager, broadcastToRoom);
+const stopGameLoop = setupGameLoop(roomManager, broadcastToRoom);
 
 // Start server and setup shutdown handlers
 startServer(server, PORT);
-setupShutdownHandlers(server, wss);
+setupShutdownHandlers(server, wss, stopGameLoop);

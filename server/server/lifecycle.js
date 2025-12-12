@@ -21,9 +21,14 @@ function startServer(server, PORT) {
  * @param {http.Server} server - HTTP server instance
  * @param {WebSocket.Server} wss - WebSocket server instance
  */
-function setupShutdownHandlers(server, wss) {
+function setupShutdownHandlers(server, wss, stopGameLoop) {
     const shutdown = () => {
         console.log("Shutting down server...");
+
+        if (stopGameLoop) {
+            stopGameLoop();
+        }
+
         // Broadcast shutdown to all clients
         for (const client of wss.clients) {
             if (client.readyState === WebSocket.OPEN) {

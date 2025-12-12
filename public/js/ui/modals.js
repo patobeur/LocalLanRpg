@@ -3,8 +3,8 @@ import { OPTIONS_MODAL_HTML } from "./templates/options.js";
 import { generateVictoryModalHtml } from "./templates/victory.js";
 
 export class Modals {
-    constructor(onModeChange) {
-        this.onModeChange = onModeChange;
+    constructor(onOptionChange) {
+        this.onOptionChange = onOptionChange;
         this.modal = null;
         this.initOptionsModal();
     }
@@ -20,6 +20,8 @@ export class Modals {
         const modalMoveModeSelect = document.getElementById("modalMoveMode");
         const closeOptionsBtn = document.getElementById("closeOptions");
         const quitBtn = document.getElementById("quitGameBtn");
+        const smartTargetingCheckbox = document.getElementById("smartTargeting");
+        const smartTargetingKeyInput = document.getElementById("smartTargetingKey");
 
         if (quitBtn) {
             quitBtn.onclick = async () => {
@@ -36,12 +38,16 @@ export class Modals {
             };
         }
 
-        // Load initial mode
-        const currentProfile = this.loadProfile();
-        if (currentProfile && currentProfile.mode) {
-            modalMoveModeSelect.value = currentProfile.mode;
-            // Notify main immediately about the stored mode
-            if (this.onModeChange) this.onModeChange(currentProfile.mode);
+        // Load initial profile
+        const currentProfile = this.loadProfile() || {};
+        modalMoveModeSelect.value = currentProfile.mode || "keyboard";
+        smartTargetingCheckbox.checked = currentProfile.smartTargeting ?? true;
+        smartTargetingKeyInput.value = currentProfile.smartTargetingKey || "Shift";
+        smartTargetingKeyInput.disabled = !smartTargetingCheckbox.checked;
+
+        // Notify main immediately about the stored profile
+        if (this.onOptionChange) {
+            this.onOptionChange(this.loadProfile() || {});
         }
 
         // Event Listeners
@@ -61,15 +67,27 @@ export class Modals {
             }
         });
 
-        // Update mode when changed in modal
-        modalMoveModeSelect.addEventListener("change", () => {
+        const updateProfile = (key, value) => {
             const current = this.loadProfile() || {};
-            current.mode = modalMoveModeSelect.value;
+            current[key] = value;
             this.saveProfile(current);
-
-            if (this.onModeChange) {
-                this.onModeChange(current.mode);
+            if (this.onOptionChange) {
+                this.onOptionChange(current);
             }
+        };
+
+        modalMoveModeSelect.addEventListener("change", () => {
+            updateProfile("mode", modalMoveModeSelect.value);
+        });
+
+        smartTargetingCheckbox.addEventListener("change", () => {
+            const isEnabled = smartTargetingCheckbox.checked;
+            smartTargetingKeyInput.disabled = !isEnabled;
+            updateProfile("smartTargeting", isEnabled);
+        });
+
+        smartTargetingKeyInput.addEventListener("input", () => {
+            updateProfile("smartTargetingKey", smartTargetingKeyInput.value);
         });
     }
 

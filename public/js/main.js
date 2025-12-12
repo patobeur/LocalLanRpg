@@ -3,7 +3,7 @@
 
 import {
 	initInput,
-	setInputMode,
+	setOptions,
 	setPlayersMap,
 } from "./input.js";
 import { initGameUI } from "./ui/game-ui.js";
@@ -51,9 +51,9 @@ initScene();
 setPlayersMap(others);
 
 // Initialize game UI
-const gameUI = initGameUI((mode) => {
-	setInputMode(mode);
-	console.log(`[Game] Movement mode set to: ${mode}`);
+const gameUI = initGameUI((options) => {
+    setOptions(options);
+    console.log(`[Game] Options updated:`, options);
 });
 
 // Modified game initialization flow

@@ -23,14 +23,10 @@ export function setOptions(options) {
 
 export function initInput() {
     addEventListener("keydown", (e) => {
-        if (mode === "keyboard") {
-            keys.add(e.key.toLowerCase());
-        }
+        keys.add(e.key.toLowerCase());
     });
     addEventListener("keyup", (e) => {
-        if (mode === "keyboard") {
-            keys.delete(e.key.toLowerCase());
-        }
+        keys.delete(e.key.toLowerCase());
     });
 
     addEventListener("mousedown", (e) => {

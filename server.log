@@ -8,3 +8,5 @@ Système de rooms activé
 Connected to SQLite database.
 Users table created or already exists.
 Server is online at: http://192.168.0.2:8080
+Shutting down server...
+Server closed

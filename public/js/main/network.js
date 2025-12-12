@@ -14,6 +14,7 @@ import {
 } from "./message-handlers.js";
 import { loadingScreen } from "../loaders/loading-screen.js";
 import { stopGameLoop } from "./game-loop.js";
+import { clearAllMinions } from "./handlers/minion-handlers.js";
 
 let ws = null;
 
@@ -110,6 +111,7 @@ export async function connectToRoomGame(gameUI) {
             if (msg.type === "server-shutdown") {
                 console.warn("[WS] Server shutting down");
                 stopGameLoop();
+                clearAllMinions();
                 alert("Le serveur s'est arrêté. Retour à l'accueil.");
                 window.location.href = "/lobby.html";
             }
@@ -119,15 +121,18 @@ export async function connectToRoomGame(gameUI) {
             console.log("[WS] Disconnected from game");
             setGameState("connecting");
 
-            // If we didn't initiate the disconnect (e.g. shutdown), we should stop
-            import("./game-loop.js").then(({ stopGameLoop }) => {
-                stopGameLoop();
-            });
+            // Stop the game loop
+            stopGameLoop();
 
-            // Optional: Show offline status in HUD instead of alert if it's just a hiccup
-            // But for now, let's be explicit
+            // Clear all minions to stop any rendering/interaction
+            clearAllMinions();
+
+            // Notify user and redirect
             const statusEl = document.getElementById("status");
             if (statusEl) statusEl.textContent = "Déconnecté...";
+
+            alert("Connexion au serveur perdue. Retour au lobby.");
+            window.location.href = "/lobby.html";
         };
 
         ws.onerror = (error) => {

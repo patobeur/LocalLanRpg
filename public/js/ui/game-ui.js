@@ -2,8 +2,8 @@
 import { Modals } from "./modals.js";
 import { PlayerInfo } from "./player-info.js";
 
-export function initGameUI(onModeChange) {
-    const modals = new Modals(onModeChange);
+export function initGameUI(onOptionChange) {
+    const modals = new Modals(onOptionChange);
     const playerInfo = new PlayerInfo();
 
     return {

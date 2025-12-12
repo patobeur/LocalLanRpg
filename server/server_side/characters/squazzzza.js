@@ -52,5 +52,5 @@ module.exports = {
     scale: 1,
     svg: "squazzzza.svg",
     png: "Squazzzza.png",
-    gltf: "Squazzzza.gltf",
+    fbx: "Squazzzza.fbx",
 };

@@ -29,8 +29,8 @@ if (!roomId) {
 	window.location.href = "/lobby.html";
 }
 
-// Initialize game state with room ID
-initGameState(roomId);
+// Initialize game state with room ID - moved to async initializeGame
+// initGameState(roomId);
 
 // Initialize loading screen
 loadingScreen.init();
@@ -52,13 +52,16 @@ setPlayersMap(others);
 
 // Initialize game UI
 const gameUI = initGameUI((options) => {
-    setOptions(options);
-    console.log(`[Game] Options updated:`, options);
+	setOptions(options);
+	console.log(`[Game] Options updated:`, options);
 });
 
 // Modified game initialization flow
 async function initializeGame() {
 	try {
+		// Initialize game state with room ID (loads character data)
+		await initGameState(roomId);
+
 		// Get room data first
 		const roomRes = await fetch(`/api/rooms/${roomId}`);
 		const roomData = await roomRes.json();

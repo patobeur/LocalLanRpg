@@ -8,6 +8,8 @@
  * @param {Object} roomData - Room data from server
  * @returns {Array} List of assets to load
  */
+import { charactersData } from "../main/game-state.js";
+
 export function getRequiredAssets(roomData) {
 	const assets = [];
 	const basePath = "/media";
@@ -22,12 +24,20 @@ export function getRequiredAssets(roomData) {
 
 	// Add character models
 	for (const characterName of characters) {
-		// Assuming GLTF format based on user's changes
-		assets.push({
-			type: "fbx",
-			path: `${basePath}/characters/glb/${characterName}.fbx`,
-			name: `character_${characterName}`,
-		});
+		const charData = charactersData[characterName];
+		if (charData) {
+			const fileName = charData.fbx || charData.glb || charData.gltf;
+			if (fileName) {
+				const isFbx = fileName.toLowerCase().endsWith('.fbx');
+				const type = isFbx ? 'fbx' : 'gltf';
+
+				assets.push({
+					type: type,
+					path: `${basePath}/characters/glb/${fileName}`,
+					name: `character_${characterName}`,
+				});
+			}
+		}
 	}
 
 	// Add minion models (using exact FBX filenames from server/server_side/minions.js)

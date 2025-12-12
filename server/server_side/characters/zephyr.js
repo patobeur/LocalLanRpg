@@ -51,5 +51,5 @@ module.exports = {
     scale: 1,
     svg: "zephyr.svg",
     png: "Zephyr.png",
-    glb: "Zephyr.gltf",
+    glb: "Zephyr.fbx",
 };

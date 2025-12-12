@@ -55,5 +55,5 @@ module.exports = {
     scale: 1,
     svg: "flora.svg",
     png: "Flora.png",
-    glb: "Flora.gltf",
+    glb: "Flora.fbx",
 };

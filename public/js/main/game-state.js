@@ -55,10 +55,11 @@ export function initGameState(roomIdParam) {
     roomId = roomIdParam;
 
     // Load characters data
-    fetch("/api/characters")
+    return fetch("/api/characters")
         .then((res) => res.json())
         .then((data) => {
             charactersData = data.chars;
+            return charactersData;
         });
 }
 

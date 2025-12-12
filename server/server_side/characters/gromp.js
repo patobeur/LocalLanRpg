@@ -51,5 +51,5 @@ module.exports = {
     scale: 1,
     svg: "gromp.svg",
     png: "Gromp.png",
-    glb: "Gromp.gltf",
+    glb: "Gromp.fbx",
 };

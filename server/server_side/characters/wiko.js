@@ -51,5 +51,5 @@ module.exports = {
     scale: 1,
     svg: "wiko.svg",
     png: "Wiko.png",
-    glb: "Wiko.gltf",
+    glb: "Wiko.fbx",
 };

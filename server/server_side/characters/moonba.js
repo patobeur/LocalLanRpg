@@ -50,5 +50,5 @@ module.exports = {
     scale: 1,
     svg: "Moonba.svg",
     png: "Moonba.png",
-    glb: "Moonba.gltf",
+    glb: "Moonba.fbx",
 };

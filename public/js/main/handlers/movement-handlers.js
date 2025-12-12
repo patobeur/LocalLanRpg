@@ -11,14 +11,14 @@ export function handlePlayerState(msg) {
 
     // Also update the level in the HUD if it's different
     if (msg.level !== undefined && m.userData.level !== msg.level) {
-        // updatePlayerHUD will update userData.level internally
+        m.userData.level = msg.level;
         updatePlayerHUD(
             m,
             m.userData.health,
             m.userData.maxHealth,
             m.userData.mana,
             m.userData.maxMana,
-            msg.level
+            m.userData.level
         );
     }
 }

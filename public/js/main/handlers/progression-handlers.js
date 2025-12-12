@@ -33,14 +33,14 @@ export function handlePlayerXp(msg) {
     } else {
         const m = others.get(msgId);
         if (m) {
-            // updatePlayerHUD will update userData.level internally
+            m.userData.level = msg.level; // Update local level state
             updatePlayerHUD(
                 m,
                 m.userData.health,
                 m.userData.maxHealth,
                 m.userData.mana,
                 m.userData.maxMana,
-                msg.level // Pass the new level from the message
+                m.userData.level
             );
             console.log(`[Game] Player XP update: ${m.userData.name || msgId} is now level ${msg.level}`);
         }
@@ -69,14 +69,14 @@ export function handleLevelUp(msg) {
         // This is a level-up for another player.
         const m = others.get(msgId);
         if (m) {
-            // updatePlayerHUD will update userData.level internally
+            m.userData.level = msg.level; // Update local level state
             updatePlayerHUD(
                 m,
                 m.userData.health,
                 m.userData.maxHealth,
                 m.userData.mana,
                 m.userData.maxMana,
-                msg.level // Pass the new level from the message
+                m.userData.level
             );
             console.log(`[Game] Le joueur '${m.userData.name}' a atteint le niveau ${msg.level} !`);
         }

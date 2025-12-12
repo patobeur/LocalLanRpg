@@ -74,7 +74,10 @@ class PlayerManager {
             minionsKilled: 0,
             damageHistory: [], // Array of { attackerId, timestamp }
 
-            maxXp: 100,
+            maxXp: characters.xpNeededPerLv && characters.xpNeededPerLv[msg.level || 1]
+                ? characters.xpNeededPerLv[msg.level || 1]
+                : characters.xpNeededPerLv[1], // Default to level 1 requirement if undefined, or hardcoded 1000? Safe fallback needed.
+
             isDead: false,
             respawnTime: null,
             disconnected: false,

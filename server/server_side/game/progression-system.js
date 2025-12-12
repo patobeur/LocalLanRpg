@@ -27,7 +27,19 @@ class ProgressionSystem {
             player.xp -= player.maxXp;
             player.level++;
             leveledUp = true;
-            player.maxXp = player.level * 100;
+
+            // Update maxXp based on new level
+            const nextLevelIndex = player.level;
+            if (characters && characters.xpNeededPerLv && nextLevelIndex < characters.xpNeededPerLv.length) {
+                player.maxXp = characters.xpNeededPerLv[nextLevelIndex];
+            } else {
+                // Fallback or cap
+                player.maxXp = (characters && characters.xpNeededPerLv)
+                    ? characters.xpNeededPerLv[characters.xpNeededPerLv.length - 1]
+                    : player.level * 1000;
+            }
+
+
             player.health = player.maxHealth; // Full heal on level up
             player.mana = player.maxMana;
             console.log(`[Game] Player ${player.id} leveled up to ${player.level}!`);
@@ -93,7 +105,18 @@ class ProgressionSystem {
         if (player.lastAttackerId) {
             const attacker = players.get(player.lastAttackerId);
             if (attacker && attacker.faction !== player.faction) {
-                const xpGain = 50 * player.level;
+                // Calculate XP Reward based on victim's level
+                let xpGain = 50 * player.level; // Default fallback
+                if (characters.xpRewardedPerLv) {
+                    // Index corresponds to level - 1 (e.g. index 0 is for lvl 1 reward)
+                    const rewardIndex = Math.max(0, player.level - 1);
+                    if (rewardIndex < characters.xpRewardedPerLv.length) {
+                        xpGain = characters.xpRewardedPerLv[rewardIndex];
+                    } else {
+                        xpGain = characters.xpRewardedPerLv[characters.xpRewardedPerLv.length - 1];
+                    }
+                }
+
                 addXpToPlayerCallback(attacker.id, xpGain, events);
 
                 // Increment Kills
@@ -134,8 +157,19 @@ class ProgressionSystem {
                     assister.assists = (assister.assists || 0) + 1;
                     console.log(`[Game] Player ${assister.name} assisted in killing ${victim.name} (Assists: ${assister.assists})`);
 
-                    // XP for assist
-                    const xpGain = 25 * victim.level;
+                    // XP for assist - 50% of kill reward
+                    let xpGain = 25 * victim.level; // Default
+                    if (characters.xpRewardedPerLv) {
+                        const rewardIndex = Math.max(0, victim.level - 1);
+                        let baseReward = 100;
+                        if (rewardIndex < characters.xpRewardedPerLv.length) {
+                            baseReward = characters.xpRewardedPerLv[rewardIndex];
+                        } else {
+                            baseReward = characters.xpRewardedPerLv[characters.xpRewardedPerLv.length - 1];
+                        }
+                        xpGain = Math.floor(baseReward * 0.5);
+                    }
+
                     addXpToPlayerCallback(assister.id, xpGain, events);
                 }
             });

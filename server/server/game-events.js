@@ -14,11 +14,20 @@ function setupGameLoop(roomManager, broadcastToRoom) {
             if (room.status === "playing" && room.game) {
                 const events = room.game.update(dt);
 
+                // --- Batching Logic ---
+                const worldUpdate = {
+                    type: "world-state",
+                    ts: Date.now(),
+                    players: [],
+                    minions: [],
+                    events: [] // For other one-off events
+                };
+
                 events.forEach((e) => {
                     if (e.type === "server-player-move") {
                         const player = room.game.players.get(e.id);
                         if (player) {
-                            broadcastToRoom(room.id, {
+                            worldUpdate.players.push({
                                 type: "player-state",
                                 id: e.id,
                                 x: e.x,
@@ -26,11 +35,19 @@ function setupGameLoop(roomManager, broadcastToRoom) {
                                 z: e.z,
                                 rotY: e.rotY,
                                 level: player.level,
-                                ts: Date.now(), // Use current time for sync
+                                ts: Date.now(),
                             });
                         }
+                    } else if (e.type === "minion-move") {
+                        worldUpdate.minions.push({
+                            minionId: e.minionId,
+                            x: e.x,
+                            y: e.y,
+                            z: e.z,
+                            rotY: e.rotY
+                        });
                     } else if (e.type === "player-regen") {
-                        broadcastToRoom(room.id, {
+                        worldUpdate.events.push({
                             type: "player-health",
                             id: e.id,
                             health: e.health,
@@ -39,7 +56,7 @@ function setupGameLoop(roomManager, broadcastToRoom) {
                             maxMana: e.maxMana,
                         });
                     } else if (e.type === "player-health") {
-                        broadcastToRoom(room.id, {
+                        worldUpdate.events.push({
                             type: "player-health",
                             id: e.id,
                             health: e.health,
@@ -48,21 +65,19 @@ function setupGameLoop(roomManager, broadcastToRoom) {
                             maxMana: e.maxMana,
                         });
                     } else if (e.type === "projectile-hit") {
-                        broadcastToRoom(room.id, {
+                        worldUpdate.events.push({
                             type: "projectile-hit",
                             shooterId: e.shooterId,
                             targetId: e.targetId,
                         });
                     } else if (e.type === "player-death") {
-                        // Broadcast death to all clients
-                        broadcastToRoom(room.id, {
+                        worldUpdate.events.push({
                             type: "player-death",
                             id: e.id,
                             respawnTime: e.respawnTime,
                         });
                     } else if (e.type === "player-respawn") {
-                        // Broadcast respawn to all clients
-                        broadcastToRoom(room.id, {
+                        worldUpdate.events.push({
                             type: "player-respawn",
                             id: e.id,
                             x: e.x,
@@ -74,7 +89,7 @@ function setupGameLoop(roomManager, broadcastToRoom) {
                             maxMana: e.maxMana,
                         });
                     } else if (e.type === "player-xp") {
-                        broadcastToRoom(room.id, {
+                        worldUpdate.events.push({
                             type: "player-xp",
                             id: e.id,
                             xp: e.xp,
@@ -82,20 +97,19 @@ function setupGameLoop(roomManager, broadcastToRoom) {
                             level: e.level,
                         });
                     } else if (e.type === "level-up") {
-                        // Broadcast level-up to all clients in room
-                        broadcastToRoom(room.id, {
+                        worldUpdate.events.push({
                             type: "level-up",
                             id: e.id,
                             level: e.level,
                         });
                     } else if (e.type === "structure-level-up") {
-                        broadcastToRoom(room.id, {
+                        worldUpdate.events.push({
                             type: "structure-level-up",
                             structureId: e.structureId,
                             level: e.level
                         });
                     } else if (e.type === "structure-hit") {
-                        broadcastToRoom(room.id, {
+                        worldUpdate.events.push({
                             type: "structure-hit",
                             structureId: e.structureId,
                             damage: e.damage,
@@ -104,46 +118,33 @@ function setupGameLoop(roomManager, broadcastToRoom) {
                             shooterId: e.shooterId
                         });
 
-                        // Broadcast projectile-hit so clients can remove the projectile
-                        broadcastToRoom(room.id, {
+                        // Also broadcast projectile-hit so clients can remove the projectile
+                        worldUpdate.events.push({
                             type: "projectile-hit",
                             shooterId: e.shooterId,
                             targetId: e.structureId,
                         });
                     } else if (e.type === "structure-death") {
-                        broadcastToRoom(room.id, {
+                        worldUpdate.events.push({
                             type: "structure-death",
                             structureId: e.structureId,
                             killerId: e.killerId
                         });
                     } else if (e.type === "minion-spawn") {
-                        // Broadcast minion spawn to all clients
-                        broadcastToRoom(room.id, {
+                        worldUpdate.events.push({
                             type: "minion-spawn",
                             minion: e.minion
                         });
                     } else if (e.type === "minion-death") {
-                        // Broadcast minion death to all clients
-                        broadcastToRoom(room.id, {
+                        worldUpdate.events.push({
                             type: "minion-death",
                             minionId: e.minionId
                         });
-                    } else if (e.type === "minion-move") {
-                        // Broadcast minion movement (throttled by minion manager)
-                        broadcastToRoom(room.id, {
-                            type: "minion-move",
-                            minionId: e.minionId,
-                            x: e.x,
-                            y: e.y,
-                            z: e.z,
-                            rotY: e.rotY
-                        });
                     } else if (e.type === "minion-attack") {
-                        // Minion fired a projectile
+                        // Minion fired a projectile - we must add it to the game state locally on server
                         room.game.addProjectile(e.minionId, e.x, e.y, e.z, e.angle);
 
-                        // Broadcast projectile spawn to all clients
-                        broadcastToRoom(room.id, {
+                        worldUpdate.events.push({
                             type: "projectile",
                             shooterId: e.minionId,
                             shooterType: "minion",
@@ -153,22 +154,30 @@ function setupGameLoop(roomManager, broadcastToRoom) {
                             angle: e.angle
                         });
                     } else if (e.type === "minion-health") {
-                        broadcastToRoom(room.id, {
+                        worldUpdate.events.push({
                             type: "minion-health",
                             minionId: e.minionId,
                             health: e.health,
                             maxHealth: e.maxHealth
                         });
                     } else if (e.type === "game-over") {
-                        // Broadcast game-over to all clients
                         console.log(`[Game Room ${room.id}] Game Over! Team ${e.winningTeam} wins!`);
-                        broadcastToRoom(room.id, {
+                        worldUpdate.events.push({
                             type: "game-over",
                             winningTeam: e.winningTeam,
                             players: e.players
                         });
                     }
                 });
+
+                // Only broadcast if there is something to update (usually always true due to movements)
+                if (
+                    worldUpdate.players.length > 0 ||
+                    worldUpdate.minions.length > 0 ||
+                    worldUpdate.events.length > 0
+                ) {
+                    broadcastToRoom(room.id, worldUpdate);
+                }
             }
         }
     }, 1000 / 60);

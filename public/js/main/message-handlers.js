@@ -43,6 +43,9 @@ export { setGameUI, setPlayerColor };
  */
 export function handleMessage(msg) {
     switch (msg.type) {
+        case "world-state":
+            handleWorldState(msg);
+            break;
         case "server-shutdown":
             handleServerShutdown();
             break;
@@ -110,6 +113,46 @@ export function handleMessage(msg) {
         default:
             // Unknown message type
             break;
+    }
+}
+
+/**
+ * Handle batched world state update
+ * @param {object} msg - The world-state message containing lists of updates
+ */
+function handleWorldState(msg) {
+    // 1. Update Players
+    if (msg.players && msg.players.length > 0) {
+        msg.players.forEach(pState => {
+            // pState is already formatted as a player-state object by the server
+            // or we can construct it if needed.
+            // Server sends: { type: "player-state", id, x, y, z, rotY, level, ts }
+            handlePlayerState(pState);
+        });
+    }
+
+    // 2. Update Minions
+    if (msg.minions && msg.minions.length > 0) {
+        msg.minions.forEach(mState => {
+            // Server sends: { minionId, x, y, z, rotY }
+            // Handler expects the full message
+            handleMinionMove({
+                type: "minion-move",
+                minionId: mState.minionId,
+                x: mState.x,
+                y: mState.y,
+                z: mState.z,
+                rotY: mState.rotY
+            });
+        });
+    }
+
+    // 3. Process other events
+    if (msg.events && msg.events.length > 0) {
+        msg.events.forEach(event => {
+            // Recursively dispatch standard events
+            handleMessage(event);
+        });
     }
 }
 

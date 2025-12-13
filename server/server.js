@@ -6,7 +6,8 @@ const http = require("http");
 const roomManager = require("./server_side/rooms.js");
 
 // Import server modules
-const { setupApp, requireAuth } = require("./server/app-config.js");
+// Import server modules
+const { setupApp, requireAuth, sessionMiddleware } = require("./server/app-config.js");
 const { setupRoutes } = require("./server/routes.js");
 const { setupRoomRoutes } = require("./server/room-routes.js");
 const { setupWebSocket, broadcastToRoom } = require("./server/websocket.js");
@@ -25,7 +26,7 @@ setupRoutes(app, requireAuth, roomManager);
 setupRoomRoutes(app, requireAuth, roomManager, broadcastToRoom);
 
 // Setup WebSocket server
-const wss = setupWebSocket(server, roomManager);
+const wss = setupWebSocket(server, roomManager, sessionMiddleware);
 
 // Setup game loop (60 FPS)
 const stopGameLoop = setupGameLoop(roomManager, broadcastToRoom);

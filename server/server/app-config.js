@@ -10,23 +10,27 @@ const authRoutes = require("../authRoutes");
  * Configure Express app with all middleware
  * @param {Express} app - Express application instance
  */
+const sessionMiddleware = session({
+	secret: "local-lan-rpg-secret-key-change-in-production",
+	resave: false,
+	saveUninitialized: false,
+	cookie: {
+		maxAge: 24 * 60 * 60 * 1000, // 24 hours
+		secure: false, // set to true if using HTTPS
+	},
+});
+
+/**
+ * Configure Express app with all middleware
+ * @param {Express} app - Express application instance
+ */
 function setupApp(app) {
 	// Body parsing middleware
 	app.use(express.json());
 	app.use(express.urlencoded({ extended: true }));
 
 	// Session configuration
-	app.use(
-		session({
-			secret: "local-lan-rpg-secret-key-change-in-production",
-			resave: false,
-			saveUninitialized: false,
-			cookie: {
-				maxAge: 24 * 60 * 60 * 1000, // 24 hours
-				secure: false, // set to true if using HTTPS
-			},
-		})
-	);
+	app.use(sessionMiddleware);
 
 	// Auth routes
 	app.use("/api/auth", authRoutes);
@@ -63,4 +67,5 @@ function requireAuth(req, res, next) {
 module.exports = {
 	setupApp,
 	requireAuth,
+	sessionMiddleware,
 };

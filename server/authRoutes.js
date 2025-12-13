@@ -2,8 +2,34 @@ const express = require("express");
 const router = express.Router();
 const { createUser, findUserByUsername, bcrypt } = require("./database");
 
+// --- Simple Rate Limiter ---
+const requestCounts = new Map();
+const LIMIT_WINDOW = 60 * 1000; // 1 minute
+const MAX_REQUESTS = 10; // 10 requests per minute per IP
+
+function rateLimit(req, res, next) {
+	const ip = req.ip;
+	const now = Date.now();
+
+	let client = requestCounts.get(ip);
+
+	// Reset if window expired
+	if (!client || now - client.startTime > LIMIT_WINDOW) {
+		client = { count: 0, startTime: now };
+	}
+
+	client.count++;
+	requestCounts.set(ip, client);
+
+	if (client.count > MAX_REQUESTS) {
+		return res.status(429).json({ error: "Trop de tentatives. Veuillez patienter 1 minute." });
+	}
+
+	next();
+}
+
 // Route d'enregistrement
-router.post("/register", async (req, res) => {
+router.post("/register", rateLimit, async (req, res) => {
 	const { username, email, password } = req.body;
 
 	// Validation
@@ -32,7 +58,7 @@ router.post("/register", async (req, res) => {
 });
 
 // Route de connexion
-router.post("/login", async (req, res) => {
+router.post("/login", rateLimit, async (req, res) => {
 	const { username, password } = req.body;
 
 	if (!username || !password) {

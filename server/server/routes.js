@@ -15,6 +15,7 @@ const { getAllUsersStats } = require("../database.js");
  */
 function setupRoutes(app, requireAuth, roomManager) {
 	// Route par défaut - redirige vers lobby ou jeu si authentifié
+	// Route par défaut - Landing page ou redirection jeu
 	app.get("/", (req, res) => {
 		if (req.session && req.session.userId) {
 			// Check if user is in an active game
@@ -26,10 +27,8 @@ function setupRoutes(app, requireAuth, roomManager) {
 					return res.redirect(`/jouer.html?roomId=${room.id}`);
 				}
 			}
-			res.redirect("/lobby.html");
-		} else {
-			res.redirect("/login.html");
 		}
+		res.sendFile(path.join(__dirname, "../../public/index.html"));
 	});
 
 	// Route du lobby - nécessite authentification

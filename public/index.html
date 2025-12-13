@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<title>Accueil - LocalLanRpg</title>
+	<link rel="stylesheet" href="lobby.css" />
+
+</head>
+
+<body>
+
+	<link rel="stylesheet" href="css/navbar.css" />
+	<link rel="stylesheet" href="landing.css" />
+
+	<div class="main-navbar">
+		<div class="nav-left">
+			<a href="/" class="nav-brand">
+				🎮 <span>LocalLanRpg</span>
+			</a>
+			<div class="nav-links">
+				<div class="nav-dropdown">
+					<button class="nav-dropbtn">Minions ▾</button>
+					<div class="nav-dropdown-content">
+						<a href="/meshes3d.html">Voir les modèles</a>
+					</div>
+				</div>
+				<a href="/players.html" class="nav-link">Joueurs</a>
+			</div>
+		</div>
+		<div class="nav-right">
+			<div class="nav-user-info">
+				👤 <span class="nav-username" id="navUsername">Chargement...</span>
+			</div>
+			<button class="nav-btn nav-btn-secondary" id="navLogoutBtn">
+				Déconnexion
+			</button>
+		</div>
+	</div>
+
+	<!-- Hero Section -->
+	<div class="hero">
+		<div class="landing-title">LocalLanRpg</div>
+		<div class="landing-subtitle">
+			Le MOBA indépendant qui défie les conventions.<br>
+			Rejoignez l'aventure directement dans votre navigateur.
+		</div>
+		<a href="/login.html" class="btn-primary btn-cta">JOUER MAINTENANT</a>
+	</div>
+
+	<!-- Game Features -->
+	<section class="section">
+		<h2>L'Expérience</h2>
+		<div class="features-grid">
+			<div class="feature-card">
+				<h3>⚔️ 5v5 Stratégique</h3>
+				<p>Formez votre équipe et affrontez vos adversaires dans des combats intenses. La coordination et la
+					stratégie sont vos meilleures armes.</p>
+			</div>
+			<div class="feature-card">
+				<h3>⚡ Action Immédiate</h3>
+				<p>Pas d'installation, pas de temps de chargement interminable. Lancez votre navigateur et plongez
+					directement dans l'action.</p>
+			</div>
+			<div class="feature-card">
+				<h3>🏆 Compétition</h3>
+				<p>Grimpez dans le classement, maîtrisez vos champions favoris et devenez une légende de l'arène locale.
+				</p>
+			</div>
+		</div>
+	</section>
+
+	<!-- Characters -->
+	<section class="section">
+		<h2>Les Héros</h2>
+		<div class="chars-grid">
+			<div class="char-card">
+				<div class="char-icon">🛡️</div>
+				<span class="char-name">Moonba</span>
+				<span class="char-role role-tank">Tank</span>
+			</div>
+			<div class="char-card">
+				<div class="char-icon">⚔️</div>
+				<span class="char-name">Wiko</span>
+				<span class="char-role role-dps">DPS</span>
+			</div>
+			<div class="char-card">
+				<div class="char-icon">💚</div>
+				<span class="char-name">Squazzzza</span>
+				<span class="char-role role-support">Support</span>
+			</div>
+			<div class="char-card">
+				<div class="char-icon">🧱</div>
+				<span class="char-name">Gromp</span>
+				<span class="char-role role-tank">Tank</span>
+			</div>
+			<div class="char-card">
+				<div class="char-icon">⚡</div>
+				<span class="char-name">Zephyr</span>
+				<span class="char-role role-speedster">Speedster</span>
+			</div>
+			<div class="char-card">
+				<div class="char-icon">🌿</div>
+				<span class="char-name">Flora</span>
+				<span class="char-role role-healer">Healer</span>
+			</div>
+			<div class="char-card">
+				<div class="char-icon">🗡️</div>
+				<span class="char-name">Shadow</span>
+				<span class="char-role role-assassin">Assassin</span>
+			</div>
+		</div>
+	</section>
+
+	<!-- Rules -->
+	<section class="section">
+		<h2>Comment Jouer ?</h2>
+		<div class="features-grid">
+			<div class="feature-card">
+				<h3>1. Choisissez votre Héros</h3>
+				<p>Sélectionnez le champion qui correspond à votre style de jeu : Tank, DPS, Support, ou Assassin.</p>
+			</div>
+			<div class="feature-card">
+				<h3>2. Progressez sur les Lanes</h3>
+				<p>Avancez avec vos sbires, détruisez les tours ennemies et gagnez de l'expérience pour débloquer vos
+					compétences ultimes.</p>
+			</div>
+			<div class="feature-card">
+				<h3>3. Détruisez le Nexus</h3>
+				<p>L'objectif final est de détruire la base ennemie. Coordonnez l'assaut final pour remporter la
+					victoire !</p>
+			</div>
+		</div>
+	</section>
+
+	<!-- Roadmap -->
+	<section class="section">
+		<h2>Futur du Jeu</h2>
+		<div class="roadmap-container">
+			<div class="roadmap-item">
+				<span class="roadmap-check">🚀</span>
+				<span class="roadmap-text">Bêta Publique - <span style="color:var(--accent)">En cours</span></span>
+			</div>
+			<div class="roadmap-item">
+				<span class="roadmap-check">⏳</span>
+				<span class="roadmap-text">Nouveaux Champions (Mage Avenir)</span>
+			</div>
+			<div class="roadmap-item">
+				<span class="roadmap-check">⏳</span>
+				<span class="roadmap-text">Système de Skins & Personnalisation</span>
+			</div>
+			<div class="roadmap-item">
+				<span class="roadmap-check">⏳</span>
+				<span class="roadmap-text">Mode Classé & Tournois</span>
+			</div>
+		</div>
+	</section>
+
+	<!-- Indie Dev -->
+	<section class="section">
+		<h2>Développement Indépendant</h2>
+		<div class="indie-content">
+			<p>
+				LocalLanRpg est un projet passionné, développé de manière <span class="indie-highlight">100%
+					indépendante</span>.
+				Loin des grosses productions, ce jeu est le fruit d'un amour pour les MOBA et le développement web.
+				<br><br>
+				Chaque mise jour, chaque champion et chaque ligne de code est conçu pour offrir une expérience fun et
+				accessible.
+				Merci de faire partie de l'aventure !
+			</p>
+		</div>
+	</section>
+
+	<footer style="text-align: center; padding: 40px; color: #8b9bb4; font-size: 0.9rem;">
+		&copy; 2025 LocalLanRpg. Tous droits réservés.
+	</footer>
+
+
+	<script src="js/navbar.js"></script>
+	<script src="js/pwa.js"></script>
+	<script>
+		// Adjust navbar for landing page if needed
+		document.addEventListener('DOMContentLoaded', async () => {
+			// If logged in, maybe change the button to "Go to Lobby"?
+			// We can reuse the session check from navbar.js or do a quick check here.
+			// For now, navbar.js updates the username. We can let the user click "Login" which handles the redirect logic if already logged in (login page usually redirects if active session, checking authRoutes.js).
+
+			// Oops, authRoutes.js: router.post("/login"...) doesn't check 'get' for redirect.
+			// server/routes.js: app.get("/login.html"...) just sends file.
+			// But generally users will see "Invité" or their name.
+		});
+	</script>
+</body>
+
+</html>

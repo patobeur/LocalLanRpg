@@ -73,8 +73,26 @@ function tick(t) {
             playerMesh.userData.hud.rotation.y = -playerMesh.rotation.y;
         }
 
-        // Placeholder for others: assuming idle for now as we don't have their velocity/attack state easily available yet
-        updateEntityAnimation(playerMesh, dt, false, false, false);
+        // Determine animation state for others based on network updates
+        const now = performance.now();
+        const lastMove = playerMesh.userData.lastMoveTime || 0;
+        // Consider moving if update received efficiently recent (e.g. 100ms)
+        // Since updates are 30fps (~33ms), 100ms is a safe buffer
+        const isMoving = (now - lastMove) < 100;
+
+        const shotFired = !!playerMesh.userData.shotFiredPending;
+        // Consume the flag
+        if (shotFired) playerMesh.userData.shotFiredPending = false;
+
+        // Consider "attacking" if we just shot or are essentially in cooldown period
+        // For visual purposes, we just need to pass 'shotFired' to trigger the loop reset.
+        // We can set isAttacking = true for a short duration to keep the "stance" if we had separate non-firing attack stance.
+        // But since 'autoattack' IS the shooting animation, we just need to ensure it plays.
+        // If we set isAttacking = true, it tries to play 'autoattack'.
+        const lastShot = playerMesh.userData.lastShotTime || 0;
+        const isAttacking = (now - lastShot) < 500; // Stay in attack state for 0.5s
+
+        updateEntityAnimation(playerMesh, dt, isMoving, isAttacking, shotFired);
     }
 
     // Update minions' HUD rotation (Counter-rotate to face camera/south)

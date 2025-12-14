@@ -16,6 +16,18 @@ let respawnInterval = null;
 
 export function handleShoot(msg) {
     shootProjectile(msg.x, msg.y, msg.z, msg.angle, String(msg.shooterId));
+
+    // ANIMATION TRIGGER:
+    // Find the shooter and trigger animation state
+    const shooterId = String(msg.shooterId);
+    // We only care about "others" because "me" is handled by local input loop
+    if (shooterId !== me.id) {
+        const shooter = others.get(shooterId);
+        if (shooter) {
+            shooter.userData.shotFiredPending = true;
+            shooter.userData.lastShotTime = performance.now();
+        }
+    }
 }
 
 export function handleProjectileHit(msg) {

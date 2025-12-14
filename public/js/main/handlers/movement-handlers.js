@@ -6,6 +6,19 @@ export function handlePlayerState(msg) {
     if (msgId === me.id) return;
     let m = others.get(msgId);
     if (!m) return;
+
+    // Check movement
+    const oldX = m.position.x;
+    const oldZ = m.position.z;
+
+    const dx = msg.x - oldX;
+    const dz = msg.z - oldZ;
+    const dist = Math.hypot(dx, dz);
+
+    if (dist > 0.01) {
+        m.userData.lastMoveTime = performance.now();
+    }
+
     m.position.set(msg.x, msg.y, msg.z);
     m.rotation.y = msg.rotY;
 

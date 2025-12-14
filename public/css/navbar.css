@@ -1,7 +1,7 @@
 /* Unified Navigation Bar Styles */
 .main-navbar {
-    background-color: #0b1020;
-    border-bottom: 2px solid #26324a;
+    background-color: var(--surface-color);
+    border-bottom: 2px solid var(--border-color);
     padding: 0 20px;
     height: 60px;
     display: flex;
@@ -19,7 +19,7 @@
 .nav-brand {
     font-size: 20px;
     font-weight: bold;
-    color: #eaeefb;
+    color: var(--text-primary);
     text-decoration: none;
     display: flex;
     align-items: center;
@@ -27,7 +27,7 @@
 }
 
 .nav-brand span {
-    background: linear-gradient(135deg, #4caf50 0%, #81c784 100%);
+    background: var(--primary-gradient);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -53,7 +53,7 @@
 .nav-dropbtn {
     background: none;
     border: none;
-    color: #8b9bb4;
+    color: var(--text-muted);
     font-size: 16px;
     cursor: pointer;
     padding: 10px;
@@ -62,7 +62,7 @@
 }
 
 .nav-dropbtn:hover {
-    color: #eaeefb;
+    color: var(--text-primary);
 }
 
 .nav-dropdown-content {
@@ -70,16 +70,16 @@
     position: absolute;
     top: 100%;
     left: 0;
-    background-color: #1a2332;
+    background-color: var(--surface-color);
     min-width: 160px;
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
-    border: 1px solid #26324a;
+    border: 1px solid var(--border-color);
     border-radius: 4px;
     z-index: 1000;
 }
 
 .nav-dropdown-content a {
-    color: #eaeefb;
+    color: var(--text-primary);
     padding: 12px 16px;
     text-decoration: none;
     display: block;
@@ -87,8 +87,8 @@
 }
 
 .nav-dropdown-content a:hover {
-    background-color: #26324a;
-    color: #4caf50;
+    background-color: var(--surface-hover);
+    color: var(--primary-color);
 }
 
 .nav-dropdown:hover .nav-dropdown-content {
@@ -100,13 +100,13 @@
     display: flex;
     align-items: center;
     gap: 10px;
-    color: #8b9bb4;
+    color: var(--text-muted);
     font-size: 14px;
     margin-right: 10px;
 }
 
 .nav-username {
-    color: #eaeefb;
+    color: var(--text-primary);
     font-weight: 600;
 }
 
@@ -123,8 +123,8 @@
 }
 
 .nav-btn-primary {
-    background: linear-gradient(135deg, #4caf50 0%, #66bb6a 100%);
-    color: white;
+    background: var(--primary-gradient);
+    color: var(--text-inverse);
 }
 
 .nav-btn-primary:hover {
@@ -133,14 +133,14 @@
 }
 
 .nav-btn-secondary {
-    background: #26324a;
-    color: #eaeefb;
-    border: 1px solid #36425a;
+    background: var(--surface-color);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
 }
 
 .nav-btn-secondary:hover {
-    background: #2d3a54;
-    border-color: #404e68;
+    background: var(--surface-hover);
+    border-color: var(--border-hover);
 }
 
 .nav-btn-danger {

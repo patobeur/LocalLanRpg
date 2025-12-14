@@ -6,9 +6,9 @@ html,
 body {
 	margin: 0;
 	height: 100%;
-	background: #0b1020;
-	color: #eaeefb;
-	font-family: system-ui, sans-serif;
+	background: var(--bg-color);
+	color: var(--text-primary);
+	font-family: var(--font-main);
 }
 
 #c {
@@ -31,8 +31,8 @@ body {
 }
 
 #card {
-	background: #121a2a;
-	border: 1px solid #26324a;
+	background: var(--surface-color);
+	border: 1px solid var(--border-color);
 	border-radius: 16px;
 	padding: 20px;
 	width: min(92vw, 420px);
@@ -51,9 +51,9 @@ input[type="color"] {
 	width: 100%;
 	padding: 10px;
 	border-radius: 10px;
-	border: 1px solid #2b3a57;
-	background: #0e1523;
-	color: #eaeefb;
+	border: 1px solid var(--border-color);
+	background: var(--surface-color);
+	color: var(--text-primary);
 }
 
 button {
@@ -62,8 +62,8 @@ button {
 	padding: 12px;
 	border: 0;
 	border-radius: 12px;
-	background: #3b82f6;
-	color: white;
+	background: var(--primary-gradient);
+	color: var(--text-inverse);
 	font-weight: 700;
 	cursor: pointer;
 }
@@ -105,8 +105,8 @@ button:disabled {
 }
 
 #options-content {
-	background: #121a2a;
-	border: 1px solid #26324a;
+	background: var(--surface-color);
+	border: 1px solid var(--border-color);
 	border-radius: 12px;
 	width: min(90vw, 350px);
 	padding: 20px;
@@ -117,13 +117,13 @@ button:disabled {
 	margin-top: 0;
 	font-size: 18px;
 	margin-bottom: 15px;
-	border-bottom: 1px solid #26324a;
+	border-bottom: 1px solid var(--border-color);
 	padding-bottom: 10px;
 }
 
 .close-btn {
 	margin-top: 15px;
-	background: #26324a;
+	background: var(--border-color);
 }
 
 .close-btn:hover {
@@ -135,11 +135,11 @@ button:disabled {
 	position: fixed;
 	bottom: 20px;
 	left: 20px;
-	background: rgba(18, 26, 42, 0.85);
-	border: 1px solid #26324a;
+	background: rgba(255, 255, 255, 0.85);
+	border: 1px solid var(--border-color);
 	border-radius: 12px;
 	padding: 15px 20px;
-	color: #eaeefb;
+	color: var(--text-primary);
 	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 	min-width: 150px;
 	backdrop-filter: blur(4px);
@@ -149,12 +149,12 @@ button:disabled {
 	font-size: 18px;
 	font-weight: 700;
 	margin-bottom: 4px;
-	color: #4A90E2;
+	color: var(--primary-color);
 }
 
 #player-level {
 	font-size: 14px;
-	color: #8b9bb4;
+	color: var(--text-muted);
 	margin-bottom: 10px;
 }
 
@@ -169,16 +169,16 @@ button:disabled {
 	font-size: 10px;
 	font-weight: bold;
 	width: 20px;
-	color: #8b9bb4;
+	color: var(--text-muted);
 }
 
 .bar-bg {
 	flex: 1;
 	height: 8px;
-	background: #0e1523;
+	background: var(--bg-color);
 	border-radius: 4px;
 	overflow: hidden;
-	border: 1px solid #26324a;
+	border: 1px solid var(--border-color);
 }
 
 .bar-fill {

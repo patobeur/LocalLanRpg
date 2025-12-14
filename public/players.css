@@ -8,9 +8,9 @@
 
 body {
 	font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-	background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+	background: var(--bg-color);
+	color: var(--text-primary);
 	min-height: 100vh;
-	/* padding-top: 70px; */
 }
 
 .players-content {
@@ -24,21 +24,22 @@ body {
 	justify-content: space-between;
 	align-items: center;
 	margin-bottom: 2rem;
-	background: rgba(255, 255, 255, 0.95);
+	background: var(--surface-color);
 	padding: 1.5rem 2rem;
 	border-radius: 15px;
 	box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+	border: 1px solid var(--border-color);
 }
 
 .players-header h2 {
-	color: #333;
+	color: var(--text-primary);
 	font-size: 1.8rem;
 	font-weight: 600;
 }
 
 .btn-secondary {
-	background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-	color: white;
+	background: var(--primary-gradient);
+	color: var(--text-inverse);
 	border: none;
 	padding: 0.75rem 1.5rem;
 	border-radius: 8px;
@@ -59,7 +60,8 @@ body {
 }
 
 .stats-container {
-	background: rgba(255, 255, 255, 0.95);
+	background: var(--surface-color);
+	border: 1px solid var(--border-color);
 	border-radius: 15px;
 	padding: 2rem;
 	box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
@@ -70,7 +72,7 @@ body {
 	text-align: center;
 	padding: 3rem;
 	font-size: 1.2rem;
-	color: #667eea;
+	color: var(--primary-color);
 }
 
 .error {
@@ -87,8 +89,9 @@ body {
 }
 
 .stats-table thead {
-	background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-	color: white;
+	background: var(--surface-hover);
+	color: var(--text-primary);
+	border-bottom: 2px solid var(--border-color);
 }
 
 .stats-table th {
@@ -115,19 +118,19 @@ body {
 
 .stats-table td {
 	padding: 1rem;
-	color: #333;
+	color: var(--text-primary);
 	font-size: 0.95rem;
 }
 
 .stats-table td:first-child {
 	font-weight: 600;
-	color: #667eea;
+	color: var(--primary-color);
 }
 
 .level-badge {
 	display: inline-block;
 	background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
-	color: #333;
+	color: var(--text-primary);
 	padding: 0.25rem 0.75rem;
 	border-radius: 20px;
 	font-weight: 600;
@@ -137,7 +140,7 @@ body {
 
 .stat-number {
 	font-weight: 500;
-	color: #555;
+	color: var(--text-secondary);
 }
 
 .win-rate {

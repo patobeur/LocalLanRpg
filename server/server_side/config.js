@@ -107,6 +107,8 @@ const MAP_CONFIG = {
 			collisionRadius: 4,
 			lv: 1,
 		},
+	},
+	decorations: {
 		HouseA: {
 			x: 15,
 			y: 15,

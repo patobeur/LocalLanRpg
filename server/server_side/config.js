@@ -109,31 +109,26 @@ const MAP_CONFIG = {
 		},
 	},
 	decorations: {
-		HouseA: {
-			x: 15,
-			y: 15,
-			z: 0,
+		house: {
 			hp: 500,
 			type: "GLB",
 			filepath: "./media/structures/glb/house.glb",
 			rotation: { x: 0, y: -135, z: 0 },
-			scale: { x: 4, y: 4, z: 4 },
-			collisionRadius: 3,
-			lv: 1,
-		},
-		HouseB: {
-			x: -15,
-			y: -15,
-			z: 0,
-			hp: 500,
-			type: "GLB",
-			filepath: "./media/structures/glb/house.glb",
-			rotation: { x: 0, y: -135, z: 0 },
-			scale: { x: 4, y: 4, z: 4 },
-			collisionRadius: 3,
+			scale: { min: 4, max: 6 }, // collisionRadius is result scale/2,
 			lv: 1,
 		},
 	},
+	map: [
+		{
+			decoration_name: "house",
+			position: { x: 20, y: 25, z: 0 },
+			destructible: true,
+			xpRewardedPerLv: [
+				100, 400, 900, 1600, 2500, 3600, 4900, 6400, 8100, 10000, 12100,
+				14400, 16900, 19600, 22500, 25600, 28900, 32400,
+			],
+		},
+	],
 };
 
 // Legacy compatibility - export as single 'config' object

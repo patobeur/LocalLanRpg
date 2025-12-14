@@ -102,7 +102,7 @@ const MAP_CONFIG = {
 			hp: 1000,
 			type: "GLB",
 			filepath: "./media/structures/glb/baseTeamB.glb",
-			rotation: { x: 0, y: 45, z: 0 },
+			rotation: { x: 0, y: -135, z: 0 },
 			scale: { x: 10, y: 10, z: 10 },
 			collisionRadius: 4,
 			lv: 1,

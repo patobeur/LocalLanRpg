@@ -28,7 +28,7 @@ export async function connectToRoomGame(gameUI) {
         const roomData = await roomRes.json();
 
         if (!roomData.success) {
-            alert("Salle introuvable");
+            alert(`Network: Salle introuvable: ${roomData.error}`);
             window.location.href = "/lobby.html";
             return;
         }
@@ -117,8 +117,8 @@ export async function connectToRoomGame(gameUI) {
             }
         };
 
-        ws.onclose = () => {
-            console.log("[WS] Disconnected from game");
+        ws.onclose = (event) => {
+            console.log("[WS] Disconnected from game", event);
             setGameState("connecting");
 
             // Stop the game loop
@@ -131,8 +131,10 @@ export async function connectToRoomGame(gameUI) {
             const statusEl = document.getElementById("status");
             if (statusEl) statusEl.textContent = "Déconnecté...";
 
-            alert("Connexion au serveur perdue. Retour au lobby.");
-            window.location.href = "/lobby.html";
+            if (event.code !== 1000) { // Don't alert on normal closure (e.g. page navigation)
+                alert("Connexion au serveur perdue. Retour au lobby.");
+                window.location.href = "/lobby.html";
+            }
         };
 
         ws.onerror = (error) => {

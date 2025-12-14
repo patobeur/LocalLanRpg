@@ -72,8 +72,9 @@ async function initializeGame() {
 		setGameConstants(configData);
 
 		if (!roomData.success) {
-			alert("Salle introuvable");
-			window.location.href = "/lobby.html";
+			console.error('[Game] Room data fetch failed:', roomData);
+			alert(`Salle introuvable ou erreur: ${roomData.error || 'Inconnue'}`);
+			// window.location.href = "/lobby.html";
 			return;
 		}
 
@@ -96,7 +97,7 @@ async function initializeGame() {
 
 	} catch (error) {
 		console.error('[Game] Initialization error:', error);
-		alert("Erreur lors du chargement du jeu");
+		alert(`Erreur init: ${error.message || error}`);
 		window.location.href = "/lobby.html";
 	}
 }

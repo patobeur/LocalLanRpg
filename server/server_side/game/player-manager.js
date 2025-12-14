@@ -145,12 +145,7 @@ class PlayerManager {
      * @returns {boolean} True if player was removed
      */
     removePlayer(id) {
-        const p = this.players.get(id);
-        if (p) {
-            p.disconnected = true;
-            return true;
-        }
-        return false;
+        return this.players.delete(id);
     }
 
     /**

@@ -49,4 +49,8 @@ module.exports = {
 	svg: "Torp.svg",
 	png: "Torp.png",
 	glb: "Torp.fbx",
+	animations: {
+		walk_path: "glb/animations/Torp_Walk.fbx",
+		autoattack_path: "glb/animations/Torp_AutoAttack.fbx",
+	},
 };

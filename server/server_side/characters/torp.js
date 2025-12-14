@@ -52,5 +52,6 @@ module.exports = {
 	animations: {
 		walk_path: "glb/animations/Torp_Walk.fbx",
 		autoattack_path: "glb/animations/Torp_AutoAttack.fbx",
+		dying_path: "glb/animations/Torp_Dying.fbx",
 	},
 };

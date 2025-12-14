@@ -49,4 +49,9 @@ module.exports = {
 	svg: "Alistar.svg",
 	png: "Alistar.png",
 	glb: "Alistar.fbx",
+	animations: {
+		walk_path: "glb/animations/Alistar_Walk.fbx",
+		autoattack_path: "glb/animations/Alistar_AutoAttack.fbx",
+		dying_path: "glb/animations/Alistar_Dying.fbx",
+	},
 };

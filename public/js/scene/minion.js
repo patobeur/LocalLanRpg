@@ -27,12 +27,8 @@ export function makeMinionMesh(name, faction, fbx, scale = 1) {
 	});
 	healthBarGroup.position.y = 1.2; // Adjust height for minion
 	g.add(healthBarGroup);
-	g.userData.hud = healthBarGroup; // Standardize userData.hud key (was healthBarGroup before, careful!)
-	g.add(healthBarGroup);
-	g.userData.healthBarGroup = healthBarGroup; // Build compatibility alias if needed by other files?
-	// Checking `updateMinionHealth` locally uses `healthBarGroup`, so I should update that function too.
-	// The previous code line 16 was: g.userData.healthBarGroup = healthBarGroup;
-	// I will keep it for safety if external code checks it, but I will primarily use hud.
+	g.userData.hud = healthBarGroup;
+	g.userData.healthBarGroup = healthBarGroup;
 
 	g.userData.level = 1; // Default level, will be updated from logic
 
@@ -43,20 +39,65 @@ export function makeMinionMesh(name, faction, fbx, scale = 1) {
 	// Use FBX filename (without extension) as the asset key
 	const assetKey = fbx ? fbx.replace('.fbx', '') : name;
 
-	// Get model from asset loader (already pre-loaded)
+	// Get model from asset loader (already pre-loaded, using SkeletonUtils.clone via getter)
 	const model = assetLoader.getModel(assetKey);
 
 	if (model) {
 		// Setup model with server-defined scale
 		const modelScale = scale * 0.01; // Apply base scale factor
-		model.scale.set(modelScale, modelScale, modelScale);
+
+		// Create a wrapper for scaling independent of animation transforms
+		const modelWrapper = new THREE.Group();
+		modelWrapper.scale.set(modelScale, modelScale, modelScale);
+		modelWrapper.add(model);
+		g.add(modelWrapper);
+
 		model.traverse((child) => {
-			if (child.isMesh) {
+			if (child.isMesh || child.isSkinnedMesh) {
 				child.castShadow = true;
 				child.receiveShadow = true;
+				child.frustumCulled = false; // Important for SkinnedMesh visibility
 			}
 		});
-		g.add(model);
+
+		// Animation Setup
+		const mixer = new THREE.AnimationMixer(model);
+		const actions = {};
+
+		// 1. Embedded Animations (e.g. Idle)
+		if (model.animations && model.animations.length > 0) {
+			const clip = model.animations[0];
+			const action = mixer.clipAction(clip);
+			actions['idle'] = action;
+			// Play idle by default
+			action.play();
+			g.userData.currentAction = action;
+		}
+
+		// 2. External Animations (Walk, AutoAttack, Dying)
+		// Try to load standardized names if they exist in cache
+		const anims = ['walk', 'autoattack', 'dying'];
+		for (const anim of anims) {
+			const animAssetKey = `${assetKey}_anim_${anim}`;
+			const animAsset = assetLoader.getModel(animAssetKey);
+
+			if (animAsset && animAsset.animations && animAsset.animations.length > 0) {
+				const clip = animAsset.animations[0];
+				const action = mixer.clipAction(clip);
+
+				if (anim === 'autoattack' || anim === 'dying') {
+					action.loop = THREE.LoopOnce;
+					action.clampWhenFinished = true;
+				}
+
+				actions[anim] = action;
+			}
+		}
+
+		// Attach mixer/actions to the root group so game-loop can find them
+		g.userData.mixer = mixer;
+		g.userData.actions = actions;
+
 	} else {
 		console.warn(`[Minion] Model ${assetKey} not found in cache, using fallback`);
 		createFallbackMesh(g, faction);

@@ -22,7 +22,13 @@ export function handleShoot(msg) {
     const shooterId = String(msg.shooterId);
     // We only care about "others" because "me" is handled by local input loop
     if (shooterId !== me.id) {
-        const shooter = others.get(shooterId);
+        let shooter = others.get(shooterId);
+
+        // If not a player, check minions
+        if (!shooter) {
+            shooter = getMinionMesh(shooterId);
+        }
+
         if (shooter) {
             shooter.userData.shotFiredPending = true;
             shooter.userData.lastShotTime = performance.now();

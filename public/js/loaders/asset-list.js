@@ -66,11 +66,30 @@ export function getRequiredAssets(roomData) {
 	for (const minion of minionAssets) {
 		// Use filename without extension as the asset key
 		const assetKey = minion.fbx.replace(".fbx", "");
+
+		// Add main mesh
 		assets.push({
 			type: "fbx",
 			path: `${basePath}/minions/glb/${minion.fbx}`,
-			name: assetKey, // This will be used as the cache key
+			name: assetKey,
 		});
+
+		// Check for animations (Currently only Tank has them)
+		if (minion.fbx.includes("tank")) {
+			// Extract color (blue/red) from filename "minion_tank_{color}.fbx"
+			// minion.fbx is "minion_tank_blue.fbx" -> parts: ["minion", "tank", "blue.fbx"] -> "blue"
+			const color = minion.fbx.includes("blue") ? "blue" : "red";
+			// Construct animation asset key: minion_tank_blue_anim_Walk
+
+			const anims = ["Walk", "AutoAttack", "Dying"];
+			for (const anim of anims) {
+				assets.push({
+					type: "fbx",
+					path: `${basePath}/minions/glb/animations/minion_tank_${color}_${anim}.fbx`,
+					name: `${assetKey}_anim_${anim.toLowerCase()}`, // Normalize to lowercase for consistency
+				});
+			}
+		}
 	}
 
 	// Add structure models

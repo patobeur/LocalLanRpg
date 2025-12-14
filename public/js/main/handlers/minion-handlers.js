@@ -44,6 +44,18 @@ export function handleMinionMove(msg) {
     const minionMesh = minions.get(msg.minionId);
     if (!minionMesh) return;
 
+    // Check movement
+    const oldX = minionMesh.position.x;
+    const oldZ = minionMesh.position.z;
+
+    const dx = msg.x - oldX;
+    const dz = msg.z - oldZ;
+    const dist = Math.hypot(dx, dz);
+
+    if (dist > 0.01) {
+        minionMesh.userData.lastMoveTime = performance.now();
+    }
+
     // Update position
     minionMesh.position.set(msg.x, msg.y, msg.z);
     minionMesh.rotation.y = msg.rotY;

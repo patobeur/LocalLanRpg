@@ -96,10 +96,24 @@ function tick(t) {
     }
 
     // Update minions' HUD rotation (Counter-rotate to face camera/south)
+    // Update minions' HUD rotation and animation
     for (const minionMesh of minions.values()) {
         if (minionMesh.userData.hud) {
             minionMesh.userData.hud.rotation.y = -minionMesh.rotation.y;
         }
+
+        const now = performance.now();
+        const lastMove = minionMesh.userData.lastMoveTime || 0;
+        // Increase buffer to 300ms to handle variable network updates and prevent animation stutter
+        const isMoving = (now - lastMove) < 300;
+
+        const shotFired = !!minionMesh.userData.shotFiredPending;
+        if (shotFired) minionMesh.userData.shotFiredPending = false;
+
+        const lastShot = minionMesh.userData.lastShotTime || 0;
+        const isAttacking = (now - lastShot) < 500;
+
+        updateEntityAnimation(minionMesh, dt, isMoving, isAttacking, shotFired);
     }
 
     // Update projectiles

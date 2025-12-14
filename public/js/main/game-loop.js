@@ -50,24 +50,31 @@ function tick(t) {
 
     // Calculate movement
     const { vx, vz } = updatePlayerMovement(dt);
+    const isMoving = Math.abs(vx) > 0.01 || Math.abs(vz) > 0.01;
 
     // Apply movement to player position
     applyMovement(vx, vz, dt);
 
-    // Update player mesh position
+    // Update player mesh position and animation
     if (me.mesh) {
         me.mesh.position.set(playerTransform.x, playerTransform.y, playerTransform.z);
         me.mesh.rotation.y = playerTransform.rotY;
         if (me.mesh.userData.hud) {
             me.mesh.userData.hud.rotation.y = -playerTransform.rotY;
         }
+
+        // Update Animation
+        updateEntityAnimation(me.mesh, dt, isMoving);
     }
 
-    // Update other players' HUD rotation
+    // Update other players' HUD rotation and animation
     for (const playerMesh of others.values()) {
         if (playerMesh.userData.hud) {
             playerMesh.userData.hud.rotation.y = -playerMesh.rotation.y;
         }
+
+        // Placeholder for others: assuming idle for now as we don't have their velocity easily available yet
+        updateEntityAnimation(playerMesh, dt, false);
     }
 
     // Update minions' HUD rotation (Counter-rotate to face camera/south)
@@ -94,5 +101,41 @@ function tick(t) {
             playerTransform.z,
             playerTransform.rotY
         );
+    }
+}
+
+/**
+ * Helper to update entity animation
+ */
+function updateEntityAnimation(mesh, dt, isMoving) {
+    if (!mesh.userData.mixer) return;
+
+    mesh.userData.mixer.update(dt);
+
+    const actions = mesh.userData.actions;
+    if (!actions) return;
+
+    // Default logic: 'walk' if moving, 'idle' if not
+    let targetActionName = isMoving ? 'walk' : 'idle';
+
+    // Check if target action exists
+    let targetAction = actions[targetActionName];
+
+    // Transition logic
+    if (targetAction) {
+        if (mesh.userData.currentAction !== targetAction) {
+            if (mesh.userData.currentAction) {
+                mesh.userData.currentAction.fadeOut(0.2);
+            }
+            targetAction.reset().fadeIn(0.2).play();
+            mesh.userData.currentAction = targetAction;
+        }
+    } else {
+        // Target action not found. 
+        // If we want 'idle' but don't have it, we might just stop the current animation
+        if (mesh.userData.currentAction) {
+            mesh.userData.currentAction.fadeOut(0.2);
+            mesh.userData.currentAction = null;
+        }
     }
 }

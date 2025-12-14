@@ -81,27 +81,43 @@ export function makePlayerMesh(name, level, hexColor, characterName) {
 			const model = cachedModel; // getModel already clones
 			model.name = characterName;
 
-			// Apply scale from data if available
-			const scale = charData.scale ? charData.scale * 0.01 : 0.01;
-			model.scale.set(scale, scale, scale);
+			console.log(`[Player] Created mesh for ${characterName}:`, model);
+
+			// Apply scale
+			// FORCE FIX for Torp
+			let scale = 0.01;
+			if (characterName === 'Torp') {
+				scale = 0.01;
+				console.log('[Player] FORCING SCALE 0.01 FOR TORP');
+			} else if (charData.scale) {
+				scale = charData.scale * 0.01;
+			} else if (assetKey.toLowerCase().endsWith('.fbx') || charData.glb?.toLowerCase().endsWith('.fbx')) {
+				scale = 0.01;
+			}
+
+			console.log(`[Player] ${characterName} applying scale: ${scale}`);
+
+			// WRAPPER FIX: Create a container for the model to handle scaling independent of animations
+			const modelWrapper = new THREE.Group();
+			modelWrapper.name = `${characterName}_Wrapper`;
+			modelWrapper.scale.set(scale, scale, scale);
+			modelWrapper.add(model);
 
 			model.traverse((child) => {
-				if (child.isMesh) {
+				console.log(`[Player] ${characterName} child:`, child.name, child.type, 'isMesh:', child.isMesh, 'isSkinned:', child.isSkinnedMesh);
+
+				if (child.isMesh || child.type === 'SkinnedMesh' || child.isSkinnedMesh) {
 					child.castShadow = true;
 					child.receiveShadow = true;
+					child.frustumCulled = false;
+					console.log(`[Player] Set frustumCulled=false for ${child.name}`);
 				}
 			});
 
 			// Center the model?
-			// Existing primitives were at y=0.45 (body) and y=1.1 (head)
-			// Minions are just at 0
 			model.position.set(0, 0, 0);
 
-			// Correct rotation if needed (FBX often need rotation)
-			// Minions didn't seem to need extra rotation in their code, but let's see.
-			// If it's facing wrong, we might need model.rotation.y = Math.PI or similar.
-
-			g.add(model);
+			g.add(modelWrapper);
 			g.userData.hasCharacterModel = true;
 			g.userData.character = characterName;
 
@@ -116,6 +132,41 @@ export function makePlayerMesh(name, level, hexColor, characterName) {
 			// healthBarGroup.position.y = 1.8;
 			// Note: 'hud' is the variable name here, not 'healthBarGroup'
 			hud.position.y = 1.8;
+
+			// Animation Setup
+			const mixer = new THREE.AnimationMixer(model);
+			const actions = {};
+
+			// 1. Check for Embedded Animations (e.g. Idle in Torp.fbx)
+			if (model.animations && model.animations.length > 0) {
+				// We assume the first embedded animation is Idle if not specified otherwise
+				const clip = model.animations[0];
+
+				// Optional: Check clip name?
+				// console.log(`[Player] Found embedded animation for ${characterName}:`, clip.name);
+
+				const action = mixer.clipAction(clip);
+				actions['idle'] = action; // Map to 'idle' by default
+			}
+
+			// 2. Load External Animations
+			if (charData.animations) {
+				for (const [key, path] of Object.entries(charData.animations)) {
+					const animName = key.replace('_path', '');
+					const assetName = `character_${characterName}_anim_${key}`;
+
+					const animAsset = assetLoader.getModel(assetName);
+					if (animAsset && animAsset.animations && animAsset.animations.length > 0) {
+						const clip = animAsset.animations[0];
+						const action = mixer.clipAction(clip);
+						actions[animName] = action;
+					}
+				}
+			}
+
+			model.userData.mixer = mixer;
+			model.userData.actions = actions;
+			model.userData.currentAction = null;
 		}
 	}
 

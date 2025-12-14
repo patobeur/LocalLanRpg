@@ -23,9 +23,11 @@ export function getRequiredAssets(roomData) {
 	}
 
 	// Add character models
+	// Add character models and animations
 	for (const characterName of characters) {
 		const charData = charactersData[characterName];
 		if (charData) {
+			// Main model
 			const fileName = charData.fbx || charData.glb || charData.gltf;
 			if (fileName) {
 				const isFbx = fileName.toLowerCase().endsWith('.fbx');
@@ -36,6 +38,19 @@ export function getRequiredAssets(roomData) {
 					path: `${basePath}/characters/glb/${fileName}`,
 					name: `character_${characterName}`,
 				});
+			}
+
+			// Animations
+			if (charData.animations) {
+				for (const [animName, animPath] of Object.entries(charData.animations)) {
+					const isFbx = animPath.toLowerCase().endsWith('.fbx');
+					// We treat animations as models for loading purposes
+					assets.push({
+						type: isFbx ? 'fbx' : 'gltf',
+						path: `${basePath}/characters/${animPath}`,
+						name: `character_${characterName}_anim_${animName}`,
+					});
+				}
 			}
 		}
 	}

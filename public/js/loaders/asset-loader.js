@@ -1,5 +1,6 @@
 import { GLTFLoader } from "/node_modules/three/examples/jsm/loaders/GLTFLoader.js";
 import { FBXLoader } from "/node_modules/three/examples/jsm/loaders/FBXLoader.js";
+import * as SkeletonUtils from "/node_modules/three/examples/jsm/utils/SkeletonUtils.js";
 
 /**
  * Centralized Asset Loader
@@ -136,7 +137,15 @@ export class AssetLoader {
      */
     getModel(name) {
         const cached = this.cache.get(name);
-        return cached ? cached.clone() : null;
+        if (!cached) return null;
+
+        // Use SkeletonUtils to clone to ensure SkinnedMeshes and Bones are correctly cloned and rebound
+        try {
+            return SkeletonUtils.clone(cached);
+        } catch (e) {
+            console.warn('[AssetLoader] SkeletonUtils.clone failed, falling back to standard clone:', e);
+            return cached.clone();
+        }
     }
 
     /**

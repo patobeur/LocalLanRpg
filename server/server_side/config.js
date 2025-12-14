@@ -92,7 +92,7 @@ const MAP_CONFIG = {
 			filepath: "./media/structures/glb/baseTeamA.glb",
 			rotation: { x: 0, y: 45, z: 0 },
 			scale: { x: 10, y: 10, z: 10 },
-			collisionRadius: 8,
+			collisionRadius: 4,
 			lv: 1,
 		},
 		BaseTeamB: {
@@ -104,7 +104,7 @@ const MAP_CONFIG = {
 			filepath: "./media/structures/glb/baseTeamB.glb",
 			rotation: { x: 0, y: -135, z: 0 },
 			scale: { x: 10, y: 10, z: 10 },
-			collisionRadius: 8,
+			collisionRadius: 4,
 			lv: 1,
 		},
 	},

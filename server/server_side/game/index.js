@@ -91,8 +91,9 @@ class Game {
         const players = this.playerManager.getPlayersMap();
         const structures = this.gameStateManager.getStructures();
 
-        // 1. Update disconnected players
+        // 1. Update disconnected players and check active players
         this.playerManager.updateDisconnectedPlayers(dt, events);
+        this.playerManager.updateActivePlayers(dt, events);
 
         // 2. Update health and mana regeneration
         this.regenerationSystem.updateRegeneration(players, dt, events);

@@ -176,7 +176,7 @@ class PlayerManager {
                     p.ts = Date.now();
 
                     events.push({
-                        type: "player-state",
+                        type: "server-player-move",
                         id: p.id,
                         x: p.x,
                         y: p.y,
@@ -184,6 +184,30 @@ class PlayerManager {
                         rotY: p.rotY
                     });
                 }
+            }
+        }
+    }
+
+    /**
+     * Check for active player movement and generate events for broadcasting
+     * @param {number} dt - Delta time
+     * @param {Array} events - Events array
+     */
+    updateActivePlayers(dt, events) {
+        const now = Date.now();
+        for (const p of this.players.values()) {
+            // If player is connected and has moved recently (within last 50ms)
+            // We check the timestamp updated by the websocket message
+            if (!p.disconnected && (now - p.ts < 100)) {
+                // Generate a movement event to be broadcasted
+                events.push({
+                    type: "server-player-move",
+                    id: p.id,
+                    x: p.x,
+                    y: p.y,
+                    z: p.z,
+                    rotY: p.rotY
+                });
             }
         }
     }

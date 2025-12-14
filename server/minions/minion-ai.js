@@ -32,8 +32,8 @@ class MinionAI {
 			: minionStats.speed;
 		const hitDistance = Array.isArray(minionStats.hitDistance)
 			? minionStats.hitDistance[
-					Math.min(levelIndex, minionStats.hitDistance.length - 1)
-			  ]
+			Math.min(levelIndex, minionStats.hitDistance.length - 1)
+			]
 			: minionStats.hitDistance;
 
 		const detectionRange = minionStats.detectionRange || 20;
@@ -55,15 +55,21 @@ class MinionAI {
 			// Move towards target or attack if in range
 			const distance = targetInfo.distance;
 
-			if (distance > hitDistance) {
+			// Adjust hit distance for target size (structures)
+			let effectiveHitDistance = hitDistance;
+			if (targetInfo.targetType === "structure" && targetInfo.target.collisionRadius) {
+				effectiveHitDistance += targetInfo.target.collisionRadius;
+			}
+
+			if (distance > effectiveHitDistance) {
 				// Move towards target
 				this.moveTowards(minion, targetInfo.target, speed, dt, allMinions);
 			} else {
 				// In range, check if can attack
 				const autoAttackCd = Array.isArray(minionStats.autoAttackCd)
 					? minionStats.autoAttackCd[
-							Math.min(levelIndex, minionStats.autoAttackCd.length - 1)
-					  ]
+					Math.min(levelIndex, minionStats.autoAttackCd.length - 1)
+					]
 					: minionStats.autoAttackCd;
 
 				const now = Date.now();
@@ -192,6 +198,54 @@ class MinionAI {
 			}
 		}
 
+		// Look for enemy base
+		const enemyBaseKey = minion.faction === "blue" ? "BaseTeamB" : "BaseTeamA";
+		const enemyBase = structures[enemyBaseKey];
+
+		if (enemyBase && !enemyBase.isDead && enemyBase.health > 0) {
+			// Structures use Y as Z in server config
+			// We create a proxy object to ensure getDistance uses the correct depth coordinate
+			const baseProxy = {
+				x: enemyBase.x,
+				z: enemyBase.y,
+				collisionRadius: enemyBase.collisionRadius,
+				id: enemyBaseKey
+			};
+
+			const dist = this.getDistance(minion, baseProxy);
+			if (dist <= detectionRange && dist < closestDistance) {
+				closestDistance = dist;
+				closestTarget = enemyBase; // Keep original reference for finding it later?
+				// Actually, we should probably return the "corrected" target or handle it in moveTowards
+				// But moveTowards handles regular objects using getDistance logic too.
+				// If we return 'enemyBase', update() loop will use it.
+				// update() -> moveTowards(minion, targetInfo.target...)
+				// moveTowards uses (target.z !== undefined ? target.z : target.y)
+				// So moveTowards ALSO has the bug if we pass valid enemyBase.
+
+				// Fix: Let's attach the corrected Z to the enemyBase object itself or handle it globally?
+				// We can't mutate shared config object securely.
+
+				// Better: Return the proxy as the target, but we need health/id from real base?
+				// Let's rely on getTargetById returning the real base, so we need to handle the Coordinate Mapping centrally?
+
+				// Simpler fix: In getDistance AND moveTowards, check for structure type logic or 'y vs z'.
+				// But minion-ai is generic.
+
+				// Let's modify getDistance to be smarter or use the proxy here and fix getTargetById?
+				// getTargetById returns the structure from the map.
+
+				// Let's stick to modifying getDistance/moveTowards to prefer Y if it seems like a 2D entity?
+				// No, inconsistent.
+
+				// Let's fix it HERE by passing a specific "Structure Target" wrapper?
+				// Or, simpler: update `findTarget` to return the proxy, and `getTargetById` to return the real structure but we wrap it?
+
+				closestId = enemyBaseKey;
+				closestType = "structure";
+			}
+		}
+
 		if (closestTarget) {
 			return {
 				target: closestTarget,
@@ -221,9 +275,19 @@ class MinionAI {
 	/**
 	 * Calculate distance between minion and target
 	 */
+	/**
+	 * Calculate distance between minion and target
+	 */
 	static getDistance(minion, target) {
 		const dx = minion.x - target.x;
-		const dz = minion.z - (target.z !== undefined ? target.z : target.y);
+		// Fix: Structures/Config objects use Y as Z, but might have a Z property (elevation)
+		// If target has a 'type' property (like GLB from config), we assume it follows config schema (Y=Depth)
+		let targetZ = target.z;
+		if (target.y !== undefined && (target.z === undefined || target.type === 'GLB' || target.filepath)) {
+			targetZ = target.y;
+		}
+
+		const dz = minion.z - targetZ;
 		return Math.hypot(dx, dz);
 	}
 
@@ -232,7 +296,14 @@ class MinionAI {
 	 */
 	static moveTowards(minion, target, speed, dt, allMinions) {
 		const dx = target.x - minion.x;
-		const dz = (target.z !== undefined ? target.z : target.y) - minion.z;
+
+		// Fix: Coordinate mapping for structures
+		let targetZ = target.z;
+		if (target.y !== undefined && (target.z === undefined || target.type === 'GLB' || target.filepath)) {
+			targetZ = target.y;
+		}
+
+		const dz = targetZ - minion.z;
 		const distance = Math.hypot(dx, dz);
 
 		if (distance > 0.1) {

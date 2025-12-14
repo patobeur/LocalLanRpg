@@ -16,6 +16,11 @@ class MinionManager {
 		this.FIRST_SPAWN_DELAY = config.constants.MINION_FIRST_SPAWN_DELAY || 10;
 		this.SPAWN_INTERVAL = config.constants.MINION_SPAWN_INTERVAL || 30;
 		this.WAVE_SIZE = config.constants.MINION_WAVE_SIZE || 3;
+
+		// Spawn Queue System
+		this.spawnQueue = [];
+		this.lastSingleSpawnTime = 0;
+		this.SINGLE_SPAWN_DELAY = 1.6; // Seconds between individual minion spawns
 	}
 
 	/**
@@ -25,11 +30,12 @@ class MinionManager {
 		this.gameStartTime = Date.now();
 		this.lastSpawnTime = 0;
 		this.minions = [];
+		this.spawnQueue = [];
 		this.nextMinionId = 1;
 		console.log(
 			"[MinionManager] Game started, first spawn in " +
-				this.FIRST_SPAWN_DELAY +
-				"s"
+			this.FIRST_SPAWN_DELAY +
+			"s"
 		);
 	}
 
@@ -64,8 +70,20 @@ class MinionManager {
 
 		if (shouldSpawnFirst || shouldSpawnNext) {
 			this.lastSpawnTime = gameTime;
-			const spawnEvents = this.spawnWave(structures);
-			events.push(...spawnEvents);
+			this.spawnWave(structures);
+		}
+
+		// Process Spawn Queue
+		if (
+			this.spawnQueue.length > 0 &&
+			gameTime >= this.lastSingleSpawnTime + this.SINGLE_SPAWN_DELAY
+		) {
+			const spawnData = this.spawnQueue.shift();
+			const spawnEvent = this.spawnSingleMinion(spawnData);
+			if (spawnEvent) {
+				events.push(spawnEvent);
+				this.lastSingleSpawnTime = gameTime;
+			}
 		}
 
 		// Update all minions
@@ -115,39 +133,34 @@ class MinionManager {
 	}
 
 	/**
-	 * Spawn a wave of minions for both teams
+	 * Queue a wave of minions for both teams
 	 */
 	spawnWave(structures) {
-		const events = [];
-
-		// Spawn for Team A (blue)
-		const teamAMinions = this.spawnMinionGroup(
+		// Queue for Team A (blue)
+		this.queueMinionGroup(
 			"blue",
 			this.WAVE_SIZE,
 			structures
 		);
-		events.push(...teamAMinions);
 
-		// Spawn for Team B (red)
-		const teamBMinions = this.spawnMinionGroup(
+		// Queue for Team B (red)
+		this.queueMinionGroup(
 			"red",
 			this.WAVE_SIZE,
 			structures
 		);
-		events.push(...teamBMinions);
 
 		console.log(
-			`[MinionManager] Spawned wave: ${this.WAVE_SIZE} minions per team`
+			`[MinionManager] Spawn queued: ${this.WAVE_SIZE} minions per team`
 		);
-		return events;
+		// Note: We return empty events array because spawns are now async via update()
+		return [];
 	}
 
 	/**
-	 * Spawn a group of minions for a specific team
+	 * Queue a group of minions for a specific team
 	 */
-	spawnMinionGroup(faction, count, structures) {
-		const events = [];
-
+	queueMinionGroup(faction, count, structures) {
 		// Determine minion level based on base level
 		let minionLevel = 1;
 		if (structures) {
@@ -170,85 +183,74 @@ class MinionManager {
 		const minionStats = minionsData.chars[minionType];
 		if (!minionStats) {
 			console.error(`[MinionManager] Minion type ${minionType} not found!`);
-			return events;
+			return;
 		}
 
 		for (let i = 0; i < count; i++) {
-			const minionId = `minion_${this.nextMinionId++}`;
-
-			// Calculate spawn position based on formation
-			// First minion at center, subsequent ones behind
+			// Calculate spawn position
+			// All minions spawn at the exact center point now
 			const spawnCenter = { x: spawnLocation.x, z: spawnLocation.y };
 
-			// Determine "forward" direction (towards enemy base)
-			// Team A (Blue) moves from negative to positive (approx 1, 1)
-			// Team B (Red) moves from positive to negative (approx -1, -1)
-			const dirX = faction === "blue" ? 1 : -1;
-			const dirZ = faction === "blue" ? 1 : -1;
-
-			// Normalize direction (approximate is fine for this)
-			const len = Math.hypot(dirX, dirZ);
-			const normDirX = dirX / len;
-			const normDirZ = dirZ / len;
-
-			// "Behind" vector is opposite of forward
-			const backX = -normDirX;
-			const backZ = -normDirZ;
-
-			// Spacing between minions
-			const spacing = 1.5;
-
-			// Calculate position: Center + (index * spacing * backwardVector)
-			const spawnX = spawnCenter.x + i * spacing * backX;
-			const spawnZ = spawnCenter.z + i * spacing * backZ;
-
-			const level = minionLevel;
-			const levelIndex = Math.max(0, level - 1);
-
-			const minion = {
-				id: minionId,
-				name: minionType,
+			this.spawnQueue.push({
 				faction: faction,
-				x: spawnX,
-				y: 0.5,
-				z: spawnZ,
-				rotY: 0,
-				health: Array.isArray(minionStats.health)
-					? minionStats.health[levelIndex]
-					: minionStats.health,
-				maxHealth: Array.isArray(minionStats.health)
-					? minionStats.health[levelIndex]
-					: minionStats.health,
-				level: level,
-				targetId: null,
-				targetType: null,
-				lastAttackTime: 0,
-				lastBroadcastTime: 0,
-				isDead: false,
-			};
-
-			this.minions.push(minion);
-
-			events.push({
-				type: "minion-spawn",
-				minion: {
-					id: minion.id,
-					name: minion.name,
-					faction: minion.faction,
-					x: minion.x,
-					y: minion.y,
-					z: minion.z,
-					rotY: minion.rotY,
-					health: minion.health,
-					maxHealth: minion.maxHealth,
-					level: minion.level,
-					fbx: minionStats.fbx, // Add FBX path from server-side data
-					scale: minionStats.scale, // Add scale from server-side data
-				},
+				minionType: minionType,
+				minionStats: minionStats,
+				level: minionLevel,
+				spawnX: spawnCenter.x,
+				spawnZ: spawnCenter.z,
 			});
 		}
+	}
 
-		return events;
+	/**
+	 * Create and spawn a single minion from queue data
+	 */
+	spawnSingleMinion(data) {
+		const minionId = `minion_${this.nextMinionId++}`;
+
+		const levelIndex = Math.max(0, data.level - 1);
+
+		const minion = {
+			id: minionId,
+			name: data.minionType,
+			faction: data.faction,
+			x: data.spawnX,
+			y: 0.5,
+			z: data.spawnZ,
+			rotY: 0,
+			health: Array.isArray(data.minionStats.health)
+				? data.minionStats.health[levelIndex]
+				: data.minionStats.health,
+			maxHealth: Array.isArray(data.minionStats.health)
+				? data.minionStats.health[levelIndex]
+				: data.minionStats.health,
+			level: data.level,
+			targetId: null,
+			targetType: null,
+			lastAttackTime: 0,
+			lastBroadcastTime: 0,
+			isDead: false,
+		};
+
+		this.minions.push(minion);
+
+		return {
+			type: "minion-spawn",
+			minion: {
+				id: minion.id,
+				name: minion.name,
+				faction: minion.faction,
+				x: minion.x,
+				y: minion.y,
+				z: minion.z,
+				rotY: minion.rotY,
+				health: minion.health,
+				maxHealth: minion.maxHealth,
+				level: minion.level,
+				fbx: data.minionStats.fbx, // Add FBX path from server-side data
+				scale: data.minionStats.scale, // Add scale from server-side data
+			},
+		};
 	}
 
 	/**
@@ -307,6 +309,7 @@ class MinionManager {
 		this.gameStartTime = null;
 		this.lastSpawnTime = 0;
 		this.minions = [];
+		this.spawnQueue = [];
 	}
 
 	/**

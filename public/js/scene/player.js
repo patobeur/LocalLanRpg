@@ -142,8 +142,7 @@ export function makePlayerMesh(name, level, hexColor, characterName) {
 				// We assume the first embedded animation is Idle if not specified otherwise
 				const clip = model.animations[0];
 
-				// Optional: Check clip name?
-				// console.log(`[Player] Found embedded animation for ${characterName}:`, clip.name);
+				console.log(`[Player] ${characterName}: Found embedded animation '${clip.name}', mapping to 'idle'`);
 
 				const action = mixer.clipAction(clip);
 				actions['idle'] = action; // Map to 'idle' by default
@@ -158,15 +157,21 @@ export function makePlayerMesh(name, level, hexColor, characterName) {
 					const animAsset = assetLoader.getModel(assetName);
 					if (animAsset && animAsset.animations && animAsset.animations.length > 0) {
 						const clip = animAsset.animations[0];
+						console.log(`[Player] ${characterName}: Found external animation '${animName}' in ${path}`);
 						const action = mixer.clipAction(clip);
 						actions[animName] = action;
 					}
 				}
 			}
 
+			// IMPORTANT: Attach mixer/actions to the root group (g) so game-loop can find them!
+			g.userData.mixer = mixer;
+			g.userData.actions = actions;
+			g.userData.currentAction = null;
+
+			// Also keep on model just in case, but g is what matters for game-loop
 			model.userData.mixer = mixer;
 			model.userData.actions = actions;
-			model.userData.currentAction = null;
 		}
 	}
 

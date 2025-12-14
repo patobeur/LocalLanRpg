@@ -44,6 +44,8 @@ export function updatePlayerMovement(dt) {
 
     // Re-check attackId after potential clear
     const currentAttackId = String(getAttackTarget());
+    let shotFired = false;
+
     if (currentAttackId && !attacking) {
         let targetMesh = others.get(currentAttackId);
         if (!targetMesh) targetMesh = structures.get(currentAttackId);
@@ -89,11 +91,14 @@ export function updatePlayerMovement(dt) {
                         playerTransform.rotY,
                         me.id
                     );
+                    shotFired = true;
                     console.log(`[AutoAttack] Fired! CD: ${cdSeconds}s`);
                 }
             }
         }
     }
+
+    // ... (rest of logic handles movement if not attacking)
 
     if (!attacking) {
         if (getMovementMode() === "keyboard") {
@@ -119,7 +124,7 @@ export function updatePlayerMovement(dt) {
         }
     }
 
-    return { vx, vz, attacking };
+    return { vx, vz, attacking, shotFired };
 }
 
 /**

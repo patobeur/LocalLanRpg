@@ -49,7 +49,7 @@ function tick(t) {
     }
 
     // Calculate movement
-    const { vx, vz } = updatePlayerMovement(dt);
+    const { vx, vz, attacking, shotFired } = updatePlayerMovement(dt);
     const isMoving = Math.abs(vx) > 0.01 || Math.abs(vz) > 0.01;
 
     // Apply movement to player position
@@ -64,7 +64,7 @@ function tick(t) {
         }
 
         // Update Animation
-        updateEntityAnimation(me.mesh, dt, isMoving);
+        updateEntityAnimation(me.mesh, dt, isMoving, attacking, shotFired);
     }
 
     // Update other players' HUD rotation and animation
@@ -73,8 +73,8 @@ function tick(t) {
             playerMesh.userData.hud.rotation.y = -playerMesh.rotation.y;
         }
 
-        // Placeholder for others: assuming idle for now as we don't have their velocity easily available yet
-        updateEntityAnimation(playerMesh, dt, false);
+        // Placeholder for others: assuming idle for now as we don't have their velocity/attack state easily available yet
+        updateEntityAnimation(playerMesh, dt, false, false, false);
     }
 
     // Update minions' HUD rotation (Counter-rotate to face camera/south)
@@ -107,7 +107,7 @@ function tick(t) {
 /**
  * Helper to update entity animation
  */
-function updateEntityAnimation(mesh, dt, isMoving) {
+function updateEntityAnimation(mesh, dt, isMoving, isAttacking = false, shotFired = false) {
     if (!mesh.userData.mixer) return;
 
     mesh.userData.mixer.update(dt);
@@ -115,24 +115,38 @@ function updateEntityAnimation(mesh, dt, isMoving) {
     const actions = mesh.userData.actions;
     if (!actions) return;
 
-    // Default logic: 'walk' if moving, 'idle' if not
-    let targetActionName = isMoving ? 'walk' : 'idle';
+    // Logic: 'autoattack' > 'walk' > 'idle'
+    let targetActionName = 'idle';
+    if (isAttacking) targetActionName = 'autoattack';
+    else if (isMoving) targetActionName = 'walk';
+
+    // If autoattack missing, fallback to idle/walk
+    if (isAttacking && !actions['autoattack']) {
+        targetActionName = isMoving ? 'walk' : 'idle';
+    }
 
     // Check if target action exists
-    let targetAction = actions[targetActionName];
+    const targetAction = actions[targetActionName];
 
     // Transition logic
     if (targetAction) {
-        if (mesh.userData.currentAction !== targetAction) {
+        // If we just fired a shot, FORCE reset the attack animation
+        if (shotFired && targetActionName === 'autoattack') {
+            targetAction.reset().play();
+            mesh.userData.currentAction = targetAction;
+        }
+        else if (mesh.userData.currentAction !== targetAction) {
             if (mesh.userData.currentAction) {
                 mesh.userData.currentAction.fadeOut(0.2);
             }
             targetAction.reset().fadeIn(0.2).play();
             mesh.userData.currentAction = targetAction;
+
+            // If it's an attack, strictly it might need to loop or not. 
+            // For now default loop is fine (repeated attacks).
         }
     } else {
-        // Target action not found. 
-        // If we want 'idle' but don't have it, we might just stop the current animation
+        // Target action not found
         if (mesh.userData.currentAction) {
             mesh.userData.currentAction.fadeOut(0.2);
             mesh.userData.currentAction = null;

@@ -159,6 +159,13 @@ export function makePlayerMesh(name, level, hexColor, characterName) {
 						const clip = animAsset.animations[0];
 						console.log(`[Player] ${characterName}: Found external animation '${animName}' in ${path}`);
 						const action = mixer.clipAction(clip);
+
+						// If it's an autoattack, configure it to NOT loop
+						if (animName === 'autoattack') {
+							action.loop = THREE.LoopOnce;
+							action.clampWhenFinished = true;
+						}
+
 						actions[animName] = action;
 					}
 				}

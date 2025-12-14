@@ -77,6 +77,7 @@ export function handleHello(msg) {
         console.log('---------------')
         m.rotation.y = p.rotY;
         m.userData.faction = p.faction; // Store faction
+        m.userData.id = id; // Store ID for targeting
         m.userData.health = p.health || 100;
         m.userData.maxHealth = p.maxHealth || 100;
         m.userData.mana = p.mana || 100;
@@ -119,6 +120,7 @@ export function handlePlayerJoin(msg) {
         m.position.set(p.x, p.y, p.z);
         m.rotation.y = p.rotY;
         m.userData.faction = p.faction; // Store faction
+        m.userData.id = pId; // Store ID for targeting
         m.userData.health = p.health || 100;
         m.userData.maxHealth = p.maxHealth || 100;
         m.userData.mana = p.mana || 100;

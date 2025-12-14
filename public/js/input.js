@@ -39,7 +39,7 @@ export function initInput() {
                     let minDistance = Infinity;
 
                     const findClosest = (entities) => {
-                        entities.forEach((entity) => {
+                        for (const entity of entities) {
                             if (entity.userData.faction !== me.faction) {
                                 const distance = entity.position.distanceTo(clickPoint);
                                 if (distance < minDistance) {
@@ -47,7 +47,7 @@ export function initInput() {
                                     closestTarget = entity.userData.id;
                                 }
                             }
-                        });
+                        }
                     };
 
                     if (playersMap) findClosest(playersMap.values());

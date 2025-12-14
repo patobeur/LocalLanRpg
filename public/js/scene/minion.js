@@ -88,6 +88,18 @@ export function makeMinionMesh(name, faction, fbx, scale = 1) {
 				if (anim === 'autoattack' || anim === 'dying') {
 					action.loop = THREE.LoopOnce;
 					action.clampWhenFinished = true;
+
+					// SPEED FIX:
+					// Minion shoot event (projectile) happens instantly.
+					// The animation is long. We must speed it up drastically so the "release" looks synchronized 
+					// and the animation finishes before the next cooldown.
+					if (anim === 'autoattack') {
+						// Default clip might be ~1-2s. We want it to feel like a quick shot.
+						// Let's force it to play in ~0.5 seconds (or faster).
+						const duration = clip.duration;
+						const desiredDuration = 0.5; // Short snap
+						action.setEffectiveTimeScale(duration / desiredDuration);
+					}
 				}
 
 				actions[anim] = action;

@@ -129,25 +129,20 @@
 
 .hero h1,
 .hero p,
-.hero .landing-title,
+.hero .landing-logo,
 .hero .landing-subtitle,
 .hero .btn-cta {
     position: relative;
     z-index: 10;
 }
 
-.landing-title {
-    font-size: 5rem;
-    font-weight: 800;
-    margin-bottom: 0.5rem;
-    background: linear-gradient(135deg, #FF6B6B, #4ECDC4);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    text-transform: uppercase;
-    letter-spacing: 5px;
-    text-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-    /* Fallback shadow */
+.landing-logo {
+    width: 65%;
+    /* 50% looked a bit small in preview, user said 50% height/width but maybe meant 50% of screen. Safe bet is 50-60%. */
+    max-width: 800px;
+    height: auto;
+    margin-bottom: 1rem;
+    filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.5));
 }
 
 .landing-subtitle {
@@ -239,7 +234,8 @@
 .char-card:hover {
     transform: translateY(-10px);
     border-color: var(--accent);
-    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4), inset 0 -100px 100px -20px rgba(0, 0, 0, 0.8);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4), inset 0 -100px 100px -100px rgba(0, 0, 0, 0.8);
+    transition: background 0.3s ease;
 }
 
 .char-card>* {
@@ -259,7 +255,7 @@
 
 .char-icon {
     font-size: 2rem;
-    margin-bottom: auto;
+    margin-bottom: 5px;
     /* Push icon to top if needed, or keep closer */
     margin-top: 10px;
     opacity: 0.8;

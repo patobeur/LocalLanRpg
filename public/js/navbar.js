@@ -1,33 +1,39 @@
 // Navbar Logic
 
 document.addEventListener('DOMContentLoaded', async () => {
-    // Only fetch session if element exists
     const usernameEl = document.getElementById('navUsername');
+    const loginLink = document.getElementById('navLoginLink');
+    const logoutLink = document.getElementById('navLogoutLink');
+
     if (usernameEl) {
         try {
             const sessionRes = await fetch('/api/auth/session');
             const sessionData = await sessionRes.json();
             if (sessionData.authenticated) {
                 usernameEl.textContent = sessionData.user.username;
+                if (loginLink) loginLink.style.display = 'none';
+                if (logoutLink) logoutLink.style.display = 'block';
             } else {
-                // If on a protected page and not authenticated, redirect?
-                // For now just show Guest or nothing
                 usernameEl.textContent = 'Invité';
-                const logoutBtn = document.getElementById('navLogoutBtn');
-                if (logoutBtn) logoutBtn.style.display = 'none';
+                if (loginLink) loginLink.style.display = 'block';
+                if (logoutLink) logoutLink.style.display = 'none';
             }
         } catch (err) {
             console.error('Session fetch error:', err);
+            // Fallback to Guest
+            usernameEl.textContent = 'Invité';
+            if (loginLink) loginLink.style.display = 'block';
+            if (logoutLink) logoutLink.style.display = 'none';
         }
     }
 
     // Handle Logout
-    const logoutBtn = document.getElementById('navLogoutBtn');
-    if (logoutBtn) {
-        logoutBtn.addEventListener('click', async () => {
+    if (logoutLink) {
+        logoutLink.addEventListener('click', async (e) => {
+            e.preventDefault();
             try {
                 await fetch('/api/auth/logout', { method: 'POST' });
-                window.location.href = '/login.html';
+                window.location.reload(); // Reload to update state
             } catch (error) {
                 console.error('Logout error:', error);
             }

@@ -28,10 +28,15 @@
 			</div>
 		</div>
 		<div class="nav-right">
-			<div class="nav-user-info">
-				👤 <span class="nav-username" id="navUsername">Chargement...</span>
+			<div class="nav-dropdown">
+				<button class="nav-dropbtn">
+					👤 <span id="navUsername">Chargement...</span> ▾
+				</button>
+				<div class="nav-dropdown-content nav-dropdown-right">
+					<a href="/login.html" id="navLoginLink">Se connecter</a>
+					<a href="#" id="navLogoutLink" style="display: none;">Déconnexion</a>
+				</div>
 			</div>
-			<button class="nav-btn nav-btn-secondary" id="navLogoutBtn">Déconnexion</button>
 		</div>
 	</div>
 

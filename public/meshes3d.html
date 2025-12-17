@@ -3,32 +3,287 @@
 
 <head>
 	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
 	<title>Vue des Modèles 3D</title>
 	<link rel="stylesheet" href="css/theme.css" />
+	<link rel="stylesheet" href="css/navbar.css" />
 	<style>
 		body {
 			margin: 0;
+			overflow: hidden;
+			display: flex;
+			flex-direction: column;
+			height: 100vh;
+			background: var(--bg-color);
+			color: var(--text-primary);
+			font-family: var(--font-main, "Segoe UI", sans-serif);
 		}
 
-		canvas {
-			display: block;
+		#main-navbar {
+			flex-shrink: 0;
+		}
+
+		.viewer-container {
+			display: flex;
+			flex: 1;
+			overflow: hidden;
+			border-top: 1px solid var(--border-color);
+		}
+
+		/* Sidebar Styles */
+		.sidebar {
+			width: 320px;
+			background: var(--surface-color);
+			border-right: 1px solid var(--border-color);
+			display: flex;
+			flex-direction: column;
+			flex-shrink: 0;
+			box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+		}
+
+		.sidebar-header {
+			padding: 20px;
+			font-size: 1.2rem;
+			font-weight: 600;
+			border-bottom: 1px solid var(--border-color);
+			background: rgba(0, 0, 0, 0.2);
+		}
+
+		/* Tabs */
+		.tabs {
+			display: flex;
+			border-bottom: 1px solid var(--border-color);
+		}
+
+		.tab-btn {
+			flex: 1;
+			padding: 15px 10px;
+			background: transparent;
+			color: var(--text-muted);
+			border: none;
+			cursor: pointer;
+			border-bottom: 3px solid transparent;
+			font-weight: 600;
+			font-size: 0.95rem;
+			transition: all 0.2s;
+		}
+
+		.tab-btn:hover {
+			color: var(--text-primary);
+			background: rgba(255, 255, 255, 0.03);
+		}
+
+		.tab-btn.active {
+			color: var(--nav-accent, #38bdf8);
+			border-bottom-color: var(--nav-accent, #38bdf8);
+			background: rgba(255, 255, 255, 0.05);
+		}
+
+		/* Model List */
+		.model-list {
+			flex: 1;
+			overflow-y: auto;
+			padding: 15px;
+		}
+
+		.model-item {
+			padding: 12px 15px;
+			cursor: pointer;
+			border-radius: 6px;
+			color: var(--text-secondary);
+			margin-bottom: 6px;
+			transition: all 0.2s;
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+		}
+
+		.model-item:hover {
+			background: var(--surface-hover);
+			color: var(--text-primary);
+			transform: translateX(2px);
+		}
+
+		.model-item.active {
+			background: var(--primary-gradient);
+			color: var(--text-inverse);
+			box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+		}
+
+		/* Main View */
+		.main-view {
+			flex: 1;
+			position: relative;
+			display: flex;
+			flex-direction: column;
+			background: #111;
+		}
+
+		#canvas-container {
+			flex: 1;
+			position: relative;
+			background: radial-gradient(circle at center, #2a2a2a 0%, #111 100%);
+			overflow: hidden;
+		}
+
+		/* Controls Area */
+		#controls-area {
+			height: auto;
+			min-height: 80px;
+			padding: 15px 25px;
+			background: var(--surface-color);
+			border-top: 1px solid var(--border-color);
+			display: flex;
+			gap: 15px;
+			overflow-x: auto;
+			align-items: center;
+			box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.2);
+			z-index: 10;
+		}
+
+		/* Scrollbar styling for controls */
+		#controls-area::-webkit-scrollbar {
+			height: 8px;
+		}
+
+		#controls-area::-webkit-scrollbar-track {
+			background: rgba(0, 0, 0, 0.2);
+		}
+
+		#controls-area::-webkit-scrollbar-thumb {
+			background: var(--border-color);
+			border-radius: 4px;
+		}
+
+		.anim-group-label {
+			font-size: 0.9rem;
+			color: var(--text-muted);
+			margin-right: 10px;
+			font-weight: 600;
+			text-transform: uppercase;
+		}
+
+		.anim-btn {
+			padding: 10px 20px;
+			background: var(--surface-hover);
+			border: 1px solid var(--border-color);
+			color: var(--text-primary);
+			border-radius: 6px;
+			cursor: pointer;
+			white-space: nowrap;
+			font-weight: 500;
+			font-size: 0.9rem;
+			transition: all 0.2s;
+		}
+
+		.anim-btn:hover {
+			background: var(--border-color);
+			transform: translateY(-2px);
+		}
+
+		.anim-btn.active {
+			background: var(--nav-accent, #38bdf8);
+			border-color: var(--nav-accent, #38bdf8);
+			color: #0f172a;
+			/* Dark text for contrast */
+			font-weight: 700;
+			box-shadow: 0 0 10px rgba(56, 189, 248, 0.3);
+		}
+
+		/* Loading */
+		.loading-overlay {
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			background: rgba(0, 0, 0, 0.8);
+			backdrop-filter: blur(4px);
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			z-index: 20;
+			pointer-events: none;
+			opacity: 0;
+			transition: opacity 0.3s;
+		}
+
+		.loading-overlay.visible {
+			opacity: 1;
+			pointer-events: all;
+		}
+
+		.spinner {
+			width: 40px;
+			height: 40px;
+			border: 4px solid var(--surface-hover);
+			border-top: 4px solid var(--nav-accent, #38bdf8);
+			border-radius: 50%;
+			animation: spin 1s linear infinite;
+		}
+
+		@keyframes spin {
+			0% {
+				transform: rotate(0deg);
+			}
+
+			100% {
+				transform: rotate(360deg);
+			}
+		}
+
+		/* ... existing styles ... */
+		.anim-btn:disabled {
+			opacity: 0.5;
+			cursor: not-allowed;
+			pointer-events: none;
 		}
 	</style>
 	<script type="importmap">
-			{
-				"imports": {
-					"three": "/node_modules/three/build/three.module.js",
-					"three/examples/jsm/loaders/FBXLoader.js": "/node_modules/three/examples/jsm/loaders/FBXLoader.js",
-					"three/examples/jsm/loaders/GLTFLoader.js": "/node_modules/three/examples/jsm/loaders/GLTFLoader.js",
-					"three/examples/jsm/controls/OrbitControls.js": "/node_modules/three/examples/jsm/controls/OrbitControls.js"
-				}
-			}
-		</script>
+        {
+            "imports": {
+                "three": "/node_modules/three/build/three.module.js",
+                "three/examples/jsm/loaders/FBXLoader.js": "/node_modules/three/examples/jsm/loaders/FBXLoader.js",
+                "three/examples/jsm/loaders/GLTFLoader.js": "/node_modules/three/examples/jsm/loaders/GLTFLoader.js",
+                "three/examples/jsm/controls/OrbitControls.js": "/node_modules/three/examples/jsm/controls/OrbitControls.js"
+            }
+        }
+    </script>
 </head>
 
 <body>
-	<link rel="stylesheet" href="css/navbar.css" />
 	<nav id="main-navbar"></nav>
+
+	<div class="viewer-container">
+		<!-- Sidebar -->
+		<div class="sidebar">
+			<div class="sidebar-header">
+				Bibliothèque 3D
+			</div>
+			<div class="tabs" id="categoryTabs">
+				<!-- Dynamically populated -->
+			</div>
+			<div class="model-list" id="modelList">
+				<!-- Dynamically populated -->
+			</div>
+		</div>
+
+		<!-- Main View -->
+		<div class="main-view">
+			<div id="canvas-container">
+				<div id="loading" class="loading-overlay">
+					<div class="spinner"></div>
+				</div>
+			</div>
+			<div id="controls-area">
+				<span class="anim-group-label">Animations:</span>
+				<span id="no-anim-msg" style="color: var(--text-muted); font-style:italic;">Aucune animation
+					disponible</span>
+				<!-- Anim buttons here -->
+			</div>
+		</div>
+	</div>
+
 	<script src="/js/navigation.js"></script>
 	<script src="js/navbar.js"></script>
 	<script type="module">
@@ -37,154 +292,370 @@
 		import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 		import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 
+		// --- Data Configuration ---
+		// Using explicit IDs to help with animation file naming (ID_AnimName.fbx)
+		const categories = {
+			"Personnages": [
+				{ name: "Ardur", id: "Ardur", path: "/media/characters/glb/Ardur.fbx" },
+				{ name: "Alistar", id: "Alistar", path: "/media/characters/glb/Alistar.fbx" },
+				{ name: "Cleric", id: "Cleric", path: "/media/characters/glb/Cleric.fbx" },
+				{ name: "Flora", id: "Flora", path: "/media/characters/glb/Flora.fbx" },
+				{ name: "Zephyr", id: "Zephyr", path: "/media/characters/glb/Zephyr.fbx" },
+				{ name: "Gromp", id: "Gromp", path: "/media/characters/glb/Gromp.fbx" },
+				{ name: "Shadow", id: "Shadow", path: "/media/characters/glb/Shadow.fbx" },
+				{ name: "Squazzzza", id: "Squazzzza", path: "/media/characters/glb/Squazzzza.fbx" },
+				{ name: "Peter", id: "Peter", path: "/media/characters/glb/Peter.fbx" },
+				{ name: "Wiko", id: "Wiko", path: "/media/characters/glb/Wiko.fbx" },
+				{ name: "Moonba", id: "Moonba", path: "/media/characters/glb/Moonba.fbx" },
+				{ name: "Torp", id: "Torp", path: "/media/characters/glb/Torp.fbx" }
+			],
+			"Minions": [
+				{ name: "Mage (Blue)", id: "minion_mage_blue", path: "/media/minions/glb/minion_mage_blue.fbx" },
+				{ name: "Tank (Blue)", id: "minion_tank_blue", path: "/media/minions/glb/minion_tank_blue.fbx" },
+				{ name: "Healer (Blue)", id: "minion_healer_blue", path: "/media/minions/glb/minion_healer_blue.fbx" },
+				{ name: "Mage (Red)", id: "minion_mage_red", path: "/media/minions/glb/minion_mage_red.fbx" },
+				{ name: "Tank (Red)", id: "minion_tank_red", path: "/media/minions/glb/minion_tank_red.fbx" },
+				{ name: "Healer (Red)", id: "minion_healer_red", path: "/media/minions/glb/minion_healer_red.fbx" }
+			],
+			"Structures": [
+				{ name: "Base (Team A)", id: "baseTeamA", path: "/media/structures/glb/baseTeamA.glb" },
+				{ name: "Base (Team B)", id: "baseTeamB", path: "/media/structures/glb/baseTeamB.glb" }
+			]
+		};
+
+		const animConfig = {
+			"Minions": [
+				{ name: "AutoAttack", suffix: "_AutoAttack.fbx" },
+				{ name: "Dying", suffix: "_Dying.fbx" },
+				{ name: "Walk", suffix: "_Walk.fbx" }
+			],
+			"Personnages": [
+				{ name: "AutoAttack", suffix: "_AutoAttack.fbx" },
+				{ name: "Dying", suffix: "_Dying.fbx" },
+				{ name: "Walk", suffix: "_Walk.fbx" },
+				{ name: "Skill1", suffix: "_Skill1.fbx" },
+				{ name: "Skill2", suffix: "_Skill2.fbx" },
+				{ name: "Skill3", suffix: "_Skill3.fbx" },
+				{ name: "Ultimat", suffix: "_Ultimat.fbx" }
+			],
+			"Structures": []
+		};
+
+		const animBasePaths = {
+			"Minions": "/media/minions/glb/animations/",
+			"Personnages": "/media/characters/glb/animations/"
+		};
+
+		// --- State ---
+		let currentCategory = "Personnages";
+		let currentModel = null;
+		let mixer = null;
+		let actions = {}; // Map name -> AnimationAction
+		let activeAction = null;
+		let clock = new THREE.Clock();
+
+		// --- THREE.js Globals ---
 		let scene, camera, renderer, controls;
-		const models = [];
-		const mixers = [];
-		const clock = new THREE.Clock();
+		const container = document.getElementById('canvas-container');
+		const loadingOverlay = document.getElementById('loading');
 
-		const files = {
-			minion_mage_blue: {
-				path: "/media/minions/glb/minion_mage_blue.fbx",
-			},
-			minion_tank_blue: {
-				path: "/media/minions/glb/minion_tank_blue.fbx",
-			},
-			minion_healer_blue: {
-				path: "/media/minions/glb/minion_healer_blue.fbx",
-			},
-			//-----
-			minion_mage_red: { path: "/media/minions/glb/minion_mage_red.fbx" },
-			minion_tank_red: {
-				path: "/media/minions/glb/minion_tank_red_Idle.fbx",
-			},
-			minion_healer_red: {
-				path: "/media/minions/glb/minion_healer_red.fbx",
-			},
-			// -----------
-			baseTeamB: { path: "/media/structures/glb/baseTeamB.glb" },
-			baseTeamA: { path: "/media/structures/glb/baseTeamA.glb" },
-			// -----------
-			Ardur: { path: "/media/characters/glb/Ardur.fbx" },
-			Alistar: { path: "/media/characters/glb/Alistar.fbx" },
-			Cleric: { path: "/media/characters/glb/Cleric.fbx" },
-			Flora: { path: "/media/characters/glb/Flora.fbx" },
-			Zephyr: { path: "/media/characters/glb/Zephyr.fbx" },
-			Gromp: { path: "/media/characters/glb/Gromp.fbx" },
-			Shadow: { path: "/media/characters/glb/Shadow.fbx" },
-			Squazzzza: { path: "/media/characters/glb/Squazzzza.fbx" },
-			Peter: { path: "/media/characters/glb/Peter.fbx" },
-			Wiko: { path: "/media/characters/glb/Wiko.fbx" },
-			Moonba: { path: "/media/characters/glb/Moonba.fbx" },
-			Torp: { path: "/media/characters/glb/Torp.fbx" },
-		}; // gltf
-
-		function init() {
+		// --- Initialization ---
+		function initThree() {
 			scene = new THREE.Scene();
-			scene.background = new THREE.Color(0xdddddd);
+			scene.background = new THREE.Color(0x1a1a1a);
 
-			camera = new THREE.PerspectiveCamera(
-				75,
-				window.innerWidth / window.innerHeight,
-				0.1,
-				1000
-			);
-			camera.position.set(0, 2, 8);
+			// Grid
+			const gridHelper = new THREE.GridHelper(20, 20, 0x444444, 0x222222);
+			scene.add(gridHelper);
 
-			renderer = new THREE.WebGLRenderer({ antialias: true });
-			renderer.setSize(window.innerWidth, window.innerHeight);
-			document.body.appendChild(renderer.domElement);
+			// Camera
+			camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
+			camera.position.set(0, 2, 5);
 
+			// Renderer
+			renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+			renderer.setSize(container.clientWidth, container.clientHeight);
+			renderer.setPixelRatio(window.devicePixelRatio);
+			renderer.outputColorSpace = THREE.SRGBColorSpace;
+			renderer.shadowMap.enabled = true;
+			container.appendChild(renderer.domElement);
+
+			// Controls
 			controls = new OrbitControls(camera, renderer.domElement);
+			controls.enableDamping = true;
+			controls.dampingFactor = 0.05;
+			controls.screenSpacePanning = false;
+			controls.minDistance = 1;
+			controls.maxDistance = 20;
+			controls.target.set(0, 1, 0);
 
-			const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
+			// Lights
+			const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
 			scene.add(ambientLight);
 
-			const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-			directionalLight.position.set(5, 10, 7.5);
-			scene.add(directionalLight);
+			const dirLight = new THREE.DirectionalLight(0xffffff, 1.0);
+			dirLight.position.set(5, 10, 7);
+			dirLight.castShadow = true;
+			scene.add(dirLight);
 
-			loadModels();
+			const backLight = new THREE.DirectionalLight(0xffffff, 0.5);
+			backLight.position.set(-5, 5, -5);
+			scene.add(backLight);
+
+			// Event Listeners
+			window.addEventListener('resize', onWindowResize);
+
+			// Start Animation Loop
 			animate();
 		}
 
-		function loadModels() {
-			const fbxLoader = new FBXLoader();
-			const gltfLoader = new GLTFLoader();
-			const modelEntries = Object.values(files);
-			const modelsPerRow = 3;
-			const spacing = 2;
-
-			modelEntries.forEach((file, index) => {
-				const lowerCasePath = file.path.toLowerCase();
-				const isFbx = lowerCasePath.endsWith(".fbx");
-				const isGltfOrGlb =
-					lowerCasePath.endsWith(".gltf") ||
-					lowerCasePath.endsWith(".glb");
-				const loader = isFbx ? fbxLoader : gltfLoader;
-
-				loader.load(
-					file.path,
-					(object) => {
-						const model = isFbx ? object : object.scene;
-						const animations = object.animations;
-
-						const row = Math.floor(index / modelsPerRow);
-						const col = index % modelsPerRow;
-
-						model.position.set(
-							(col - (modelsPerRow - 1) / 2) * spacing,
-							0,
-							-row * spacing
-						);
-
-						if (isFbx) {
-							model.scale.set(0.01, 0.01, 0.01);
-						} else if (isGltfOrGlb) {
-							model.scale.set(0.5, 0.5, 0.5);
-						} else {
-							model.scale.set(1, 1, 1);
-						}
-
-						scene.add(model);
-						models.push(model);
-
-						if (animations && animations.length > 0) {
-							const mixer = new THREE.AnimationMixer(model);
-							const action = mixer.clipAction(animations[0]);
-							action.play();
-							mixers.push(mixer);
-						}
-					},
-					undefined,
-					(error) => {
-						console.error(
-							`An error happened while loading ${file.path}:`,
-							error
-						);
-					}
-				);
-			});
+		function onWindowResize() {
+			camera.aspect = container.clientWidth / container.clientHeight;
+			camera.updateProjectionMatrix();
+			renderer.setSize(container.clientWidth, container.clientHeight);
 		}
 
 		function animate() {
 			requestAnimationFrame(animate);
-
 			const delta = clock.getDelta();
-			for (const mixer of mixers) {
-				mixer.update(delta);
-			}
-
+			if (mixer) mixer.update(delta);
 			controls.update();
 			renderer.render(scene, camera);
 		}
 
-		window.addEventListener("resize", () => {
-			camera.aspect = window.innerWidth / window.innerHeight;
-			camera.updateProjectionMatrix();
-			renderer.setSize(window.innerWidth, window.innerHeight);
-		});
+		// --- UI Logic ---
+		function initUI() {
+			renderTabs();
+			switchCategory(Object.keys(categories)[0]); // Default to first
+		}
 
-		init();
+		function renderTabs() {
+			const tabsContainer = document.getElementById('categoryTabs');
+			tabsContainer.innerHTML = '';
+			Object.keys(categories).forEach(cat => {
+				const btn = document.createElement('button');
+				btn.className = 'tab-btn';
+				btn.textContent = cat;
+				btn.onclick = () => switchCategory(cat);
+				tabsContainer.appendChild(btn);
+			});
+		}
+
+		function switchCategory(category) {
+			currentCategory = category;
+
+			// Update Tabs Status
+			const tabs = document.querySelectorAll('.tab-btn');
+			tabs.forEach(btn => {
+				if (btn.textContent === category) btn.classList.add('active');
+				else btn.classList.remove('active');
+			});
+
+			renderModelList();
+		}
+
+		function renderModelList() {
+			const listContainer = document.getElementById('modelList');
+			listContainer.innerHTML = '';
+			const models = categories[currentCategory];
+
+			models.forEach(item => {
+				const el = document.createElement('div');
+				el.className = 'model-item';
+				el.textContent = item.name;
+				el.onclick = () => loadModel(item, el);
+				listContainer.appendChild(el);
+			});
+		}
+
+		// --- Model Loading ---
+		function loadModel(item, uiElement) {
+			// UI Update
+			document.querySelectorAll('.model-item').forEach(el => el.classList.remove('active'));
+			if (uiElement) uiElement.classList.add('active');
+
+			// Show Loading
+			loadingOverlay.classList.add('visible');
+
+			// Cleanup
+			if (currentModel) {
+				scene.remove(currentModel);
+				currentModel = null;
+			}
+			if (mixer) {
+				mixer.stopAllAction();
+				mixer = null;
+			}
+			actions = {};
+			clearAnimControls();
+
+			// Load Base Model
+			const isFbx = item.path.toLowerCase().endsWith('.fbx');
+			const loader = isFbx ? new FBXLoader() : new GLTFLoader();
+
+			loader.load(item.path, (object) => {
+				const model = isFbx ? object : object.scene;
+				currentModel = model;
+
+				// Scale & Center (Same as before)
+				model.scale.set(1, 1, 1);
+				const box = new THREE.Box3().setFromObject(model);
+				const size = box.getSize(new THREE.Vector3());
+				const center = box.getCenter(new THREE.Vector3());
+				const maxDim = Math.max(size.x, size.y, size.z);
+				let scaleFactor = 1;
+				if (isFbx) {
+					if (maxDim > 100) scaleFactor = 0.01;
+				} else {
+					if (maxDim > 5) scaleFactor = 0.5;
+				}
+				model.scale.set(scaleFactor, scaleFactor, scaleFactor);
+				new THREE.Box3().setFromObject(model).getCenter(center);
+				model.position.sub(center);
+				model.position.y = 0;
+				scene.add(model);
+
+				// --- Animation Setup ---
+				mixer = new THREE.AnimationMixer(model);
+
+				// 1. Integrated Animations (e.g. Idle)
+				const rawAnims = isFbx ? object.animations : object.animations;
+				if (rawAnims && rawAnims.length > 0) {
+					// Usually the first integrated animation is Idle
+					const clip = rawAnims[0];
+					const action = mixer.clipAction(clip);
+					actions['Idle'] = action;
+					createAnimButton('Idle', action, true); // Create enabled button
+					action.play();
+				} else {
+					// Fallback 'Idle' label if no embedded anims, just so it's not empty? 
+					// Or do nothing.
+				}
+
+				// 2. Load External Animations
+				const neededAnims = animConfig[currentCategory] || [];
+				const basePath = animBasePaths[currentCategory];
+
+				if (basePath && neededAnims.length > 0) {
+					// Create placeholder buttons (disabled/gray)
+					neededAnims.forEach(animConf => {
+						const btn = createAnimButton(animConf.name, null, false); // Disabled initially
+
+						// Determine filename (Handle special cases or just Standard)
+						let filename = `${item.id}${animConf.suffix}`;
+						// Special case for Zephyr typo if needed, but for now stick to standard logic
+
+						const fullPath = basePath + filename;
+
+						loadExternalAnimation(fullPath, animConf.name, btn);
+					});
+				} else {
+					// No external anims config (Structures) or folder not defined
+					if (!actions['Idle']) {
+						document.getElementById('no-anim-msg').style.display = 'inline';
+					}
+				}
+
+				loadingOverlay.classList.remove('visible');
+			}, undefined, (error) => {
+				console.error("Error loading model:", error);
+				loadingOverlay.classList.remove('visible');
+			});
+		}
+
+		function loadExternalAnimation(path, name, button) {
+			const loader = new FBXLoader();
+			// console.log(`[Anim] Loading: ${path}`);
+			loader.load(path, (object) => {
+				// console.log(`[Anim] Loaded: ${path}`, object);
+				if (object.animations && object.animations.length > 0) {
+					const clip = object.animations[0];
+					// IMPORTANT: The clip tracks might target nodes strictly by name. 
+					// Usually Mixamo/FBX works if hierarchy matches.
+					const action = mixer.clipAction(clip);
+					actions[name] = action;
+
+					// Enable button
+					button.disabled = false;
+					// CSS handles the visual update
+					button.onclick = () => {
+						playAction(name);
+						// UI active state
+						document.querySelectorAll('.anim-btn').forEach(b => b.classList.remove('active'));
+						button.classList.add('active');
+					};
+				} else {
+					// console.warn(`[Anim] No animations found in ${path}`);
+				}
+			}, undefined, (err) => {
+				// If 404 or other error, leave button disabled (grayed)
+				// console.warn(`[Anim] ${name} not found at ${path}`, err);
+				// Optional: set styling to indicate missing
+			});
+		}
+
+		// --- Animation Controls UI ---
+		function clearAnimControls() {
+			const area = document.getElementById('controls-area');
+			const label = area.querySelector('.anim-group-label');
+			const noMsg = document.getElementById('no-anim-msg');
+			area.innerHTML = '';
+			area.appendChild(label);
+			area.appendChild(noMsg);
+			noMsg.style.display = 'none';
+		}
+
+
+		function createAnimButton(name, action, enabled) {
+			const area = document.getElementById('controls-area');
+			const btn = document.createElement('button');
+			btn.className = 'anim-btn';
+			if (!enabled) {
+				btn.disabled = true;
+				// Inline styles removed - relying on CSS :disabled
+			}
+			btn.textContent = name;
+
+			if (enabled && action) {
+				btn.onclick = () => {
+					playAction(name);
+					document.querySelectorAll('.anim-btn').forEach(b => b.classList.remove('active'));
+					btn.classList.add('active');
+					if (name === 'Idle') btn.classList.add('active');
+				};
+			}
+
+			area.appendChild(btn);
+			return btn;
+		}
+
+		function playAction(name) {
+			if (!mixer || !actions[name]) return;
+			const action = actions[name];
+
+			// Fading logic
+			// Find current active action to fade out
+			// Since we don't store "currentAction" globally in a simple variable comfortably with multiple fades,
+			// we iterate or track manually.
+			// Let's assume singular active action for simplicity of "state".
+
+			// Actually, mixer.stopAllAction() is harsh.
+			// Let's fade out everyone else.
+			// Better: track currentAction.
+
+			if (activeAction && activeAction !== action) {
+				activeAction.fadeOut(0.2);
+			}
+
+			if (activeAction !== action) {
+				action.reset().fadeIn(0.2).play();
+				activeAction = action;
+			}
+		}
+
+		// --- Start ---
+		initThree();
+		initUI();
 	</script>
 </body>
 

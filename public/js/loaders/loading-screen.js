@@ -22,7 +22,7 @@ export class LoadingScreenManager {
         const loadingHTML = `
             <div id="loading-screen" class="loading-screen">
                 <div class="loading-container">
-                    <h1 class="loading-title">🎮 Chargement...</h1>
+                    <h1 class="loading-title">Chargement...</h1>
                     
                     <div class="progress-container">
                         <div class="progress-bar">

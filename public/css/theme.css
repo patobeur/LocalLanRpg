@@ -1,25 +1,35 @@
 :root {
-    /* Color Palette - Light Theme */
-    --bg-color: #f0f2f5;
-    --surface-color: #ffffff;
-    --surface-hover: #f8f9fa;
-    
+    /* Color Palette - Premium Dark Theme (Slate) */
+    --bg-color: #0f172a;
+    /* Slate 900 */
+    --surface-color: #1e293b;
+    /* Slate 800 */
+    --surface-hover: #334155;
+    /* Slate 700 */
+
     /* Text Colors */
-    --text-primary: #1a2332;
-    --text-secondary: #5a6a7f;
-    --text-muted: #8b9bb4;
-    --text-inverse: #ffffff;
+    --text-primary: #f8fafc;
+    /* Slate 50 */
+    --text-secondary: #cbd5e1;
+    /* Slate 300 */
+    --text-muted: #94a3b8;
+    /* Slate 400 */
+    --text-inverse: #0f172a;
+    /* Slate 900 (for buttons on light/gradient) */
 
     /* Brand Colors */
     --primary-color: #4caf50;
     --primary-hover: #43a047;
     --primary-gradient: linear-gradient(135deg, #4caf50 0%, #66bb6a 100%);
-    
-    --accent-color: #2196f3;
-    
+
+    --accent-color: #38bdf8;
+    /* Twitter Blue type for accents */
+
     /* Functional Colors */
-    --border-color: #e2e8f0;
-    --border-hover: #cbd5e1;
+    --border-color: #334155;
+    /* Slate 700 */
+    --border-hover: #475569;
+    /* Slate 600 */
     --danger-color: #ef5350;
     --warning-color: #ff9800;
     --success-color: #4caf50;
@@ -28,11 +38,11 @@
     --radius-sm: 6px;
     --radius-md: 12px;
     --radius-lg: 16px;
-    
+
     --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
     --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
     --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-    
+
     /* Typography */
     --font-main: 'Segoe UI', system-ui, -apple-system, sans-serif;
 }

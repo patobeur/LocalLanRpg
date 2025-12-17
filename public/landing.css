@@ -147,7 +147,7 @@
 
 .landing-subtitle {
     font-size: 1.5rem;
-    color: #e0e0e0;
+    color: var(--text-primary);
     margin-bottom: 2rem;
     max-width: 700px;
     line-height: 1.5;
@@ -163,7 +163,7 @@
 
 .feature-card {
     background: var(--bg-card);
-    border: 1px solid #26324a;
+    border: 1px solid var(--border-color);
     padding: 40px;
     border-radius: 12px;
     transition: transform 0.3s ease, border-color 0.3s ease;
@@ -181,7 +181,7 @@
 }
 
 .feature-card p {
-    color: var(--text-muted);
+    color: var(--text-secondary);
     line-height: 1.6;
 }
 

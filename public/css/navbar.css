@@ -1,13 +1,20 @@
 /* Unified Navigation Bar Styles */
 .main-navbar {
-    background-color: var(--surface-color);
-    border-bottom: 2px solid var(--border-color);
+    background-color: rgba(15, 23, 42, 0.7);
+    /* Transparent slate */
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     padding: 0 20px;
     height: 60px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    position: sticky;
+    /* Sticky to keep it visible */
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
 .nav-left {
@@ -70,9 +77,8 @@
     position: absolute;
     top: 100%;
     left: 0;
-    background-color: var(--surface-color);
-    min-width: 160px;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+    background-color: rgba(30, 41, 59, 0.95);
+    backdrop-filter: blur(10px);
     border: 1px solid var(--border-color);
     border-radius: 4px;
     z-index: 1000;

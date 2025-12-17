@@ -41,6 +41,24 @@ body {
 	color: var(--text-muted);
 }
 
+/* Leave Room Button */
+.leave-btn {
+	background-color: #ef4444;
+	color: white;
+	border: none;
+	padding: 8px 16px;
+	border-radius: 4px;
+	font-weight: bold;
+	cursor: pointer;
+	margin-left: auto;
+	/* Push to right if flex */
+	transition: background-color 0.2s;
+}
+
+.leave-btn:hover {
+	background-color: #dc2626;
+}
+
 /* Faction Selection */
 .faction-selection {
 	background: var(--surface-color);

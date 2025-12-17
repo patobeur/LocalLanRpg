@@ -28,33 +28,8 @@
 
 <body>
 	<link rel="stylesheet" href="css/navbar.css" />
-	<div class="main-navbar">
-		<div class="nav-left">
-			<a href="/lobby.html" class="nav-brand">
-				<span>LittleMoba</span>
-			</a>
-			<div class="nav-links">
-				<div class="nav-dropdown">
-					<button class="nav-dropbtn">Minions ▾</button>
-					<div class="nav-dropdown-content">
-						<a href="/meshes3d.html">Voir les modèles</a>
-					</div>
-				</div>
-			</div>
-			<a href="/players.html" class="nav-link">Joueurs</a>
-		</div>
-		<div class="nav-right">
-			<div class="nav-dropdown">
-				<button class="nav-dropbtn">
-					👤 <span id="navUsername">Chargement...</span> ▾
-				</button>
-				<div class="nav-dropdown-content nav-dropdown-right">
-					<a href="/login.html" id="navLoginLink">Se connecter</a>
-					<a href="#" id="navLogoutLink" style="display: none;">Déconnexion</a>
-				</div>
-			</div>
-		</div>
-	</div>
+	<nav id="main-navbar"></nav>
+	<script src="/js/navigation.js"></script>
 	<script src="js/navbar.js"></script>
 	<script type="module">
 		import * as THREE from "three";

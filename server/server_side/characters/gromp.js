@@ -49,4 +49,13 @@ module.exports = {
 	svg: "gromp.svg",
 	png: "Gromp.png",
 	glb: "Gromp.fbx",
+	animations: {
+		walk_path: "glb/animations/Gromp_Walk.fbx",
+		autoattack_path: "glb/animations/Gromp_AutoAttack.fbx",
+		dying_path: "glb/animations/Gromp_Dying.fbx",
+		skill1_path: "glb/animations/Gromp_Skill1.fbx",
+		skill2_path: "glb/animations/Gromp_Skill2.fbx",
+		skill3_path: "glb/animations/Gromp_Skill3.fbx",
+		ultimat_path: "glb/animations/Gromp_Ultimat.fbx",
+	},
 };

@@ -1,7 +1,7 @@
 const minions = {
 	namesByFaction: {
-		red: ["minion_tank_blue", "minion_mage_blue"],
-		blue: ["minion_tank_red", "minion_mage_red"],
+		red: ["minion_tank_blue", "minion_mage_blue", "minion_healer_blue"],
+		blue: ["minion_tank_red", "minion_mage_red", "minion_healer_red"],
 	},
 	types: ["tank", "dps", "healer"],
 	xpRewardedPerLv: [
@@ -164,6 +164,84 @@ const minions = {
 
 			scale: 1,
 			fbx: "minion_mage_blue.fbx",
+		},
+		minion_healer_red: {
+			name: "minion_healer_red",
+			type: "healer",
+			speed: [
+				1, 1.1, 1.2, 1.3, 1.4, 1.4, 1.4, 1.4, 1.4, 1.4, 1.4, 1.4, 1.4, 1.4,
+				1.4, 1.4, 1.4, 1.4,
+			], // [skill lv1, lv2, ..., lv18 ]
+
+			detectionRange: 8,
+			hitDistance: [5, 6, 7, 8, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9],
+			autoAttackDamage: [
+				10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 60, 60, 60, 60, 60, 60,
+				60,
+			],
+			autoAttackCd: [
+				2, 1.8, 1.6, 1.4, 1.3, 1.3, 1.3, 1.3, 1.3, 1.3, 1.3, 1.3, 1.3, 1.3,
+				1.3, 1.3, 1.3, 1.3,
+			],
+
+			health: [
+				150, 200, 250, 300, 350, 350, 350, 350, 350, 350, 350, 350, 350,
+				350, 350, 350, 350, 350,
+			],
+			mana: [
+				80, 100, 120, 140, 160, 160, 160, 160, 160, 160, 160, 160, 160, 160,
+				160, 160, 160, 160,
+			],
+			physiqueArmor: [
+				20, 25, 30, 35, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40,
+				40,
+			],
+			magicArmor: [
+				20, 25, 30, 35, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40,
+				40,
+			],
+
+			scale: 1,
+			fbx: "minion_healer_red.fbx",
+		},
+		minion_healer_blue: {
+			name: "minion_healer_blue",
+			type: "dps",
+			speed: [
+				1, 1.1, 1.2, 1.3, 1.4, 1.4, 1.4, 1.4, 1.4, 1.4, 1.4, 1.4, 1.4, 1.4,
+				1.4, 1.4, 1.4, 1.4,
+			], // [skill lv1, lv2, ..., lv18 ]
+
+			detectionRange: 8,
+			hitDistance: [5, 6, 7, 8, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9],
+			autoAttackDamage: [
+				10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 60, 60, 60, 60, 60, 60,
+				60,
+			],
+			autoAttackCd: [
+				2, 1.8, 1.6, 1.4, 1.3, 1.3, 1.3, 1.3, 1.3, 1.3, 1.3, 1.3, 1.3, 1.3,
+				1.3, 1.3, 1.3, 1.3,
+			],
+
+			health: [
+				150, 200, 250, 300, 350, 350, 350, 350, 350, 350, 350, 350, 350,
+				350, 350, 350, 350, 350,
+			],
+			mana: [
+				80, 100, 120, 140, 160, 160, 160, 160, 160, 160, 160, 160, 160, 160,
+				160, 160, 160, 160,
+			],
+			physiqueArmor: [
+				20, 25, 30, 35, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40,
+				40,
+			],
+			magicArmor: [
+				20, 25, 30, 35, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40,
+				40,
+			],
+
+			scale: 1,
+			fbx: "minion_healer_blue.fbx",
 		},
 	},
 };

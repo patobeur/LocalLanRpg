@@ -51,4 +51,13 @@ module.exports = {
 	svg: "Peter.svg",
 	png: "Peter.png",
 	glb: "Peter.fbx",
+	animations: {
+		walk_path: "glb/animations/Peter_Walk.fbx",
+		autoattack_path: "glb/animations/Peter_AutoAttack.fbx",
+		dying_path: "glb/animations/Peter_Dying.fbx",
+		skill1_path: false, // not yet
+		skill2_path: false, // not yet
+		skill3_path: false, // not yet
+		ultimat_path: false, // not yet
+	},
 };

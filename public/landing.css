@@ -1,10 +1,8 @@
 :root {
     /* Mapped to global theme.css variables */
-    --primary-gradient: var(--primary-gradient);
     --bg-dark: var(--bg-color);
     --bg-card: var(--surface-color);
     --text-main: var(--text-primary);
-    --text-muted: var(--text-muted);
     --accent: var(--primary-color);
 }
 

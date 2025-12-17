@@ -53,4 +53,13 @@ module.exports = {
 	svg: "flora.svg",
 	png: "Flora.png",
 	glb: "Flora.fbx",
+	animations: {
+		walk_path: "glb/animations/Flora_Walk.fbx",
+		autoattack_path: "glb/animations/Flora_AutoAttack.fbx",
+		dying_path: "glb/animations/Flora_Dying.fbx",
+		skill1_path: "glb/animations/Flora_Skill1.fbx",
+		skill2_path: "glb/animations/Flora_Skill2.fbx",
+		skill3_path: "glb/animations/Flora_Skill3.fbx",
+		ultimat_path: "glb/animations/Flora_Ultimat.fbx",
+	},
 };

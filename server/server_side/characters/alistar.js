@@ -53,5 +53,9 @@ module.exports = {
 		walk_path: "glb/animations/Alistar_Walk.fbx",
 		autoattack_path: "glb/animations/Alistar_AutoAttack.fbx",
 		dying_path: "glb/animations/Alistar_Dying.fbx",
+		skill1_path: "glb/animations/Alistar_Skill1.fbx",
+		skill2_path: "glb/animations/Alistar_Skill2.fbx",
+		skill3_path: "glb/animations/Alistar_Skill3.fbx",
+		ultimat_path: "glb/animations/Alistar_Ultimat.fbx",
 	},
 };

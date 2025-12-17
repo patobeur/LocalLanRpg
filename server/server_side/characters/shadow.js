@@ -51,4 +51,13 @@ module.exports = {
 	// svg: "shadow.svg",
 	png: "Shadow.png",
 	glb: "Shadow.fbx",
+	animations: {
+		walk_path: "glb/animations/Shadow_Walk.fbx",
+		autoattack_path: "glb/animations/Shadow_AutoAttack.fbx",
+		dying_path: "glb/animations/Shadow_Dying.fbx",
+		skill1_path: false, // not yet
+		skill2_path: false, // not yet
+		skill3_path: false, // not yet
+		ultimat_path: false, // not yet
+	},
 };

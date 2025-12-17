@@ -9,7 +9,7 @@ module.exports = {
 		4.2, 4.2, 4.2,
 	], // [skill lv1, lv2, ..., lv18 ]
 
-	hitDistance: [5, 6, 7, 8, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9],
+	hitDistance: [3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4],
 	autoAttackDamage: [
 		45, 52, 59, 66, 73, 76, 79, 82, 85, 88, 91, 94, 97, 100, 103, 106, 109,
 		112,
@@ -41,14 +41,23 @@ module.exports = {
 		5.3, 5.5, 5.7,
 	],
 	physiqueArmor: [
-		12, 15, 18, 21, 24, 26, 28, 30, 32, 34, 36, 38, 40, 42, 44, 46, 48, 50,
+		32, 32, 32, 32, 32, 32, 32, 32, 32, 34, 36, 38, 40, 42, 44, 46, 48, 50,
 	],
 	magicArmor: [
-		12, 15, 18, 21, 24, 26, 28, 30, 32, 34, 36, 38, 40, 42, 44, 46, 48, 50,
+		32, 32, 32, 32, 32, 32, 32, 32, 32, 34, 36, 38, 40, 42, 44, 46, 48, 50,
 	],
 
-	scale: 1.5,
+	scale: 1.2,
 	svg: "zephyr.svg",
 	png: "Zephyr.png",
 	glb: "Zephyr.fbx",
+	animations: {
+		walk_path: "glb/animations/Zephyr_Walk.fbx",
+		autoattack_path: "glb/animations/Zephyr_AutoAttack.fbx",
+		dying_path: "glb/animations/Zephyr_Dying.fbx",
+		skill1_path: "glb/animations/Zephyr_Skill1.fbx",
+		skill2_path: "glb/animations/Zephyr_Skill2.fbx",
+		skill3_path: "glb/animations/Zephyr_Skill3.fbx",
+		ultimat_path: "glb/animations/Zephyr_Ultimat.fbx",
+	},
 };

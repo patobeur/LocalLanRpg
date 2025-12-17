@@ -51,4 +51,13 @@ module.exports = {
 	svg: "wiko.svg",
 	png: "Wiko.png",
 	glb: "Wiko.fbx",
+	animations: {
+		walk_path: "glb/animations/Wiko_Walk.fbx",
+		autoattack_path: "glb/animations/Wiko_AutoAttack.fbx",
+		dying_path: "glb/animations/Wiko_Dying.fbx",
+		skill1_path: false, // not yet
+		skill2_path: false, // not yet
+		skill3_path: false, // not yet
+		ultimat_path: false, // not yet
+	},
 };

@@ -1,5 +1,6 @@
 const characters = {
 	names: [
+		"Ardur",
 		"Alistar",
 		"Cleric",
 		"Flora",
@@ -31,6 +32,7 @@ const characters = {
 		16900, 19600, 22500, 25600, 28900, 32400,
 	],
 	chars: {
+		Ardur: require("./ardur"),
 		Alistar: require("./alistar"),
 		Cleric: require("./cleric"),
 		Flora: require("./flora"),

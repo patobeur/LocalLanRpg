@@ -53,4 +53,13 @@ module.exports = {
 	svg: "Cleric.svg",
 	png: "Cleric.png",
 	glb: "Cleric.fbx",
+	animations: {
+		walk_path: "glb/animations/Cleric_Walk.fbx",
+		autoattack_path: "glb/animations/Cleric_AutoAttack.fbx",
+		dying_path: "glb/animations/Cleric_Dying.fbx",
+		skill1_path: false, // not yet
+		skill2_path: false, // not yet
+		skill3_path: false, // not yet
+		ultimat_path: false, // not yet
+	},
 };

@@ -43,6 +43,10 @@ export function getRequiredAssets(roomData) {
 			// Animations
 			if (charData.animations) {
 				for (const [animName, animPath] of Object.entries(charData.animations)) {
+					if (typeof animPath !== 'string') {
+						console.warn(`[AssetList] Invalid animation path for ${characterName} animation ${animName}:`, animPath);
+						continue;
+					}
 					const isFbx = animPath.toLowerCase().endsWith('.fbx');
 					// We treat animations as models for loading purposes
 					assets.push({

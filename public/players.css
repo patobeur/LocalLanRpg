@@ -26,14 +26,14 @@ body {
 	margin-bottom: 2rem;
 	background: var(--surface-color);
 	padding: 1.5rem 2rem;
-	border-radius: 15px;
-	box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+	border-radius: 8px;
+	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 	border: 1px solid var(--border-color);
 }
 
 .players-header h2 {
 	color: var(--text-primary);
-	font-size: 1.8rem;
+	font-size: 1.5rem;
 	font-weight: 600;
 }
 
@@ -62,9 +62,9 @@ body {
 .stats-container {
 	background: var(--surface-color);
 	border: 1px solid var(--border-color);
-	border-radius: 15px;
+	border-radius: 8px;
 	padding: 2rem;
-	box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 	overflow-x: auto;
 }
 
@@ -130,12 +130,13 @@ body {
 .level-badge {
 	display: inline-block;
 	background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
-	color: var(--text-primary);
+	color: var(--text-inverse);
+	/* Fix: Dark text on yellow background */
 	padding: 0.25rem 0.75rem;
-	border-radius: 20px;
+	border-radius: 12px;
 	font-weight: 600;
 	font-size: 0.85rem;
-	box-shadow: 0 2px 8px rgba(255, 215, 0, 0.3);
+	box-shadow: 0 2px 4px rgba(255, 215, 0, 0.2);
 }
 
 .stat-number {

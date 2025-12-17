@@ -31,9 +31,10 @@ body {
 }
 
 .header h1 {
-	font-size: 28px;
+	font-size: 24px;
 	color: var(--text-primary);
 	margin-bottom: 5px;
+	font-weight: 600;
 }
 
 .room-status {
@@ -69,9 +70,10 @@ body {
 }
 
 .faction-selection h2 {
-	font-size: 32px;
-	margin-bottom: 40px;
+	font-size: 24px;
+	margin-bottom: 30px;
 	color: var(--text-primary);
+	font-weight: 600;
 }
 
 .faction-buttons {
@@ -82,10 +84,10 @@ body {
 }
 
 .btn-faction {
-	padding: 40px 60px;
-	border: 2px solid transparent;
-	border-radius: 12px;
-	font-size: 20px;
+	padding: 24px 40px;
+	border: 1px solid transparent;
+	border-radius: 8px;
+	font-size: 18px;
 	font-weight: 600;
 	cursor: pointer;
 	transition: all 0.3s;
@@ -101,7 +103,7 @@ body {
 }
 
 .btn-faction.blue {
-	background: linear-gradient(135deg, #2196f3 0%, #4a90e2 100%);
+	background: linear-gradient(135deg, #1e88e5 0%, #42a5f5 100%);
 	color: white;
 }
 
@@ -111,7 +113,7 @@ body {
 }
 
 .btn-faction.red {
-	background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+	background: linear-gradient(135deg, #e53935 0%, #ef5350 100%);
 	color: white;
 }
 
@@ -282,7 +284,7 @@ body {
 	position: relative;
 	z-index: 1;
 	color: var(--text-primary);
-	text-shadow: 0px 0px 4px rgba(255, 255, 255, 0.7);
+	/* text-shadow: 0px 0px 4px rgba(255, 255, 255, 0.7); Removed cheap glow */
 }
 
 .character-card h4 {
@@ -328,10 +330,13 @@ body {
 }
 
 .character-card p {
-	color: #ffffff;
+	color: var(--text-primary);
 	margin: 0 0 5px;
 	padding: 0;
 	z-index: 9999;
+	font-weight: 500;
+	text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+	/* Ensure readability over images */
 }
 
 /* Start Button */

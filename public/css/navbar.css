@@ -27,7 +27,8 @@
     top: 0;
     z-index: 1000;
     font-family: 'Inter', system-ui, sans-serif;
-    /* Clean font */
+    font-size: 15px;
+    /* Define base size */
 }
 
 /* --- Left Section (Brand + Links) --- */
@@ -64,11 +65,13 @@
 .nav-link {
     text-decoration: none;
     color: var(--nav-text);
-    font-weight: 600;
-    font-size: 0.9rem;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    transition: color 0.2s ease, text-shadow 0.2s ease;
+    font-weight: 500;
+    /* Lighter weight */
+    font-size: 0.95em;
+    /* text-transform: uppercase; Removed for less aggressive look */
+    letter-spacing: 0.02em;
+    /* Reduced spacing */
+    transition: color 0.2s ease;
     padding: 5px 0;
     position: relative;
 }
@@ -76,7 +79,7 @@
 .nav-link:hover,
 .nav-link.active {
     color: var(--nav-text-hover);
-    text-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
+    /* text-shadow: 0 0 8px rgba(255, 255, 255, 0.3); Removed cheap glow */
 }
 
 /* Active indicator dot or line */
@@ -103,12 +106,13 @@
 /* Auth Buttons (Guest) */
 .nav-btn {
     text-decoration: none;
-    font-weight: 700;
-    font-size: 0.85rem;
-    padding: 10px 20px;
-    border-radius: 4px;
+    font-weight: 600;
+    font-size: 0.9em;
+    padding: 8px 16px;
+    border-radius: 6px;
+    /* Slightly softer radius */
     transition: all 0.2s ease;
-    text-transform: uppercase;
+    /* text-transform: uppercase; Removed */
 }
 
 .nav-btn-login {

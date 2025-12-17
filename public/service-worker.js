@@ -1,4 +1,4 @@
-const CACHE_NAME = "LocalLanRpg-offline-v1";
+const CACHE_NAME = "LittleMoba-offline-v1";
 const OFFLINE_URL = "/offline.html";
 
 // Install event: Cache the offline page

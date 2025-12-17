@@ -4,7 +4,7 @@
 <head>
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
-	<title>Accueil - LocalLanRpg</title>
+	<title>Accueil - LittleMoba</title>
 	<link rel="stylesheet" href="css/theme.css" />
 	<link rel="stylesheet" href="lobby.css" />
 
@@ -18,7 +18,7 @@
 	<div class="main-navbar">
 		<div class="nav-left">
 			<a href="/" class="nav-brand">
-				🎮 <span>LocalLanRpg</span>
+				🎮 <span>LittleMoba</span>
 			</a>
 			<div class="nav-links">
 				<div class="nav-dropdown">
@@ -44,7 +44,7 @@
 	<div class="hero">
 		<div class="hero-slider" id="heroSlider"></div>
 		<div class="hero-overlay"></div> <!-- For text readability -->
-		<div class="landing-title">LocalLanRpg</div>
+		<div class="landing-title">LittleMoba</div>
 		<div class="landing-subtitle">
 			Le MOBA indépendant qui défie les conventions.<br>
 			Rejoignez l'aventure directement dans votre navigateur.
@@ -78,40 +78,74 @@
 	<section class="section">
 		<h2>Les Héros</h2>
 		<div class="chars-grid">
-			<div class="char-card">
+			<!-- Tank -->
+			<div class="char-card" style="background-image: url('media/characters/low/Ardur.png');">
 				<div class="char-icon">🛡️</div>
-				<span class="char-name">Moonba</span>
+				<span class="char-name">Ardur</span>
 				<span class="char-role role-tank">Tank</span>
 			</div>
-			<div class="char-card">
-				<div class="char-icon">⚔️</div>
-				<span class="char-name">Wiko</span>
-				<span class="char-role role-dps">DPS</span>
+			<div class="char-card" style="background-image: url('media/characters/low/Alistar.png');">
+				<div class="char-icon">🛡️</div>
+				<span class="char-name">Alistar</span>
+				<span class="char-role role-tank">Tank</span>
 			</div>
-			<div class="char-card">
-				<div class="char-icon">💚</div>
-				<span class="char-name">Squazzzza</span>
-				<span class="char-role role-support">Support</span>
-			</div>
-			<div class="char-card">
+			<div class="char-card" style="background-image: url('media/characters/low/Gromp.png');">
 				<div class="char-icon">🧱</div>
 				<span class="char-name">Gromp</span>
 				<span class="char-role role-tank">Tank</span>
 			</div>
-			<div class="char-card">
+			<div class="char-card" style="background-image: url('media/characters/low/Moonba.png');">
+				<div class="char-icon">🛡️</div>
+				<span class="char-name">Moonba</span>
+				<span class="char-role role-tank">Tank</span>
+			</div>
+			<div class="char-card" style="background-image: url('media/characters/low/Torp.png');">
+				<div class="char-icon">🛡️</div>
+				<span class="char-name">Torp</span>
+				<span class="char-role role-tank">Tank</span>
+			</div>
+
+			<!-- DPS -->
+			<div class="char-card" style="background-image: url('media/characters/low/Wiko.png');">
+				<div class="char-icon">⚔️</div>
+				<span class="char-name">Wiko</span>
+				<span class="char-role role-dps">DPS</span>
+			</div>
+
+			<!-- Speedster -->
+			<div class="char-card" style="background-image: url('media/characters/low/Peter.png');">
+				<div class="char-icon">⚡</div>
+				<span class="char-name">Peter</span>
+				<span class="char-role role-speedster">Speedster</span>
+			</div>
+			<div class="char-card" style="background-image: url('media/characters/low/Zephyr.png');">
 				<div class="char-icon">⚡</div>
 				<span class="char-name">Zephyr</span>
 				<span class="char-role role-speedster">Speedster</span>
 			</div>
-			<div class="char-card">
+
+			<!-- Assassin -->
+			<div class="char-card" style="background-image: url('media/characters/low/Shadow.png');">
+				<div class="char-icon">🗡️</div>
+				<span class="char-name">Shadow</span>
+				<span class="char-role role-assassin">Assassin</span>
+			</div>
+
+			<!-- Healer / Support -->
+			<div class="char-card" style="background-image: url('media/characters/low/Cleric.png');">
+				<div class="char-icon">🌿</div>
+				<span class="char-name">Cleric</span>
+				<span class="char-role role-healer">Healer</span>
+			</div>
+			<div class="char-card" style="background-image: url('media/characters/low/Flora.png');">
 				<div class="char-icon">🌿</div>
 				<span class="char-name">Flora</span>
 				<span class="char-role role-healer">Healer</span>
 			</div>
-			<div class="char-card">
-				<div class="char-icon">🗡️</div>
-				<span class="char-name">Shadow</span>
-				<span class="char-role role-assassin">Assassin</span>
+			<div class="char-card" style="background-image: url('media/characters/low/Squazzzza.png');">
+				<div class="char-icon">💚</div>
+				<span class="char-name">Squazzzza</span>
+				<span class="char-role role-support">Support</span>
 			</div>
 		</div>
 	</section>
@@ -165,7 +199,7 @@
 		<h2>Développement Indépendant</h2>
 		<div class="indie-content">
 			<p>
-				LocalLanRpg est un projet passionné, développé de manière <span class="indie-highlight">100%
+				LittleMoba est un projet passionné, développé de manière <span class="indie-highlight">100%
 					indépendante</span>.
 				Loin des grosses productions, ce jeu est le fruit d'un amour pour les MOBA et le développement web.
 				<br><br>
@@ -177,7 +211,7 @@
 	</section>
 
 	<footer style="text-align: center; padding: 40px; color: #8b9bb4; font-size: 0.9rem;">
-		&copy; 2025 LocalLanRpg. Tous droits réservés.
+		&copy; 2025 LittleMoba. Tous droits réservés.
 	</footer>
 
 

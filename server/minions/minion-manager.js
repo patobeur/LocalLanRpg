@@ -307,10 +307,14 @@ class MinionManager {
 	/**
 	 * Remove all projectiles from a specific shooter (when minion dies)
 	 */
+	/**
+	 * Remove all projectiles from a specific shooter (when minion dies)
+	 * MOVED TO MARK-AND-SWEEP to avoid array mutation during iteration in CombatSystem
+	 */
 	cleanupMinionProjectiles(minionId, projectiles) {
-		for (let i = projectiles.length - 1; i >= 0; i--) {
-			if (projectiles[i].shooterId === minionId) {
-				projectiles.splice(i, 1);
+		for (const p of projectiles) {
+			if (p.shooterId === minionId) {
+				p.markedForDeletion = true;
 			}
 		}
 	}

@@ -30,8 +30,8 @@ export function getRequiredAssets(roomData) {
 			// Main model
 			const fileName = charData.fbx || charData.glb || charData.gltf;
 			if (fileName) {
-				const isFbx = fileName.toLowerCase().endsWith('.fbx');
-				const type = isFbx ? 'fbx' : 'gltf';
+				const isFbx = fileName.toLowerCase().endsWith(".fbx");
+				const type = isFbx ? "fbx" : "gltf";
 
 				assets.push({
 					type: type,
@@ -42,15 +42,20 @@ export function getRequiredAssets(roomData) {
 
 			// Animations
 			if (charData.animations) {
-				for (const [animName, animPath] of Object.entries(charData.animations)) {
-					if (typeof animPath !== 'string') {
-						console.warn(`[AssetList] Invalid animation path for ${characterName} animation ${animName}:`, animPath);
+				for (const [animName, animPath] of Object.entries(
+					charData.animations
+				)) {
+					if (typeof animPath !== "string") {
+						console.warn(
+							`[AssetList] Invalid animation path for ${characterName} animation ${animName}:`,
+							animPath
+						);
 						continue;
 					}
-					const isFbx = animPath.toLowerCase().endsWith('.fbx');
+					const isFbx = animPath.toLowerCase().endsWith(".fbx");
 					// We treat animations as models for loading purposes
 					assets.push({
-						type: isFbx ? 'fbx' : 'gltf',
+						type: isFbx ? "fbx" : "gltf",
 						path: `${basePath}/characters/${animPath}`,
 						name: `character_${characterName}_anim_${animName}`,
 					});
@@ -65,6 +70,8 @@ export function getRequiredAssets(roomData) {
 		{ fbx: "minion_tank_red.fbx" },
 		{ fbx: "minion_mage_blue.fbx" },
 		{ fbx: "minion_mage_red.fbx" },
+		{ fbx: "minion_healer_blue.fbx" },
+		{ fbx: "minion_healer_red.fbx" },
 	];
 
 	for (const minion of minionAssets) {
@@ -79,17 +86,18 @@ export function getRequiredAssets(roomData) {
 		});
 
 		// Check for animations (Currently only Tank has them)
-		if (minion.fbx.includes("tank")) {
-			// Extract color (blue/red) from filename "minion_tank_{color}.fbx"
-			// minion.fbx is "minion_tank_blue.fbx" -> parts: ["minion", "tank", "blue.fbx"] -> "blue"
-			const color = minion.fbx.includes("blue") ? "blue" : "red";
-			// Construct animation asset key: minion_tank_blue_anim_Walk
+		// Generalize animation loading for all minion types based on filename structure: minion_{type}_{color}.fbx
+		const parts = minion.fbx.replace(".fbx", "").split("_");
+		// Expected parts: ["minion", "type", "color"]
+		if (parts.length >= 3) {
+			const type = parts[1]; // tank, mage, healer
+			const color = parts[2]; // blue, red
 
 			const anims = ["Walk", "AutoAttack", "Dying"];
 			for (const anim of anims) {
 				assets.push({
 					type: "fbx",
-					path: `${basePath}/minions/glb/animations/minion_tank_${color}_${anim}.fbx`,
+					path: `${basePath}/minions/glb/animations/minion_${type}_${color}_${anim}.fbx`,
 					name: `${assetKey}_anim_${anim.toLowerCase()}`, // Normalize to lowercase for consistency
 				});
 			}
@@ -99,7 +107,7 @@ export function getRequiredAssets(roomData) {
 	// Add structure models
 	const structures = [
 		{ name: "baseTeamA", file: "baseTeamA.glb" },
-		{ name: "baseTeamB", file: "baseTeamB.glb" }
+		{ name: "baseTeamB", file: "baseTeamB.glb" },
 	];
 
 	for (const structure of structures) {

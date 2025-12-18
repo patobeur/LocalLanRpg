@@ -293,6 +293,14 @@ class CombatSystem {
     updateProjectiles(dt, players, minionManager, structures, progressionSystem, addXpCallback, handleGameOverCallback, events) {
         for (let i = this.projectiles.length - 1; i >= 0; i--) {
             const p = this.projectiles[i];
+
+            // Safety check: p might be undefined if array was modified externally (though we fixed that logic hopefully)
+            // Also check for markedForDeletion
+            if (!p || p.markedForDeletion) {
+                this.projectiles.splice(i, 1);
+                continue;
+            }
+
             const move = this.PROJECTILE_SPEED * dt;
             p.x += p.vx * move;
             p.z += p.vz * move;

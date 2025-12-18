@@ -136,52 +136,75 @@ function tick(t) {
     }
 }
 
+// --- Debugging Helper for Animation Warnings ---
+let currentUpdatingEntityName = null;
+const originalWarn = console.warn;
+if (!console.warn.__isPatched) {
+    console.warn = function (...args) {
+        if (currentUpdatingEntityName && args.length > 0 && typeof args[0] === 'string') {
+            // Check for specific Three.js warning
+            if (args[0].includes('THREE.PropertyBinding: No target node found')) {
+                originalWarn.call(console, `[Debug] Animation Warning for Entity: "${currentUpdatingEntityName}"`);
+            }
+        }
+        originalWarn.apply(console, args);
+    };
+    console.warn.__isPatched = true;
+}
+// -----------------------------------------------
+
 /**
  * Helper to update entity animation
  */
 function updateEntityAnimation(mesh, dt, isMoving, isAttacking = false, shotFired = false) {
-    if (!mesh.userData.mixer) return;
+    // Set the current model name for debugging console warnings
+    currentUpdatingEntityName = mesh.userData.name || mesh.userData.character || "Unknown Entity";
+    try {
+        if (!mesh.userData.mixer) return;
 
-    mesh.userData.mixer.update(dt);
+        mesh.userData.mixer.update(dt);
 
-    const actions = mesh.userData.actions;
-    if (!actions) return;
+        const actions = mesh.userData.actions;
+        if (!actions) return;
 
-    // Logic: 'autoattack' > 'walk' > 'idle'
-    let targetActionName = 'idle';
-    if (isAttacking) targetActionName = 'autoattack';
-    else if (isMoving) targetActionName = 'walk';
+        // Logic: 'autoattack' > 'walk' > 'idle'
+        let targetActionName = 'idle';
+        if (isAttacking) targetActionName = 'autoattack';
+        else if (isMoving) targetActionName = 'walk';
 
-    // If autoattack missing, fallback to idle/walk
-    if (isAttacking && !actions['autoattack']) {
-        targetActionName = isMoving ? 'walk' : 'idle';
-    }
-
-    // Check if target action exists
-    const targetAction = actions[targetActionName];
-
-    // Transition logic
-    if (targetAction) {
-        // If we just fired a shot, FORCE reset the attack animation
-        if (shotFired && targetActionName === 'autoattack') {
-            targetAction.reset().play();
-            mesh.userData.currentAction = targetAction;
+        // If autoattack missing, fallback to idle/walk
+        if (isAttacking && !actions['autoattack']) {
+            targetActionName = isMoving ? 'walk' : 'idle';
         }
-        else if (mesh.userData.currentAction !== targetAction) {
+
+        // Check if target action exists
+        const targetAction = actions[targetActionName];
+
+        // Transition logic
+        if (targetAction) {
+            // If we just fired a shot, FORCE reset the attack animation
+            if (shotFired && targetActionName === 'autoattack') {
+                targetAction.reset().play();
+                mesh.userData.currentAction = targetAction;
+            }
+            else if (mesh.userData.currentAction !== targetAction) {
+                if (mesh.userData.currentAction) {
+                    mesh.userData.currentAction.fadeOut(0.2);
+                }
+                targetAction.reset().fadeIn(0.2).play();
+                mesh.userData.currentAction = targetAction;
+
+                // If it's an attack, strictly it might need to loop or not. 
+                // For now default loop is fine (repeated attacks).
+            }
+        } else {
+            // Target action not found
             if (mesh.userData.currentAction) {
                 mesh.userData.currentAction.fadeOut(0.2);
+                mesh.userData.currentAction = null;
             }
-            targetAction.reset().fadeIn(0.2).play();
-            mesh.userData.currentAction = targetAction;
-
-            // If it's an attack, strictly it might need to loop or not. 
-            // For now default loop is fine (repeated attacks).
         }
-    } else {
-        // Target action not found
-        if (mesh.userData.currentAction) {
-            mesh.userData.currentAction.fadeOut(0.2);
-            mesh.userData.currentAction = null;
-        }
+    } finally {
+        currentUpdatingEntityName = null;
     }
 }

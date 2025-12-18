@@ -131,7 +131,11 @@ export async function connectToRoomGame(gameUI) {
             const statusEl = document.getElementById("status");
             if (statusEl) statusEl.textContent = "Déconnecté...";
 
-            if (event.code !== 1000) { // Don't alert on normal closure (e.g. page navigation)
+            // code 1000: Normal Closure
+            // code 1001: Going Away (Browser navigation/Refresh)
+            if (event.code !== 1000 && event.code !== 1001) {
+                // Only alert on abnormal disconnects
+                console.warn(`[WS] Abnormal disconnection. Code: ${event.code}`);
                 alert("Connexion au serveur perdue. Retour au lobby.");
                 window.location.href = "/lobby.html";
             }

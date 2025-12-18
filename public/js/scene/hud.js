@@ -154,7 +154,7 @@ export function createHUD(config) {
 	};
 
 	// Default HUD offset
-	hudGroup.position.y = 3;
+	hudGroup.position.y = 4;
 
 	return hudGroup;
 }

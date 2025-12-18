@@ -17,8 +17,8 @@ const minions = {
 				1.4, 1.4, 1.4, 1.4,
 			], // [skill lv1, lv2, ..., lv18 ]
 
-			detectionRange: 8,
-			hitDistance: [2, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4],
+			detectionRange: 5,
+			hitDistance: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 			autoAttackDamage: [
 				10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 60, 60, 60, 60, 60, 60,
 				60,
@@ -56,8 +56,8 @@ const minions = {
 				1.4, 1.4, 1.4, 1.4,
 			], // [skill lv1, lv2, ..., lv18 ]
 
-			detectionRange: 8,
-			hitDistance: [2, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4],
+			detectionRange: 5,
+			hitDistance: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 			autoAttackDamage: [
 				10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 60, 60, 60, 60, 60, 60,
 				60,
@@ -95,8 +95,8 @@ const minions = {
 				1.4, 1.4, 1.4, 1.4,
 			], // [skill lv1, lv2, ..., lv18 ]
 
-			detectionRange: 8,
-			hitDistance: [5, 6, 7, 8, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9],
+			detectionRange: 5,
+			hitDistance: [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3],
 			autoAttackDamage: [
 				10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 60, 60, 60, 60, 60, 60,
 				60,
@@ -134,8 +134,8 @@ const minions = {
 				1.4, 1.4, 1.4, 1.4,
 			], // [skill lv1, lv2, ..., lv18 ]
 
-			detectionRange: 8,
-			hitDistance: [5, 6, 7, 8, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9],
+			detectionRange: 5,
+			hitDistance: [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3],
 			autoAttackDamage: [
 				10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 60, 60, 60, 60, 60, 60,
 				60,
@@ -173,8 +173,8 @@ const minions = {
 				1.4, 1.4, 1.4, 1.4,
 			], // [skill lv1, lv2, ..., lv18 ]
 
-			detectionRange: 8,
-			hitDistance: [5, 6, 7, 8, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9],
+			detectionRange: 5,
+			hitDistance: [5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5],
 			autoAttackDamage: [
 				10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 60, 60, 60, 60, 60, 60,
 				60,
@@ -212,8 +212,8 @@ const minions = {
 				1.4, 1.4, 1.4, 1.4,
 			], // [skill lv1, lv2, ..., lv18 ]
 
-			detectionRange: 8,
-			hitDistance: [5, 6, 7, 8, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9],
+			detectionRange: 5,
+			hitDistance: [5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5],
 			autoAttackDamage: [
 				10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 60, 60, 60, 60, 60, 60,
 				60,

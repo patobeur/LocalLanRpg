@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Paramètres - LittleMoba</title>
+    <link rel="stylesheet" href="css/theme.css" />
+    <link rel="stylesheet" href="css/navbar.css" />
+    <style>
+        .settings-content {
+            max-width: 800px;
+            margin: 80px auto;
+            padding: 20px;
+        }
+
+        .settings-container {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .settings-header {
+            margin-bottom: 30px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 20px;
+        }
+
+        .settings-section {
+            margin-bottom: 40px;
+        }
+
+        .settings-section h3 {
+            color: var(--primary);
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-bright);
+        }
+
+        .form-group input[type="range"] {
+            width: 100%;
+            accent-color: var(--primary);
+        }
+
+        .form-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .save-bar {
+            margin-top: 30px;
+            border-top: 1px solid var(--border);
+            padding-top: 20px;
+            text-align: right;
+        }
+    </style>
+</head>
+
+<body>
+    <nav id="main-navbar"></nav>
+    <script src="/js/navigation.js"></script>
+
+    <div class="settings-content">
+        <div class="settings-container">
+            <div class="settings-header">
+                <h2>⚙️ Paramètres</h2>
+            </div>
+
+            <form id="settingsForm">
+                <div class="settings-section">
+                    <h3>Audio</h3>
+                    <div class="form-group">
+                        <div class="form-row">
+                            <label for="masterVolume">Volume Principal</label>
+                            <span id="masterVolumeVal">100%</span>
+                        </div>
+                        <input type="range" id="masterVolume" name="masterVolume" min="0" max="100" value="100">
+                    </div>
+                </div>
+
+                <div class="settings-section">
+                    <h3>Graphismes</h3>
+                    <div class="form-group">
+                        <div class="form-row">
+                            <label for="quality">Qualité</label>
+                            <select id="quality" name="quality" class="nav-btn" style="width: auto;">
+                                <option value="low">Basse</option>
+                                <option value="medium" selected>Moyenne</option>
+                                <option value="high">Haute</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="save-bar">
+                    <button type="submit" class="btn-primary">Enregistrer</button>
+                    <span id="saveMessage"
+                        style="margin-left: 10px; color: var(--success); opacity: 0; transition: opacity 0.5s;">Sauvegardé
+                        !</span>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/settings.js"></script>
+    <script src="js/navbar.js"></script>
+</body>
+
+</html>

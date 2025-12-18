@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<title>Profil - LittleMoba</title>
+	<link rel="stylesheet" href="css/theme.css" />
+	<link rel="stylesheet" href="css/navbar.css" />
+	<style>
+		.profile-content {
+			max-width: 800px;
+			margin: 80px auto;
+			padding: 20px;
+		}
+
+		.profile-header {
+			background: var(--surface);
+			border: 1px solid var(--border);
+			border-radius: 12px;
+			padding: 30px;
+			display: flex;
+			align-items: center;
+			gap: 20px;
+			box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+		}
+
+		.profile-avatar {
+			width: 100px;
+			height: 100px;
+			background: var(--primary);
+			border-radius: 50%;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			font-size: 3rem;
+			color: white;
+		}
+
+		.profile-info h2 {
+			font-size: 2rem;
+			margin-bottom: 5px;
+			background: linear-gradient(45deg, var(--primary), var(--secondary));
+			-webkit-background-clip: text;
+			-webkit-text-fill-color: transparent;
+		}
+
+		.profile-stats {
+			display: grid;
+			grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+			gap: 20px;
+			margin-top: 30px;
+		}
+
+		.stat-card {
+			background: var(--surface);
+			border: 1px solid var(--border);
+			border-radius: 12px;
+			padding: 20px;
+			text-align: center;
+			transition: transform 0.2s;
+		}
+
+		.stat-card:hover {
+			transform: translateY(-2px);
+			border-color: var(--primary);
+		}
+
+		.stat-value {
+			font-size: 2rem;
+			font-weight: bold;
+			color: var(--text-bright);
+			margin-bottom: 5px;
+		}
+
+		.stat-label {
+			color: var(--text-dim);
+			font-size: 0.9rem;
+			text-transform: uppercase;
+			letter-spacing: 1px;
+		}
+	</style>
+</head>
+
+<body>
+	<nav id="main-navbar"></nav>
+	<script src="/js/navigation.js"></script>
+
+	<div class="profile-content">
+		<div class="profile-header">
+			<div class="profile-avatar">👤</div>
+			<div class="profile-info">
+				<h2 id="profileUsername">Chargement...</h2>
+				<p style="color: var(--text-dim);">Membre de LittleMoba</p>
+			</div>
+		</div>
+
+		<div class="profile-stats" id="profileStats">
+			<!-- Stats will be injected here -->
+			<div class="stat-card">
+				<div class="stat-value" id="statsGames">0</div>
+				<div class="stat-label">Parties Jouées</div>
+			</div>
+			<div class="stat-card">
+				<div class="stat-value" id="statsWins">0</div>
+				<div class="stat-label">Victoires</div>
+			</div>
+			<div class="stat-card">
+				<div class="stat-value" id="statsKills">0</div>
+				<div class="stat-label">Éliminations</div>
+			</div>
+			<div class="stat-card">
+				<div class="stat-value" id="statsXP">0</div>
+				<div class="stat-label">XP Total</div>
+			</div>
+		</div>
+	</div>
+
+	<script src="js/profile.js"></script>
+	<script src="js/navbar.js"></script>
+</body>
+
+</html>

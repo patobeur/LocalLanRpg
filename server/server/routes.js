@@ -77,6 +77,16 @@ function setupRoutes(app, requireAuth, roomManager) {
 	app.get("/login.html", (req, res) => {
 		res.sendFile(path.join(__dirname, "../../public/login.html"));
 	});
+
+	// Route de profil - nécessite authentification
+	app.get("/profile.html", requireAuth, (req, res) => {
+		res.sendFile(path.join(__dirname, "../../public/profile.html"));
+	});
+
+	// Route de paramètres - nécessite authentification
+	app.get("/settings.html", requireAuth, (req, res) => {
+		res.sendFile(path.join(__dirname, "../../public/settings.html"));
+	});
 	// API Players Stats
 	app.get("/api/players/stats", requireAuth, async (req, res) => {
 		try {

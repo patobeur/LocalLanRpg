@@ -21,8 +21,8 @@ module.exports = {
 
 	skill1Id: 0,
 	skill2Id: 1,
-	skill3Id: 2,
-	ultimatId: 3,
+	skill3Id: 7,
+	ultimatId: 11,
 
 	health: [
 		120, 160, 200, 240, 280, 300, 320, 340, 360, 380, 400, 420, 440, 460, 480,
@@ -55,9 +55,9 @@ module.exports = {
 		walk_path: "glb/animations/Wiko_Walk.fbx",
 		autoattack_path: "glb/animations/Wiko_AutoAttack.fbx",
 		dying_path: "glb/animations/Wiko_Dying.fbx",
-		skill1_path: false, // not yet
-		skill2_path: false, // not yet
-		skill3_path: false, // not yet
-		ultimat_path: false, // not yet
+		skill1_path: "glb/animations/Wiko_Skill1.fbx",
+		skill2_path: "glb/animations/Wiko_Skill2.fbx",
+		skill3_path: "glb/animations/Wiko_Skill3.fbx",
+		ultimat_path: "glb/animations/Wiko_Ultimat.fbx",
 	},
 };

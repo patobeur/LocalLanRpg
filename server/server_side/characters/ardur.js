@@ -57,9 +57,9 @@ module.exports = {
 		walk_path: "glb/animations/Ardur_Walk.fbx",
 		autoattack_path: "glb/animations/Ardur_AutoAttack.fbx",
 		dying_path: "glb/animations/Ardur_Dying.fbx",
-		skill1_path: false, // not yet
-		skill2_path: false, // not yet
-		skill3_path: false, // not yet
-		ultimat_path: false, // not yet
+		skill1_path: "glb/animations/Ardur_Skill1.fbx",
+		skill2_path: "glb/animations/Ardur_Skill2.fbx",
+		skill3_path: "glb/animations/Ardur_Skill3.fbx",
+		ultimat_path: "glb/animations/Ardur_Ultimat.fbx",
 	},
 };

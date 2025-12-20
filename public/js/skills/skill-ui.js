@@ -1,3 +1,5 @@
+import { me, charactersData } from "../main/game-state.js";
+
 export const skillZones = {};
 
 export function initSkillUI() {
@@ -40,7 +42,9 @@ export function initSkillUI() {
             fontWeight: "bold",
             cursor: "pointer",
             position: "relative",
-            transition: "background-color 0.1s"
+            transition: "background-color 0.1s",
+            backgroundSize: "cover", // Ensure image covers the zone
+            backgroundPosition: "center"
         });
         zone.textContent = skill.key;
 
@@ -65,6 +69,32 @@ export function initSkillUI() {
     });
 
     document.body.appendChild(container);
+
+    // Try to update icons immediately if data is available
+    updateSkillIcons();
+}
+
+export function updateSkillIcons() {
+    if (!me.character || !charactersData[me.character]) return;
+
+    const char = charactersData[me.character];
+    const mapping = {
+        "A": char.skill1Id,
+        "Z": char.skill2Id,
+        "E": char.skill3Id,
+        "R": char.ultimatId
+    };
+
+    Object.keys(skillZones).forEach(key => {
+        const skillId = mapping[key];
+        if (skillId !== undefined) {
+            skillZones[key].element.style.backgroundImage = `url('/media/skills/${skillId}.png')`;
+            // Make text semi-transparent or remove it if icon is loaded? 
+            // Better to keep text as overlay or move it to corner?
+            // For now, let's keep text but maybe add text-shadow for visibility
+            skillZones[key].element.style.textShadow = "0px 0px 4px #000";
+        }
+    });
 }
 
 export function updateSkillVisual(key, isOnCooldown, duration) {

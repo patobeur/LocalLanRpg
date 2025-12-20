@@ -22,9 +22,9 @@ module.exports = {
 	],
 
 	skill1Id: 2,
-	skill2Id: 3,
-	skill3Id: 4,
-	ultimatId: 5,
+	skill2Id: 12,
+	skill3Id: 13,
+	ultimatId: 14,
 
 	health: [
 		145, 185, 225, 265, 305, 325, 345, 365, 385, 405, 425, 445, 465, 485, 505,
@@ -57,9 +57,9 @@ module.exports = {
 		walk_path: "glb/animations/Cleric_Walk.fbx",
 		autoattack_path: "glb/animations/Cleric_AutoAttack.fbx",
 		dying_path: "glb/animations/Cleric_Dying.fbx",
-		skill1_path: false, // not yet
-		skill2_path: false, // not yet
-		skill3_path: false, // not yet
-		ultimat_path: false, // not yet
+		skill1_path: "glb/animations/Cleric_Skill1.fbx",
+		skill2_path: "glb/animations/Cleric_Skill2.fbx",
+		skill3_path: "glb/animations/Cleric_Skill3.fbx",
+		ultimat_path: "glb/animations/Cleric_Ultimat.fbx",
 	},
 };

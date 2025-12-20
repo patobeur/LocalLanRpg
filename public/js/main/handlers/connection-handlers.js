@@ -9,6 +9,7 @@ import {
 } from "../game-state.js";
 import { makePlayerMesh, removePlayerMesh, updatePlayerHUD, world, createMapObjects } from "../../scene.js";
 import { initSkillManager } from "../../skills/skill-manager.js";
+import { updateSkillIcons } from "../../skills/skill-ui.js";
 import { handleMinionSpawn } from "./minion-handlers.js";
 
 export function handleServerShutdown() {
@@ -110,6 +111,9 @@ export function handleHello(msg) {
             charactersData[me.character]
         );
     }
+
+    // Update skill icons now that character is set
+    updateSkillIcons();
 }
 
 export function handlePlayerJoin(msg) {

@@ -49,5 +49,14 @@ module.exports = {
 	scale: 1.5,
 	svg: "squazzzza.svg",
 	png: "Squazzzza.png",
-	fbx: "Squazzzza.fbx",
+	glb: "Squazzzza.fbx",
+	animations: {
+		walk_path: "glb/animations/Squazzzza_Walk.fbx",
+		autoattack_path: "glb/animations/Squazzzza_AutoAttack.fbx",
+		dying_path: "glb/animations/Squazzzza_Dying.fbx",
+		skill1_path: "glb/animations/Squazzzza_Skill1.fbx",
+		skill2_path: "glb/animations/Squazzzza_Skill2.fbx",
+		skill3_path: "glb/animations/Squazzzza_Skill3.fbx",
+		ultimat_path: "glb/animations/Squazzzza_Ultimat.fbx",
+	},
 };

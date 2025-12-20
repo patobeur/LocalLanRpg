@@ -11,6 +11,7 @@ import { clearAttackTarget, getAttackTarget } from "../../input.js";
 import { updatePlayerHUD } from "../../scene.js";
 import { GAME_CONSTANTS } from "../../client-config.js";
 import { getMinionMesh } from "./minion-handlers.js";
+import { playSkillEffect } from "../../effects/skill-visuals.js";
 
 let respawnInterval = null;
 
@@ -232,7 +233,17 @@ export function handlePlayerRespawn(msg) {
     }
 }
 
+
+
 export function handleSkillEffect(msg) {
-    console.log("[Combat] Skill effect received:", msg);
-    // TODO: Implement visual effects based on msg.skillId or msg.effectType
+    console.log("[Combat] Handling Skill Effect (Full Msg):", msg);
+    if (msg.skillId !== undefined) {
+        try {
+            playSkillEffect(msg.skillId, msg);
+        } catch (e) {
+            console.error("[Combat] Visual Error:", e);
+        }
+    } else {
+        console.warn("[Combat] Skill effect received without skillId:", msg);
+    }
 }

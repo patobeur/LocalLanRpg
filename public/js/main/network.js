@@ -171,6 +171,7 @@ export function getWebSocket() {
     return ws;
 }
 
+
 /**
  * Send assets-loaded message to server
  */
@@ -178,5 +179,20 @@ export function sendAssetsLoaded() {
     if (ws && ws.readyState === WebSocket.OPEN) {
         ws.send(JSON.stringify({ type: "assets-loaded" }));
         console.log("[Network] Sent assets-loaded to server");
+    }
+}
+
+/**
+ * Send a skill action to the server
+ * @param {string} skillKey - The skill key (A, Z, E, R)
+ * @param {object} targetData - Target information (x, z, targetId, etc.)
+ */
+export function sendSkillAction(skillKey, targetData) {
+    if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({
+            type: "skill",
+            skillKey,
+            ...targetData
+        }));
     }
 }

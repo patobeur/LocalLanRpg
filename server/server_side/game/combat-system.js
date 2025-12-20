@@ -23,7 +23,7 @@ class CombatSystem {
      */
     addProjectile(shooterId, x, y, z, angle, players) {
         const shooter = players.get(shooterId);
-        if (shooter && shooter.isDead) return; // Prevent shooting if dead
+        if (shooter && shooter.isDead) return;
 
         let vx = Math.sin(angle);
         let vz = Math.cos(angle);
@@ -34,8 +34,52 @@ class CombatSystem {
             z,
             vx,
             vz,
-            distTraveled: 0
+            distTraveled: 0,
+            // Default stats
+            speed: this.PROJECTILE_SPEED,
+            range: this.PROJECTILE_RANGE,
+            damage: 0, // Calculated on hit usually, but for skills we might want to fix it here
+            isSkill: false
         });
+    }
+
+    /**
+     * Add a skill projectile to the game
+     */
+    addSkillProjectile(shooterId, x, y, z, angle, skillDef, damageValue, players) {
+        const shooter = players.get(shooterId);
+        if (shooter && shooter.isDead) return;
+
+        let vx = Math.sin(angle);
+        let vz = Math.cos(angle);
+
+        const speed = (skillDef.projectile_speed || 1.1) * 30; // Adjust scale? 1.1 seems small vs constant PROJECTILE_SPEED
+        // GAME_CONSTANTS.PROJECTILE_SPEED might be around 30? Check config.
+        // skills.js values: 1.1. 
+        // We know game speed. Let's assume 1.1 is relative or needs scaling.
+        // Wait, standard speed in config?
+        // Let's use the provided speed directly if it looks sizeable, or multiply.
+        // Actually, looking at skills.js, speed is 1.1. default is likely higher?
+        // Let's check `GAME_CONSTANTS` in config via context if possible, or just apply a multiplier.
+        // `d:\laragon\www\LocalLanRpg\server\server_side\config.js`.
+        // Let's assume we need to scale it to match units per second. 
+
+        const projectile = {
+            shooterId,
+            x,
+            z,
+            vx,
+            vz,
+            distTraveled: 0,
+            speed: (skillDef.projectile_speed || 1) * 20, // heuristic scaling
+            range: skillDef.hitDistance || 20,
+            damage: damageValue,
+            isSkill: true,
+            skillName: skillDef.name
+        };
+
+        this.projectiles.push(projectile);
+        return projectile;
     }
 
     /**
@@ -44,7 +88,10 @@ class CombatSystem {
      * @param {boolean} isMinion - Whether the shooter is a minion
      * @returns {number} Damage amount
      */
-    calculateDamage(shooter, isMinion) {
+    calculateDamage(shooter, isMinion, projectile) {
+        if (projectile && projectile.isSkill) {
+            return projectile.damage;
+        }
         let damage = 10;
         if (isMinion) {
             const minionsData = require("../minions.js");
@@ -74,8 +121,9 @@ class CombatSystem {
             const dx = projectile.x - player.x;
             const dz = projectile.z - player.z;
 
+
             if (Math.hypot(dx, dz) < 0.5) {
-                const damage = this.calculateDamage(shooter, shooterIsMinion);
+                const damage = this.calculateDamage(shooter, shooterIsMinion, projectile);
 
                 // Track damage for players
                 if (!shooterIsMinion) {
@@ -301,7 +349,11 @@ class CombatSystem {
                 continue;
             }
 
-            const move = this.PROJECTILE_SPEED * dt;
+            // Custom speed and range
+            const speed = p.speed || this.PROJECTILE_SPEED;
+            const range = p.range || this.PROJECTILE_RANGE;
+
+            const move = speed * dt;
             p.x += p.vx * move;
             p.z += p.vz * move;
             p.distTraveled += move;
@@ -341,7 +393,7 @@ class CombatSystem {
                 hit = this.checkStructureCollision(p, structures, shooter, shooterIsMinion, players, progressionSystem, handleGameOverCallback, events);
             }
 
-            if (hit || p.distTraveled >= this.PROJECTILE_RANGE) {
+            if (hit || p.distTraveled >= (p.range || this.PROJECTILE_RANGE)) {
                 this.projectiles.splice(i, 1);
             }
         }

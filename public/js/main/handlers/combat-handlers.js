@@ -231,3 +231,8 @@ export function handlePlayerRespawn(msg) {
         }
     }
 }
+
+export function handleSkillEffect(msg) {
+    console.log("[Combat] Skill effect received:", msg);
+    // TODO: Implement visual effects based on msg.skillId or msg.effectType
+}

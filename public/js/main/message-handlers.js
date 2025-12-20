@@ -13,7 +13,8 @@ import {
     handleProjectileHit,
     handlePlayerHealth,
     handlePlayerDeath,
-    handlePlayerRespawn
+    handlePlayerRespawn,
+    handleSkillEffect
 } from "./handlers/combat-handlers.js";
 import {
     handleStructureHit,
@@ -63,6 +64,9 @@ export function handleMessage(msg) {
             break;
         case "shoot":
             handleShoot(msg);
+            break;
+        case "skill-effect":
+            handleSkillEffect(msg);
             break;
         case "projectile":
             // Handle both player and minion projectiles

@@ -4,6 +4,7 @@ const CombatSystem = require("./combat-system.js");
 const ProgressionSystem = require("./progression-system.js");
 const RegenerationSystem = require("./regeneration-system.js");
 const GameStateManager = require("./game-state-manager.js");
+const SkillSystem = require("./skill-system.js");
 
 /**
  * Game Class - Main orchestrator
@@ -18,6 +19,7 @@ class Game {
         this.regenerationSystem = new RegenerationSystem();
         this.gameStateManager = new GameStateManager();
         this.minionManager = new MinionManager();
+        this.skillSystem = new SkillSystem(this);
 
         // Initialize structures
         this.gameStateManager.initializeStructures();
@@ -79,6 +81,14 @@ class Game {
     // ===== Combat =====
     addProjectile(shooterId, x, y, z, angle) {
         this.combatSystem.addProjectile(shooterId, x, y, z, angle, this.playerManager.getPlayersMap());
+    }
+
+    // ===== Skills =====
+    useSkill(playerId, skillKey, targetData) {
+        const player = this.playerManager.getPlayersMap().get(playerId);
+        if (player) {
+            return this.skillSystem.useSkill(player, skillKey, targetData);
+        }
     }
 
     // ===== Main Update Loop =====

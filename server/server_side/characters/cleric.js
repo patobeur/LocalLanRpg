@@ -21,10 +21,10 @@ module.exports = {
 		1.8, 1.8, 1.8,
 	],
 
-	skill1Id: 0,
-	skill2Id: 1,
-	skill3Id: 2,
-	ultimatId: 3,
+	skill1Id: 2,
+	skill2Id: 3,
+	skill3Id: 4,
+	ultimatId: 5,
 
 	health: [
 		145, 185, 225, 265, 305, 325, 345, 365, 385, 405, 425, 445, 465, 485, 505,

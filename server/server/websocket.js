@@ -221,6 +221,18 @@ function setupWebSocket(server, roomManager, sessionMiddleware) {
                     );
                 }
 
+                if (msg.type === "skill") {
+                    if (!ws.roomId || !ws.playerId) return;
+
+                    const room = roomManager.getRoom(ws.roomId);
+                    if (!room || !room.game) return;
+
+                    const result = room.game.useSkill(ws.playerId, msg.skillKey, msg);
+                    if (result && result.executed && result.event) {
+                        broadcastToRoom(ws.roomId, result.event);
+                    }
+                }
+
                 // Handle assets-loaded
                 if (msg.type === "assets-loaded") {
                     if (!ws.roomId || !ws.playerId) return;

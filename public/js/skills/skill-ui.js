@@ -17,6 +17,13 @@ export function initSkillUI() {
         pointerEvents: "auto" // Ensure clicks are registered
     });
 
+    // Prevent click propagation to game world
+    ['mousedown', 'mouseup', 'click', 'touchstart', 'touchend'].forEach(eventType => {
+        container.addEventListener(eventType, (e) => {
+            e.stopPropagation();
+        });
+    });
+
     // Define skills
     const skills = [
         { key: "A", id: "skill1" },

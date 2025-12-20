@@ -254,7 +254,7 @@ const skills = {
 		type: ["heal", "hot", "area"],
 		projectile_speed: 1.0,
 		hitDistance: 15,
-		damage: [60, 90, 120, 150, 190], // consider it as heal per tick
+		damage: [120, 90, 120, 150, 190], // consider it as heal per tick
 		manaCost: [16, 20, 28, 38, 50],
 		cd: [11, 10, 9, 8, 8],
 		target: "floor",
